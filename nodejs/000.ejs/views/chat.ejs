@@ -1,8 +1,7 @@
 <script src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
-var socket = io.connect('http://192.168.13.200:3000/');
+var socket = io.connect('http://<%= host %>');
 socket.on('connect', function(msg) {
-  console.log("connet");
   document.getElementById("connectId").innerHTML = 
     "your connection id::" + socket.socket.transport.sessid;
   document.getElementById("type").innerHTML = 
