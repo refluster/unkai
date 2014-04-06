@@ -1,7 +1,5 @@
-
 <script src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
-// var socket = io.connect('http://localhost:3000');
 var socket = io.connect('http://192.168.13.200:3000/');
 socket.on('connect', function(msg) {
   console.log("connet");
@@ -11,25 +9,25 @@ socket.on('connect', function(msg) {
     "connection type::" + socket.socket.transport.name;
 });
 
-// メッセージを受けたとき
+// message received
 socket.on('message', function(msg) {
-  // メッセージを画面に表示する
-  document.getElementById("receiveMsg").innerHTML = msg.value;
+  // display message
+  document.getElementById("receive_message").innerHTML = msg.value;
 });
 
-// メッセージを送る
-function SendMsg() {
+// send message
+function send_message() {
   var msg = document.getElementById("message").value;
   console.log('send msg');
-  // メッセージを発射する
+  // send message
   socket.emit('message', { value: msg });
 }
-// 切断する
-function DisConnect() {
-  var msg = socket.socket.transport.sessid + "は切断しました。";
-  // メッセージを発射する
+// disconnect
+function disconnect() {
+  var msg = socket.socket.transport.sessid + " was disconnected";
+  // send message
   socket.emit('message', { value: msg });
-  // socketを切断する
+  // socket disconnect
   socket.disconnect();
 }
 </script>
@@ -37,20 +35,21 @@ function DisConnect() {
 <!DOCTYPE html>
 <html>
   <head>
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <meta content="text/html; charset=EUC-JP">
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
-    
     <h1>socket.io sample program</h1>
     <div id="connectId"></div>
     <div id="type"></div>
     <br>
     <input type="text" id="message" value="">
-    <input type="button" value="send message" onclick="SendMsg()">
-    <input type="button" value="disconnect" onclick="DisConnect()">
-    <div id="receiveMsg"></div>
-    
+    <input type="button" value="send message" onclick="send_message()">
+    <input type="button" value="disconnect" onclick="disconnect()">
+    <div id="receive_message"></div>
   </body>
 </html>
