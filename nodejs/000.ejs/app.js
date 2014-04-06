@@ -10,6 +10,7 @@ var path = require('path');
 var routes = require('./routes');
 var user = require('./routes/user');
 var chat = require('./routes/chat');
+var humidity = require('./routes/humidity');
 
 var app = express();
 
@@ -36,6 +37,7 @@ if ('development' == app.get('env')) {
 app.get('/', routes.index);
 app.get('/users', user.list);
 app.get('/chat', chat.index);
+app.get('/humidity', humidity.index);
 
 var server = http.createServer(app);
 server.listen(app.get('port'), function(){
@@ -43,19 +45,25 @@ server.listen(app.get('port'), function(){
 });
 
 var socketio = require('socket.io');
-// wait for connections from clients
+// wait for connecbtions from clients
 var io = socketio.listen(server);
 
 // client connected
 io.sockets.on('connection', function(socket) {
     console.log("connection");
-    // message received
+    // chat message received
     socket.on('message', function(data) {
         // broadcast to all clients
         console.log("message");
         io.sockets.emit('message', { value: data.value });
     });
     
+    // for humidity
+    socket.on('get humidity', function(data) {
+        console.log("get humidity");
+        socket.emit('humidity', { humidity: 30, temperature: 23});
+    });
+
     // client disconnected
     socket.on('disconnect', function(){
         console.log("disconnect");

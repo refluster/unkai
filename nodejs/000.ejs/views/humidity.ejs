@@ -1,0 +1,37 @@
+<script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript">
+var socket = io.connect('http://<%= host %>');
+socket.on('connect', function(msg) {
+});
+
+// message received
+socket.on('humidity', function(data) {
+  console.log('receive msg');
+  document.getElementById("humidity").innerHTML = data.humidity;
+  document.getElementById("temperature").innerHTML = data.temperature;
+});
+
+// send message
+function send_message() {
+  console.log('send msg');
+  socket.emit('get humidity', {});
+}
+</script>
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta content="text/html; charset=EUC-JP">
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body onload="send_message();">
+    <h1><%= title %></h1>
+    <br>
+    humidity: <span id="humidity"></span><br>
+    temperature: <span id="temperature"></span>
+  </body>
+</html>
