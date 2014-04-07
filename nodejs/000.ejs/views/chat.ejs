@@ -1,3 +1,4 @@
+
 <script src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
 var socket = io.connect('http://<%= host %>');
@@ -9,8 +10,9 @@ socket.on('connect', function(msg) {
 });
 
 // message received
-socket.on('message', function(msg) {
+socket.on('chat send_server_to_clients', function(msg) {
   // display message
+  console.log('recv msg');
   document.getElementById("receive_message").innerHTML = msg.value;
 });
 
@@ -19,7 +21,7 @@ function send_message() {
   var msg = document.getElementById("message").value;
   console.log('send msg');
   // send message
-  socket.emit('message', { value: msg });
+  socket.emit('chat send_client_to_server', { value: msg });
 }
 // disconnect
 function disconnect() {
@@ -46,6 +48,7 @@ function disconnect() {
     <div id="connectId"></div>
     <div id="type"></div>
     <br>
+    s
     <input type="text" id="message" value="">
     <input type="button" value="send message" onclick="send_message()">
     <input type="button" value="disconnect" onclick="disconnect()">

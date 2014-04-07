@@ -5,7 +5,7 @@ socket.on('connect', function(msg) {
 });
 
 // message received
-socket.on('humidity', function(data) {
+socket.on('humidity ret_value', function(data) {
   console.log('receive msg');
   document.getElementById("humidity").innerHTML = data.humidity;
   document.getElementById("temperature").innerHTML = data.temperature;
@@ -14,7 +14,7 @@ socket.on('humidity', function(data) {
 // send message
 function send_message() {
   console.log('send msg');
-  socket.emit('get humidity', {});
+  socket.emit('humidity get_value', {});
 }
 </script>
 
