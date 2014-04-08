@@ -1,4 +1,5 @@
+TARGET = 000.gpio-set
 all:
-	gcc main.c -o ../gpio_set
-	sudo chown root:root ../gpio_set
-	sudo chmod u+s ../gpio_set
+	gcc main.c -o $(TARGET)
+	sudo chown root:root $(TARGET)
+	sudo chmod u+s $(TARGET)

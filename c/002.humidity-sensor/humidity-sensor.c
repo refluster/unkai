@@ -1,6 +1,8 @@
 #include <wiringPi.h>
 #include <stdio.h>
 #include <stdint.h>
+#include "humidity-sensor.h"
+
 #define MAX_TIME 85
 #define DHT11PIN 7
 
@@ -42,7 +44,8 @@ void dht11_read_val() {
     // verify cheksum and print the verified data
     if((dht11_val[4] == ((dht11_val[0] + dht11_val[1] + dht11_val[2] + dht11_val[3]) & 0xFF))) {
         farenheit = dht11_val[2]*9.0/5.0 + 32;
-        printf("Humidity = %d.%d %% Temperature = %d.%d *C (%.1f *F)\n",
+
+		printf("humidity:%d.%d celsius:%d.%d fahrenheit:%1f",
                dht11_val[0], dht11_val[1], dht11_val[2], dht11_val[3], farenheit);
     } else {
         printf("Invalid Data!!\n");
