@@ -1,21 +1,28 @@
 <script src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
 var socket = io.connect('http://<%= host %>');
+var update_time = 0;
 socket.on('connect', function(msg) {
+  console.log('connect');
+  setInterval(send_request, 1000);
 });
 
-// message received
+// receive message
 socket.on('humidity ret_value', function(data) {
+  update_time ++;
   console.log('receive msg');
   document.getElementById("humidity").innerHTML = data.humidity;
-  document.getElementById("temperature").innerHTML = data.temperature;
+  document.getElementById("celsius").innerHTML = data.celsius;
+  document.getElementById("fahrenheit").innerHTML = data.fahrenheit;
+  document.getElementById("update").innerHTML = update_time;
 });
 
 // send message
-function send_message() {
+function send_request() {
   console.log('send msg');
   socket.emit('humidity get_value', {});
 }
+
 </script>
 
 <!DOCTYPE html>
@@ -28,10 +35,13 @@ function send_message() {
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
-  <body onload="send_message();">
+  <body>
     <h1><%= title %></h1>
     <br>
     humidity: <span id="humidity"></span><br>
-    temperature: <span id="temperature"></span>
+    celsius: <span id="celsius"></span><br>
+    fahrenheit: <span id="fahrenheit"></span><br>
+    <hr>
+    update: <span id="update"></span>
   </body>
 </html>
