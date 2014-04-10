@@ -1,11 +1,22 @@
 var exec = require('child_process').exec;
 
 exports.index = function(req, res){
+    // get user-agent
+    var ua = JSON.stringify(req.headers['user-agent']);
+    var is_mobile = false;
+    console.log('UA ' + ua);
+    if ((ua.indexOf('iPhone') > 0 && ua.indexOf('iPad') == -1) ||
+	    ua.indexOf('iPod') > 0 ||
+	    ua.indexOf('Android') > 0) {
+	    is_mobile = true;
+    }
+    console.log('UA ' + ua);
     console.log('getting humidity from ' + req.headers.host);
-    res.render('humidity', { title: 'humidity and temperature', host: req.headers.host });
+    res.render('humidity', { title: 'humidity and temperature', host: req.headers.host, is_mobile: is_mobile});
 };
 
 exports.init_socket = function(io, client){
+
     // for humidity
     client.on('humidity get_value', function(data) {
 		console.log("get humidity");
@@ -24,6 +35,7 @@ exports.init_socket = function(io, client){
 				humidity = re_match[1];
 				celsius = re_match[2];
 				fahrenheit = re_match[3];
+
 			}
 			client.emit('humidity ret_value', { humidity: humidity,
 												celsius: celsius,

@@ -32,6 +32,9 @@ function send_request() {
     <meta http-equiv="Cache-Control" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta content="text/html; charset=EUC-JP">
+    <% if (is_mobile) { %>
+    <meta name="viewport" content="width=320, user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
+    <% } %>
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>

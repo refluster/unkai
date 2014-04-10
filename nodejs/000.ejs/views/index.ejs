@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <% if (is_mobile) { %>
+    <meta name="viewport" content="width=320, user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
+    <% } %>
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
     <h1><%= title %></h1>
     <p>Welcome to <%= title %></p>
+    <% for(var i in contents) { %>
+    <li><a href="<%- contents[i] %>"><%- contents[i] %></a></li>
+    <% } %>
   </body>
 </html>
