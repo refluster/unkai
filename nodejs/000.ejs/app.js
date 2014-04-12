@@ -17,7 +17,7 @@ var led_ctrl = require('./routes/led-ctrl');
 
 // all environments
 app.configure('development', function(){
-    app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
@@ -32,7 +32,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // development only
 if ('development' == app.get('env')) {
-    app.use(express.errorHandler());
+	app.use(express.errorHandler());
 }
 
 app.get('/', routes.index);
@@ -43,20 +43,20 @@ app.get('/led-ctrl', led_ctrl.index);
 
 var server = http.createServer(app);
 server.listen(app.get('port'), function(){
-    console.log('Express server listening on port ' + app.get('port'));
+	console.log('Express server listening on port ' + app.get('port'));
 });
 
 var io = require('socket.io').listen(server);
 
 // client connected
 io.sockets.on('connection', function(client) {
-    console.log("connection");
-    chat.init_socket(io, client);
-    humidity.init_socket(io, client);
-    led_ctrl.init_socket(io, client);
+	console.log("connection");
+	chat.init_socket(io, client);
+	humidity.init_socket(io, client);
+	led_ctrl.init_socket(io, client);
 
-    // client disconnected
-    client.on('disconnect', function(){
-        console.log("disconnect");
-    });
+	// client disconnected
+	client.on('disconnect', function(){
+		console.log("disconnect");
+	});
 });
