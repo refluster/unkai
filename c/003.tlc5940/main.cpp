@@ -38,7 +38,7 @@
 
 #define NUM_LEDS 16
 
-static volatile uint16_t bitpattern;
+static volatile uint16_t brightness[NUM_LEDS];
 
 void update_thread() {
 	RaspberryGPIOPin tlc_sin(1);
@@ -60,19 +60,19 @@ void update_thread() {
 	SingleTLCController tlc_controller(&tlc_sin, &tlc_sclk, &tlc_blank, &tlc_dcprg,
 									   &tlc_vprg, &tlc_xlat, &tlc_gsclk);
 
-	while(true) {
+	while (true) {
 		// This thread only reads the bit pattern so no lock is required
-		for(int i = 0; i < NUM_LEDS; i++) {
-			tlc_controller.setChannel(i, (bitpattern & (1 << i)) ? 0xFF : 0);
+		for (int i = 0; i < NUM_LEDS; i++) {
+			tlc_controller.setChannel(i, brightness[i]);
 		}
 
 		tlc_controller.update();
 		
 		// for verification
-		std::chrono::milliseconds duration(500);
+		std::chrono::milliseconds duration(200);
 		std::this_thread::sleep_for(duration);
-		for(int i = 0; i < NUM_LEDS; i++) {
-			printf(" %4d", (bitpattern & (1 << i)) ? 0xFF : 0);
+		for (int i = 0; i < NUM_LEDS; i++) {
+			printf(" %4d", brightness[i]);
 		}
 		printf("\n");
 	}
@@ -80,22 +80,26 @@ void update_thread() {
 
 void pattern_thread() {
 	bool reverse = false;
-	bitpattern = 1;
+	int light_point;
 
-	while(true) {
+	light_point = 0;
+
+	while (true) {
+		brightness[light_point] = 0;
 		if(!reverse) {
-			bitpattern <<= 1;
+			++ light_point;
 		} else {
-			bitpattern >>= 1;
+			-- light_point;
 		}
+		brightness[light_point] = 0xff;
 
-		if(bitpattern == 1) {
+		if (light_point == 0) {
 			reverse = false;
-		} else if((bitpattern & (1 << (NUM_LEDS - 1))) != 0) {
+		} else if (light_point == NUM_LEDS - 1) {
 			reverse = true;
 		}
 
-		std::chrono::milliseconds duration(500);
+		std::chrono::milliseconds duration(200);
 		std::this_thread::sleep_for(duration);
 	}
 }
@@ -106,8 +110,6 @@ int main() {
 		throw std::runtime_error("Could not setup wiringPi, running as root?");
 	}
 
-	bitpattern = 0;
-	
 	std::thread thread1(update_thread);
 	std::thread thread2(pattern_thread);
 
