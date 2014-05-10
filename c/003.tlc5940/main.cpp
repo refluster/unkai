@@ -36,11 +36,11 @@
 #include <thread>
 #include <chrono>
 
-volatile uint16_t bitpattern;
-volatile int print;
+#define NUM_LEDS 16
 
-void update_thread()
-{
+static volatile uint16_t bitpattern;
+
+void update_thread() {
 	RaspberryGPIOPin tlc_sin(1);
 	RaspberryGPIOPin tlc_sclk(14);
 	RaspberryGPIOPin tlc_blank(4);
@@ -57,13 +57,12 @@ void update_thread()
 	tlc_xlat.setOutput();
 	tlc_gsclk.setOutput();
 	
-	SingleTLCController tlc_controller(&tlc_sin, &tlc_sclk, &tlc_blank, &tlc_dcprg, &tlc_vprg, &tlc_xlat, &tlc_gsclk);
+	SingleTLCController tlc_controller(&tlc_sin, &tlc_sclk, &tlc_blank, &tlc_dcprg,
+									   &tlc_vprg, &tlc_xlat, &tlc_gsclk);
 
-	while(true)
-	{
+	while(true) {
 		// This thread only reads the bit pattern so no lock is required
-		for(int i = 0; i < 16; i++)
-		{
+		for(int i = 0; i < NUM_LEDS; i++) {
 			tlc_controller.setChannel(i, (bitpattern & (1 << i)) ? 0xFF : 0);
 		}
 
@@ -71,30 +70,20 @@ void update_thread()
 	}
 }
 
-void pattern_thread()
-{
+void pattern_thread() {
 	bool reverse = false;
 	bitpattern = 1;
 
-	while(true)
-	{
-		if(!reverse)
-		{
-			bitpattern << 1;
-		}
-		else
-		{
-			bitpattern >> 1;
+	while(true) {
+		if(!reverse) {
+			bitpattern <<= 1;
+		} else {
+			bitpattern >>= 1;
 		}
 
-		print = 1;
-
-		if(bitpattern == 1)
-		{
+		if(bitpattern == 1) {
 			reverse = false;
-		}
-		else if((bitpattern & (1 << 15)) != 0)
-		{
+		} else if((bitpattern & (1 << (NUM_LEDS - 1))) != 0) {
 			reverse = true;
 		}
 
@@ -103,11 +92,9 @@ void pattern_thread()
 	}
 }
 
-int main()
-{
+int main() {
 	// Initialize GPIO Pins
-	if(wiringPiSetup() == -1)
-	{
+	if(wiringPiSetup() == -1) {
 		throw std::runtime_error("Could not setup wiringPi, running as root?");
 	}
 
@@ -119,4 +106,3 @@ int main()
 	thread1.join();
 	thread2.join();
 }
-
