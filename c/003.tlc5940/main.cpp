@@ -67,6 +67,14 @@ void update_thread() {
 		}
 
 		tlc_controller.update();
+		
+		// for verification
+		std::chrono::milliseconds duration(500);
+		std::this_thread::sleep_for(duration);
+		for(int i = 0; i < NUM_LEDS; i++) {
+			printf(" %4d", (bitpattern & (1 << i)) ? 0xFF : 0);
+		}
+		printf("\n");
 	}
 }
 
@@ -87,7 +95,7 @@ void pattern_thread() {
 			reverse = true;
 		}
 
-		std::chrono::milliseconds duration(1500);
+		std::chrono::milliseconds duration(500);
 		std::this_thread::sleep_for(duration);
 	}
 }
