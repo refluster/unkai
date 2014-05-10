@@ -1,3 +1,9 @@
+ifndef MAKEROOT
+	export MAKEROOT:= $(shell path=`pwd`; until test -d $$path/.git; do path=$${path%/*}; done; echo $$path)
+endif
+
+include $(MAKEROOT)/mk/base.mk
+
 TARGET = 002.humidity
 
 all:
