@@ -4,9 +4,9 @@
 
 #define BUFSIZE 256
 
-unsigned short brightness[NUM_LEDS];
+extern volatile int brightness[];
 
-void msg_decode(char *cmd, tlc5940_ctrl_info *ctrl_info) {
+static void msg_decode(char *cmd, tlc5940_ctrl_info *ctrl_info) {
 	int ret = 0;
 	char *cmd_val;
 	int i;
@@ -14,7 +14,7 @@ void msg_decode(char *cmd, tlc5940_ctrl_info *ctrl_info) {
 	printf("js-cmd: %s\n", cmd);
 	
 	CHECK((cmd_val = strtok(cmd, " ")) != NULL);
-	ctrl_info->type = atoi(cmd_val);
+	ctrl_info->type = (TLC5940_CTRL_INFO)atoi(cmd_val);
 
 	switch (ctrl_info->type) {
 	case TLC5940_END:
@@ -27,7 +27,7 @@ void msg_decode(char *cmd, tlc5940_ctrl_info *ctrl_info) {
 	}
 }
 
-int main() {
+void pattern_thread() {
 	int end = 0;
 	tlc5940_ctrl_info ctrl_info;
 	int i;

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #define NUM_LEDS    4
-
+#define TLC5940_UPDATE_INTERVAL   1500  //msec
 #define CHECK(x) \
     do { \
         if (!(x)) { \
@@ -23,5 +23,8 @@ typedef struct {
 	TLC5940_CTRL_INFO type;
 	unsigned short brightness[NUM_LEDS];
 } tlc5940_ctrl_info;
+
+void pattern_thread();
+void update_thread();
 
 #endif /* #ifndef COMMON_H_ */

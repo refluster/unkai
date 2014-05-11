@@ -36,9 +36,9 @@
 #include <thread>
 #include <chrono>
 
-#define NUM_LEDS 16
+#include "common.h"
 
-static volatile uint16_t brightness[NUM_LEDS];
+volatile int brightness[NUM_LEDS];
 
 void update_thread() {
 	RaspberryGPIOPin tlc_sin(1);
@@ -69,38 +69,12 @@ void update_thread() {
 		tlc_controller.update();
 		
 		// for verification
-		std::chrono::milliseconds duration(200);
+		std::chrono::milliseconds duration(TLC5940_UPDATE_INTERVAL);
 		std::this_thread::sleep_for(duration);
 		for (int i = 0; i < NUM_LEDS; i++) {
 			printf(" %4d", brightness[i]);
 		}
 		printf("\n");
-	}
-}
-
-void pattern_thread() {
-	bool reverse = false;
-	int light_point;
-
-	light_point = 0;
-
-	while (true) {
-		brightness[light_point] = 0;
-		if(!reverse) {
-			++ light_point;
-		} else {
-			-- light_point;
-		}
-		brightness[light_point] = 0xff;
-
-		if (light_point == 0) {
-			reverse = false;
-		} else if (light_point == NUM_LEDS - 1) {
-			reverse = true;
-		}
-
-		std::chrono::milliseconds duration(200);
-		std::this_thread::sleep_for(duration);
 	}
 }
 
@@ -112,7 +86,7 @@ int main() {
 
 	std::thread thread1(update_thread);
 	std::thread thread2(pattern_thread);
-
+	
 	thread1.join();
 	thread2.join();
 }

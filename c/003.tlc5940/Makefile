@@ -4,14 +4,17 @@ endif
 
 include $(MAKEROOT)/mk/base.mk
 
-DRIVER = tlc5940-drv
+TARGET = 003.tlc5940
 
-LCFLAGS = -std=c++11 `pkg-config --cflags tlc5940-raspberry-1.0` \
-		`pkg-config --libs tlc5940-raspberry-1.0` -lwiringPi
+all: $(TARGET)
 
-all: $(DRIVER)
+$(TARGET): tlc5940-drv.o tlc5940-if.o
+	g++ -o $(TARGET) tlc5940-drv.o tlc5940-if.o -lwiringPi `pkg-config --libs tlc5940-raspberry-1.0`
+	sudo chown root:root $(TARGET)
+	sudo chmod u+s $(TARGET)
 
-$(DRIVER):
-	g++ main.cpp $(LCFLAGS) -o $(DRIVER)
-	sudo chown root:root $(DRIVER)
-	sudo chmod u+s $(DRIVER)
+tlc5940-drv.o: tlc5940-drv.cpp
+	g++ tlc5940-drv.cpp -c -std=c++11 `pkg-config --cflags tlc5940-raspberry-1.0`
+
+tlc5940-if.o: tlc5940-if.cpp
+	g++ tlc5940-if.cpp -c
