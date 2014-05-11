@@ -14,6 +14,7 @@ var user = require('./routes/user');
 var chat = require('./routes/chat');
 var humidity = require('./routes/humidity');
 var led_ctrl = require('./routes/led-ctrl');
+var tlc5940 = require('./routes/tlc5940');
 
 // all environments
 app.configure('development', function(){
@@ -40,6 +41,7 @@ app.get('/users', user.list);
 app.get('/chat', chat.index);
 app.get('/humidity', humidity.index);
 app.get('/led-ctrl', led_ctrl.index);
+app.get('/tlc5940', tlc5940.index);
 
 var server = http.createServer(app);
 server.listen(app.get('port'), function(){
@@ -54,6 +56,7 @@ io.sockets.on('connection', function(client) {
 	chat.init_socket(io, client);
 	humidity.init_socket(io, client);
 	led_ctrl.init_socket(io, client);
+	tlc5940.init_socket(io, client);
 
 	// client disconnected
 	client.on('disconnect', function(){

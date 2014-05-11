@@ -1,0 +1,39 @@
+<script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript">
+var socket = io.connect('http://<%= host %>');
+socket.on('connect', function(msg) {
+  console.log('connect');
+  tlc5940_update();
+});
+
+// send message
+function tlc5940_update() {
+  var brightness = document.getElementById("tlc5940-brightness").value;
+  socket.emit('tlc5940 update', {brightness: brightness});
+  console.log('tlc5940 update ' + brightness);
+}
+</script>
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta content="text/html; charset=EUC-JP">
+    <% if (is_mobile) { %>
+    <meta name="viewport" content="width=320, user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
+    <% } %>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <br>
+	0
+	<input id="tlc5940-brightness" type="range" min="0" max="4096" step="1"
+	  onchange="tlc5940_update()" style="width: 200px"/>
+	4096
+	<hr>
+  </body>
+</html>
