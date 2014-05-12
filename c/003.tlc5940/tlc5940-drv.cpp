@@ -75,6 +75,7 @@ void update_thread() {
 			printf(" %4d", brightness[i]);
 		}
 		printf("\n");
+		fflush(stdout);
 	}
 }
 

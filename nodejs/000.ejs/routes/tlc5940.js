@@ -1,4 +1,6 @@
-var exec = require('child_process').exec;
+// init tlc5940 driver daemon
+var spawn = require('child_process').spawn;
+var tlc5940_drv = spawn("../../c/003.tlc5940/003.tlc5940");
 
 exports.index = function(req, res){
 	// get user-agent
@@ -16,6 +18,11 @@ exports.index = function(req, res){
 
 exports.init_socket = function(io, client){
 	client.on('tlc5940 update', function(data) {
+		tlc5940_drv.stdin.write("1 " + data.brightness + " 12 13 14\n");
 		console.log("tlc5940 update " + data.brightness);
 	});
+
+	tlc5940_drv.stdout.on('data', function(data) {
+		console.log('stdout: ' + data);
+	})
 };
