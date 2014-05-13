@@ -18,7 +18,12 @@ exports.index = function(req, res){
 
 exports.init_socket = function(io, client){
 	client.on('tlc5940 update', function(data) {
-		tlc5940_drv.stdin.write("1 " + data.brightness + " 12 13 14\n");
+		var cmd = "1"; // update cmd
+		for (var i = 0; i < 4; i++) {
+			cmd += " " + data.brightness[i];
+		}
+		cmd += "\n";
+		tlc5940_drv.stdin.write(cmd);
 		console.log("tlc5940 update " + data.brightness);
 	});
 
