@@ -28,6 +28,9 @@
  * THE SOFTWARE.
  */
 
+#include <stdio.h>
+#include <unistd.h>
+
 #include <tlc5940-raspberry/tlc-controller.h>
 #include <tlc5940-raspberry/raspberry-gpio.h>
 
@@ -39,6 +42,8 @@
 #include "common.h"
 
 volatile int brightness[NUM_LEDS];
+static int tlc5940_update_interval = TLC5940_UPDATE_INTERVAL_DEFAULT; // msec
+static int tlc5940_print_interval = 0; // msec, do not print if this var is zero
 
 void update_thread() {
 	RaspberryGPIOPin tlc_sin(1);
@@ -68,22 +73,58 @@ void update_thread() {
 
 		tlc_controller.update();
 		
-		// for verification
-		std::chrono::milliseconds duration(TLC5940_UPDATE_INTERVAL);
+		std::chrono::milliseconds duration(tlc5940_update_interval);
 		std::this_thread::sleep_for(duration);
-		for (int i = 0; i < NUM_LEDS; i++) {
-			printf(" %4d", brightness[i]);
+
+		// for verification
+		if (tlc5940_print_interval > 0) {
+			static int count = 0;
+			count += tlc5940_update_interval;
+
+			printf(".");
+			// display message every tlc5940_print_interval msec
+			if (count >= tlc5940_print_interval) {
+				count -= tlc5940_print_interval;
+				printf("tlc5940 brightness:");
+				for (int i = 0; i < NUM_LEDS; i++) {
+					printf(" %4d", brightness[i]);
+				}
+				printf("\n");
+				fflush(stdout);
+			}
 		}
-		printf("\n");
-		fflush(stdout);
 	}
 }
 
-int main() {
+void chk_arg(int argc, char **argv) {
+	int result;
+
+	while ((result = getopt(argc, argv, "p:t:")) != -1){
+		int t;
+		switch (result) {
+		case 'p':  // tlc5940 print interval, usually larger than update interval
+			t = atoi(optarg);
+			if (t > 0) {
+				tlc5940_print_interval = t;
+			}
+			break;
+		case 't':  // tlc5940 update interval
+			t = atoi(optarg);
+			if (t > 0) {
+				tlc5940_update_interval = t;
+			}
+			break;
+		}
+	}
+}
+
+int main(int argc, char **argv) {
 	// Initialize GPIO Pins
-	if(wiringPiSetup() == -1) {
+	if (wiringPiSetup() == -1) {
 		throw std::runtime_error("Could not setup wiringPi, running as root?");
 	}
+
+	chk_arg(argc, argv);
 
 	std::thread thread1(update_thread);
 	std::thread thread2(pattern_thread);

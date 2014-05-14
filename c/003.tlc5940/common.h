@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #define NUM_LEDS    4
-#define TLC5940_UPDATE_INTERVAL   1500  //msec
+#define TLC5940_UPDATE_INTERVAL_DEFAULT   100  //msec
 #define CHECK(x) \
     do { \
         if (!(x)) { \

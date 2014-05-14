@@ -1,6 +1,6 @@
 // init tlc5940 driver daemon
 var spawn = require('child_process').spawn;
-var tlc5940_drv = spawn("../../c/003.tlc5940/003.tlc5940");
+var tlc5940_drv = spawn("../../c/003.tlc5940/003.tlc5940", ["-p", "1000", "-t", "500"]);
 
 exports.index = function(req, res){
 	// get user-agent
