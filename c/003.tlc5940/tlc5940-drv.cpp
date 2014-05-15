@@ -101,7 +101,7 @@ void update_thread() {
 void chk_arg(int argc, char **argv) {
 	int result;
 
-	while ((result = getopt(argc, argv, "p:t:")) != -1){
+	while ((result = getopt(argc, argv, "n:p:t:")) != -1){
 		int t;
 		switch (result) {
 		case 'n':  // the number of leds to control
