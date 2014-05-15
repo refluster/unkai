@@ -9,7 +9,7 @@ socket.on('connect', function(msg) {
 // send message
 function tlc5940_update() {
   var brightness = [];
-  for (var i = 0; i < 4; i++) {
+  for (var i = 0; i < <%= num_led%> ; i++) {
     brightness[i] = document.getElementById("tlc5940-brightness-" + i).value;
   }
   socket.emit('tlc5940 update', {brightness: brightness});
@@ -33,17 +33,11 @@ function tlc5940_update() {
   <body>
     <h1><%= title %></h1>
     <br>
-	<input id="tlc5940-brightness-0" type="range" min="0" max="4096" step="1"
-	  onchange="tlc5940_update()" style="width: 200px"/>
-    <br>
-	<input id="tlc5940-brightness-1" type="range" min="0" max="4096" step="1"
-	  onchange="tlc5940_update()" style="width: 200px"/>
-    <br>
-	<input id="tlc5940-brightness-2" type="range" min="0" max="4096" step="1"
-	  onchange="tlc5940_update()" style="width: 200px"/>
-    <br>
-	<input id="tlc5940-brightness-3" type="range" min="0" max="4096" step="1"
-	  onchange="tlc5940_update()" style="width: 200px"/>
+    <% for (var i = 0; i < num_led; i++) { %>
+      <input id="tlc5940-brightness-<%= i %>" type="range" min="0" max="4096" step="1"
+	    onchange="tlc5940_update()" style="width: 200px"/>
+      <br>
+    <% } %>
     <br>
 	<hr>
   </body>

@@ -1,6 +1,7 @@
 // init tlc5940 driver daemon
+const num_led = 8; // # of led to control
 var spawn = require('child_process').spawn;
-var tlc5940_drv = spawn("../../c/003.tlc5940/003.tlc5940", ["-p", "1000", "-t", "500", "-n", "4"]);
+var tlc5940_drv = spawn("../../c/003.tlc5940/003.tlc5940", ["-p", "1000", "-t", "500", "-n", String(num_led)]);
 
 exports.index = function(req, res){
 	// get user-agent
@@ -13,13 +14,14 @@ exports.index = function(req, res){
 		is_mobile = true;
 	}
 	console.log('tlc5940 @ ' + req.headers.host);
-	res.render('tlc5940', { title: 'tlc5940 control', host: req.headers.host, is_mobile: is_mobile });
+	res.render('tlc5940', { title: 'tlc5940 control', host: req.headers.host, is_mobile: is_mobile,
+							num_led: num_led});
 };
 
 exports.init_socket = function(io, client){
 	client.on('tlc5940 update', function(data) {
 		var cmd = "1"; // update cmd
-		for (var i = 0; i < 4; i++) {
+		for (var i = 0; i < num_led; i++) {
 			cmd += " " + data.brightness[i];
 		}
 		cmd += "\n";
