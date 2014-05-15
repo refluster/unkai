@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 
-#define NUM_LEDS    4
+#define NUM_LED_MAX   16
 #define TLC5940_UPDATE_INTERVAL_DEFAULT   100  //msec
 #define CHECK(x) \
     do { \
@@ -21,7 +21,7 @@ typedef enum {
 
 typedef struct {
 	TLC5940_CTRL_INFO type;
-	unsigned short brightness[NUM_LEDS];
+	unsigned short brightness[NUM_LED_MAX];
 } tlc5940_ctrl_info;
 
 void pattern_thread();

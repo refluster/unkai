@@ -29,6 +29,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 
 #include <tlc5940-raspberry/tlc-controller.h>
@@ -41,7 +42,8 @@
 
 #include "common.h"
 
-volatile int brightness[NUM_LEDS];
+volatile int brightness[NUM_LED_MAX]; // brightness for each led
+int num_led = NUM_LED_MAX; // the number of leds to control
 static int tlc5940_update_interval = TLC5940_UPDATE_INTERVAL_DEFAULT; // msec
 static int tlc5940_print_interval = 0; // msec, do not print if this var is zero
 
@@ -67,7 +69,7 @@ void update_thread() {
 
 	while (true) {
 		// This thread only reads the bit pattern so no lock is required
-		for (int i = 0; i < NUM_LEDS; i++) {
+		for (int i = 0; i < num_led; i++) {
 			tlc_controller.setChannel(i, brightness[i]);
 		}
 
@@ -86,7 +88,7 @@ void update_thread() {
 			if (count >= tlc5940_print_interval) {
 				count -= tlc5940_print_interval;
 				printf("tlc5940 brightness:");
-				for (int i = 0; i < NUM_LEDS; i++) {
+				for (int i = 0; i < num_led; i++) {
 					printf(" %4d", brightness[i]);
 				}
 				printf("\n");
@@ -102,6 +104,12 @@ void chk_arg(int argc, char **argv) {
 	while ((result = getopt(argc, argv, "p:t:")) != -1){
 		int t;
 		switch (result) {
+		case 'n':  // the number of leds to control
+			t = atoi(optarg);
+			if (t > 0) {
+				num_led = t;
+			}
+			break;
 		case 'p':  // tlc5940 print interval, usually larger than update interval
 			t = atoi(optarg);
 			if (t > 0) {
@@ -118,12 +126,21 @@ void chk_arg(int argc, char **argv) {
 	}
 }
 
+int initialize() {
+	memset((void*)brightness, 0, sizeof(brightness));
+	num_led = NUM_LED_MAX;
+	tlc5940_update_interval = TLC5940_UPDATE_INTERVAL_DEFAULT; // msec
+	tlc5940_print_interval = 0; // msec, do not print if this var is zero
+	return 0;
+}
+
 int main(int argc, char **argv) {
 	// Initialize GPIO Pins
 	if (wiringPiSetup() == -1) {
 		throw std::runtime_error("Could not setup wiringPi, running as root?");
 	}
 
+	initialize();
 	chk_arg(argc, argv);
 
 	std::thread thread1(update_thread);

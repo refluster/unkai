@@ -5,6 +5,7 @@
 #define BUFSIZE 256
 
 extern volatile int brightness[];
+extern int num_led;
 
 static void msg_decode(char *cmd, tlc5940_ctrl_info *ctrl_info) {
 	int ret = 0;
@@ -20,7 +21,7 @@ static void msg_decode(char *cmd, tlc5940_ctrl_info *ctrl_info) {
 	case TLC5940_END:
 		break;
 	case TLC5940_UPDATE:
-		for (i = 0; i < NUM_LEDS; i++) {
+		for (i = 0; i < num_led; i++) {
 			CHECK((cmd_val = strtok(NULL, " ")) != NULL);
 			ctrl_info->brightness[i] = atoi(cmd_val);
 		}
@@ -43,7 +44,7 @@ void pattern_thread() {
 			end = 1;
 			break;
 		case TLC5940_UPDATE:
-			for (i = 0; i < NUM_LEDS; i++) {
+			for (i = 0; i < num_led; i++) {
 				brightness[i] = ctrl_info.brightness[i];;
 			}
 			break;
