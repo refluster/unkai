@@ -34,7 +34,7 @@ function tlc5940_update() {
     <h1><%= title %></h1>
     <br>
     <% for (var i = 0; i < num_led; i++) { %>
-      <input id="tlc5940-brightness-<%= i %>" type="range" min="0" max="4096" step="1"
+      <input id="tlc5940-brightness-<%= i %>" type="range" min="0" max="4095" step="1"
 	    onchange="tlc5940_update()" style="width: 200px"/>
       <br>
     <% } %>
