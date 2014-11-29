@@ -1,12 +1,16 @@
 #include <cv.h>
 #include <highgui.h>
 #include <iostream>
+#include <stdio.h>
+#include <unistd.h>
 
 #define square(x) ((x)*(x))
 
+#define KPOC_MEASURE ((unsigned long long)10000)
+
 uchar minH, minS, minV, maxH, maxS, maxV;
 unsigned int area;
-unsigned long long green_point;
+unsigned long long green_level;
 
 using namespace std;
 
@@ -28,7 +32,7 @@ void GetMaskHSV(IplImage* src, IplImage* mask, int erosions, int dilations) {
 					   mask->widthStep, cvGetSize(mask), x, y, mask->origin);
 
 	area = 0;
-	green_point = 0;
+	green_level = 0;
 	int centerH = (minH + maxH) / 2;
 	int centerS = (minS + maxS) / 2;
 	int centerV = (minV + maxV) / 2;
@@ -48,7 +52,7 @@ void GetMaskHSV(IplImage* src, IplImage* mask, int erosions, int dilations) {
 				p_dst[0] = p_dst[1] = p_dst[2] = 255;
 
 				++ area;
-				green_point += square(H - centerH) +
+				green_level += square(H - centerH) +
 					square(S - centerS) +
 					square(V - centerS);
 			} else {
@@ -60,10 +64,12 @@ void GetMaskHSV(IplImage* src, IplImage* mask, int erosions, int dilations) {
 	if(erosions > 0)  cvErode(mask, mask, 0, erosions);
 	if(dilations > 0) cvDilate(mask, mask, 0, dilations);
 
-	cout << "green area (1-1000, higher is larger): "
-		 << (unsigned long long)1000*area/(tmp->height*tmp->width) << endl;
-	cout << "green level (1-1000, lower is better): "
-		 << 1000*green_level/area/(255*255*3) << endl;
+	printf("green area (0-%llu, higher is larger): %llu\n",
+		   KPOC_MEASURE,
+		   KPOC_MEASURE*area/(tmp->height*tmp->width));
+	printf("green level (0-%llu, lower is better): %llu\n",
+		   KPOC_MEASURE,
+		   KPOC_MEASURE*green_level/area/(255*255*3));
 	
 	cvReleaseImage(&tmp);
 }
@@ -73,32 +79,75 @@ int main(int argc, char **argv) {
 	IplImage* mask = 0;
 	IplImage* dst = 0;
 
-	frame = cvLoadImage(argv[1], CV_LOAD_IMAGE_ANYCOLOR | CV_LOAD_IMAGE_ANYDEPTH);
-	cvNamedWindow("src", CV_WINDOW_AUTOSIZE);
-	cvShowImage("src", frame);
-	cvWaitKey(0);
-	cvDestroyWindow("src");
+	int display = 0; // display image
+	char *infile = NULL;
+	char *outfile = NULL;
 
-	minH = atoi(argv[2]);
-	maxH = atoi(argv[3]);
-	minS = atoi(argv[4]);
-	maxS = atoi(argv[5]);
-	minV = atoi(argv[6]);
-	maxV = atoi(argv[7]);
+	int result;
 
+	while ((result = getopt(argc, argv, "di:o:")) != -1) {
+		switch (result) {
+		case 'd':
+			display = 1;
+			break;
+		case 'i':
+			infile = optarg;
+			break;
+		case 'o':
+			outfile = optarg;
+			break;
+		case ':':
+			fprintf(stdout, "%c needs value\n", result);
+			break;
+		case '?':
+			fprintf(stdout, "unknown\n");
+			break;
+		}
+	}
+	
+	minH = atoi(argv[optind + 0]);
+	maxH = atoi(argv[optind + 1]);
+	minS = atoi(argv[optind + 2]);
+	maxS = atoi(argv[optind + 3]);
+	minV = atoi(argv[optind + 4]);
+	maxV = atoi(argv[optind + 5]);
+
+	printf("infile: %s\n", infile);
+	printf("HSV param: %d %d %d %d %d %d\n", minH, maxH, minS, maxS, minV, maxV);
+
+	// argument check
+	if (infile == NULL) {
+		fprintf(stderr, "input file not specified\n");
+		return -1;
+	}
+
+	frame = cvLoadImage(infile, CV_LOAD_IMAGE_ANYCOLOR | CV_LOAD_IMAGE_ANYDEPTH);
+	
 	mask = cvCreateImage(cvSize(frame->width, frame->height), IPL_DEPTH_8U, 3);
 	dst = cvCreateImage(cvSize(frame->width, frame->height), IPL_DEPTH_8U, 3);
 
 	GetMaskHSV(frame, mask, 1, 1);
-	cvAnd(frame, mask, dst);
 	
-	cvNamedWindow("dst", CV_WINDOW_AUTOSIZE);
-	cvShowImage("dst", dst);
-	cvWaitKey(0);
-	cvDestroyWindow("dst");
+	if (display) {
+		// original
+		cvNamedWindow("src", CV_WINDOW_AUTOSIZE);
+		cvShowImage("src", frame);
+		cvWaitKey(0);
+		cvDestroyWindow("src");
+		
+		// masked
+		cvAnd(frame, mask, dst);
+		cvNamedWindow("dst", CV_WINDOW_AUTOSIZE);
+		cvShowImage("dst", dst);
+		cvWaitKey(0);
+		cvDestroyWindow("dst");
+	}
 
-    cvSaveImage("output.jpg", dst);
-	
+	if (outfile) {
+		cvAnd(frame, mask, dst);
+		cvSaveImage(outfile, dst);
+	}
+
 	cvReleaseImage(&frame);
 	cvReleaseImage(&dst);
 	cvReleaseImage(&mask);
