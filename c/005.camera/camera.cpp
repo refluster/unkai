@@ -75,9 +75,9 @@ void GetMaskHSV(IplImage* src, IplImage* mask, int erosions, int dilations) {
 }
 
 int main(int argc, char **argv) {
-	IplImage* frame = 0;
-	IplImage* mask = 0;
-	IplImage* dst = 0;
+	IplImage* frame = NULL;
+	IplImage* mask = NULL;
+	IplImage* dst = NULL;
 
 	int display = 0; // display image
 	char *infile = NULL;
@@ -100,11 +100,15 @@ int main(int argc, char **argv) {
 			fprintf(stdout, "%c needs value\n", result);
 			break;
 		case '?':
-			fprintf(stdout, "unknown\n");
 			break;
 		}
 	}
 	
+	if (argc - optind != 6) {
+		fprintf(stdout, "HSV param is not set\n");
+		return -1;
+	}
+
 	minH = atoi(argv[optind + 0]);
 	maxH = atoi(argv[optind + 1]);
 	minS = atoi(argv[optind + 2]);
@@ -113,7 +117,7 @@ int main(int argc, char **argv) {
 	maxV = atoi(argv[optind + 5]);
 
 	printf("infile: %s\n", infile);
-	printf("HSV param: %d %d %d %d %d %d\n", minH, maxH, minS, maxS, minV, maxV);
+	printf("HSV param: %d-%d %d-%d %d-%d\n", minH, maxH, minS, maxS, minV, maxV);
 
 	// argument check
 	if (infile == NULL) {
@@ -122,7 +126,6 @@ int main(int argc, char **argv) {
 	}
 
 	frame = cvLoadImage(infile, CV_LOAD_IMAGE_ANYCOLOR | CV_LOAD_IMAGE_ANYDEPTH);
-	
 	mask = cvCreateImage(cvSize(frame->width, frame->height), IPL_DEPTH_8U, 3);
 	dst = cvCreateImage(cvSize(frame->width, frame->height), IPL_DEPTH_8U, 3);
 
@@ -154,4 +157,3 @@ int main(int argc, char **argv) {
 
 	return(0);
 }
-
