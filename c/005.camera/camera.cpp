@@ -1,8 +1,14 @@
 #include <cv.h>
 #include <highgui.h>
-#include <stdio.h>
+#include <iostream>
+
+#define square(x) ((x)*(x))
 
 uchar minH, minS, minV, maxH, maxS, maxV;
+unsigned int area;
+unsigned long long green_point;
+
+using namespace std;
 
 void GetMaskHSV(IplImage* src, IplImage* mask, int erosions, int dilations) {
 	int x = 0, y = 0;
@@ -13,7 +19,6 @@ void GetMaskHSV(IplImage* src, IplImage* mask, int erosions, int dilations) {
 
 	tmp = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 3);
 
-	//HSVに変換
 	cvCvtColor(src, tmp, CV_RGB2HSV);
 
 	CV_INIT_PIXEL_POS(pos_src, (unsigned char*) tmp->imageData,
@@ -22,18 +27,18 @@ void GetMaskHSV(IplImage* src, IplImage* mask, int erosions, int dilations) {
 	CV_INIT_PIXEL_POS(pos_dst, (unsigned char*) mask->imageData,
 					   mask->widthStep, cvGetSize(mask), x, y, mask->origin);
 
-#if 0
-	minH = 70/2;	maxH = 160/2;
-	minS = 80;	maxS = 255;
-	minV = 120;	maxV = 255;
-#endif
+	area = 0;
+	green_point = 0;
+	int centerH = (minH + maxH) / 2;
+	int centerS = (minS + maxS) / 2;
+	int centerV = (minV + maxV) / 2;
 
 	for(y = 0; y < tmp->height; y++) {
 		for(x = 0; x < tmp->width; x++) {
 			uchar *p_src = CV_MOVE_TO(pos_src, x, y, 3);
 			uchar *p_dst = CV_MOVE_TO(pos_dst, x, y, 3);
 
-			H = p_src[0];	//0から180
+			H = p_src[0];
 			S = p_src[1];
 			V = p_src[2];
 
@@ -41,20 +46,29 @@ void GetMaskHSV(IplImage* src, IplImage* mask, int erosions, int dilations) {
 				minS <= S && S <= maxS &&
 				minV <= V && V <= maxV) {
 				p_dst[0] = p_dst[1] = p_dst[2] = 255;
+
+				++ area;
+				green_point += square(H - centerH) +
+					square(S - centerS) +
+					square(V - centerS);
 			} else {
 				p_dst[0] = p_dst[1] = p_dst[2] = 0;
 			}
 		}
 	}
-	
+
 	if(erosions > 0)  cvErode(mask, mask, 0, erosions);
 	if(dilations > 0) cvDilate(mask, mask, 0, dilations);
+
+	cout << "green area (1-1000, higher is larger): "
+		 << (unsigned long long)1000*area/(tmp->height*tmp->width) << endl;
+	cout << "green level (1-1000, lower is better): "
+		 << 1000*green_level/area/(255*255*3) << endl;
 	
 	cvReleaseImage(&tmp);
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
 	IplImage* frame = 0;
 	IplImage* mask = 0;
 	IplImage* dst = 0;
@@ -91,3 +105,4 @@ int main(int argc, char **argv)
 
 	return(0);
 }
+
