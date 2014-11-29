@@ -17,4 +17,4 @@ camera.o: camera.cpp
 	g++ camera.cpp -c -o camera.o `pkg-config --cflags opencv`
 
 run:
-	$(TARGET) jpg/before.jpg 35 100 60 255 20 255
+	$(TARGET) -i jpg/before.jpg 35 100 60 255 20 255
