@@ -1,8 +1,9 @@
 #include <cv.h>
 #include <highgui.h>
-#include <iostream>
 #include <stdio.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #define square(x) ((x)*(x))
 
@@ -82,6 +83,7 @@ int main(int argc, char **argv) {
 	int display = 0; // display image
 	char *infile = NULL;
 	char *outfile = NULL;
+	struct stat st;
 
 	int result;
 
@@ -121,7 +123,11 @@ int main(int argc, char **argv) {
 
 	// argument check
 	if (infile == NULL) {
-		fprintf(stderr, "input file not specified\n");
+		fprintf(stderr, "input file is not specified\n");
+		return -1;
+	}
+	if (stat(infile, &st) != 0) {
+		fprintf(stderr, "input file not exist\n");
 		return -1;
 	}
 
@@ -132,17 +138,23 @@ int main(int argc, char **argv) {
 	GetMaskHSV(frame, mask, 1, 1);
 	
 	if (display) {
+		cvAnd(frame, mask, dst);
+
 		// original
 		cvNamedWindow("src", CV_WINDOW_AUTOSIZE);
 		cvShowImage("src", frame);
-		cvWaitKey(0);
-		cvDestroyWindow("src");
 		
+		// mask
+		cvNamedWindow("mask", CV_WINDOW_AUTOSIZE);
+		cvShowImage("mask", mask);
+
 		// masked
-		cvAnd(frame, mask, dst);
 		cvNamedWindow("dst", CV_WINDOW_AUTOSIZE);
 		cvShowImage("dst", dst);
+
 		cvWaitKey(0);
+		cvDestroyWindow("src");
+		cvDestroyWindow("mask");
 		cvDestroyWindow("dst");
 	}
 
