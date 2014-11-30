@@ -5,12 +5,14 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stack>
+#include <list>
 
 using namespace std;
 
 #define square(x) ((x)*(x))
 
 #define KPOC_MEASURE ((unsigned long long)10000)
+#define INVALID 0xffffffff
 
 typedef struct {
 	int x, y;
@@ -23,7 +25,7 @@ typedef struct {
 } HSV_filter;
 
 void GetMaskHSV(IplImage* src, IplImage* mask, HSV_filter *hsv_filter) {
-	CvPixelPosition8u pos_src, pos_dst;
+	CvPixelPosition8u pos_src;
 	IplImage* tmp;
 
 	tmp = cvCreateImage(cvGetSize(src), IPL_DEPTH_8U, 3);
@@ -33,48 +35,41 @@ void GetMaskHSV(IplImage* src, IplImage* mask, HSV_filter *hsv_filter) {
 	CV_INIT_PIXEL_POS(pos_src, (unsigned char*) tmp->imageData,
 					  tmp->widthStep,cvGetSize(tmp), 0, 0, tmp->origin);
 
-	CV_INIT_PIXEL_POS(pos_dst, (unsigned char*) mask->imageData,
-					  mask->widthStep, cvGetSize(mask), 0, 0, mask->origin);
-
-
-	int centerH = (hsv_filter->H_min + hsv_filter->H_max) / 2;
-		
 	// filter
-	uint *_lavel = new uint [tmp->height*tmp->width];
-	uint **lavel = new uint* [tmp->height];
+	uint *_lavel = new uint [src->height*src->width];
+	uint **lavel = new uint* [src->height];
 
-	for (int y = 0; y < tmp->height; y++) {
-		lavel[y] = _lavel + y*tmp->width;
+	for (int y = 0; y < src->height; y++) {
+		lavel[y] = _lavel + y*src->width;
 	}
 
-	for (int y = 0; y < tmp->height; y++) {
-		for (int x = 0; x < tmp->width; x++) {
+	for (int y = 0; y < src->height; y++) {
+		for (int x = 0; x < src->width; x++) {
 			uchar *p_src = CV_MOVE_TO(pos_src, x, y, 3);
 			uchar H = p_src[0], S = p_src[1], V = p_src[2];
 			if (hsv_filter->H_min <= H && H <= hsv_filter->H_max &&
 				hsv_filter->S_min <= S && S <= hsv_filter->S_max &&
 				hsv_filter->V_min <= V && V <= hsv_filter->V_max) {
-				lavel[y][x] = 0xffffffff;
+				lavel[y][x] = INVALID;
 			}
 		}
 	}
 
 	// lavel
 	int cur_lavel_no = 0;
-	int max_area_lavel_no = 0xffffffff;
-	int max_area = 0;
 	uint green_level = 0;
+	list<uint> lavel_area;
 	
-	for (int y = 0; y < tmp->height; y++) {
-		for (int x = 0; x < tmp->width; x++) {
-			if (lavel[y][x] == 0xffffffff) {
+	for (int y = 0; y < src->height; y++) {
+		for (int x = 0; x < src->width; x++) {
+			if (lavel[y][x] == INVALID) {
 				stack<point> stack;
 				int area = 0;
 
 				point p = {x, y};
 				stack.push(p);
 
-				++curlavel_no;
+				++cur_lavel_no;
 				while(! stack.empty()) {
 					// pop
 					int xx = stack.top().x, yy = stack.top().y;
@@ -83,55 +78,68 @@ void GetMaskHSV(IplImage* src, IplImage* mask, HSV_filter *hsv_filter) {
 					// laveling
 					lavel[yy][xx] = cur_lavel_no;
 					
-					uchar *p_dst = CV_MOVE_TO(pos_dst, xx, yy, 3);
-//					p_dst[0] = ((uchar)(0x12345678*cur_lavel_no))/2;
-//					p_dst[1] = (uchar)(0x34567812*cur_lavel_no);
-//					p_dst[2] = (uchar)(0x56781234*cur_lavel_no);
-
 					++area;
 
 					// push arround
-					if (xx - 1 >= 0 && lavel[yy][xx - 1] == 0xffffffff) {
+					if (xx - 1 >= 0 && lavel[yy][xx - 1] == INVALID) {
 						point p = {xx - 1, yy};
 						stack.push(p);
 					}
-					if (xx + 1 < tmp->width && lavel[yy][xx + 1] == 0xffffffff) {
+					if (xx + 1 < src->width && lavel[yy][xx + 1] == INVALID) {
 						point p = {xx + 1, yy};
 						stack.push(p);
 					}
-					if (yy - 1 >= 0 && lavel[yy - 1][xx] == 0xffffffff) {
+					if (yy - 1 >= 0 && lavel[yy - 1][xx] == INVALID) {
 						point p = {xx, yy - 1};
 						stack.push(p);
 					}
-					if (yy + 1 < tmp->height && lavel[yy + 1][xx] == 0xffffffff) {
+					if (yy + 1 < src->height && lavel[yy + 1][xx] == INVALID) {
 						point p = {xx, yy + 1};
 						stack.push(p);
 					}
 				}
 
-				if (max_area < area) {
-					max_area_lavel_no = cur_lavel_no;
-					max_area = area;
-				}
+				lavel_area.push_back(area);
 			}
 		}
 	}
 
-	for (int y = 0; y < tmp->height; y++) {
-		for (int x = 0; x < tmp->width; x++) {
+	int centerH = (hsv_filter->H_min + hsv_filter->H_max) / 2;
+	CvPixelPosition8u pos_dst;
+	uint max_area = 0;
+	int max_area_lavel_no = INVALID;
+
+	for (int i = 1; !lavel_area.empty(); ++i) {
+		uint area = lavel_area.front();
+		if (max_area < area) {
+			max_area_lavel_no = i;
+			max_area = area;
+		}
+		lavel_area.pop_front();
+	}
+	
+	CV_INIT_PIXEL_POS(pos_dst, (unsigned char*) mask->imageData,
+					  mask->widthStep, cvGetSize(mask), 0, 0, mask->origin);
+		
+	for (int y = 0; y < src->height; y++) {
+		for (int x = 0; x < src->width; x++) {
 			if (lavel[y][x] == max_area_lavel_no) {
 				uchar *p_dst = CV_MOVE_TO(pos_dst, x, y, 3);
 				uchar *p_src = CV_MOVE_TO(pos_src, x, y, 3);
 				p_dst[0] = p_dst[1] = p_dst[2] = 255;
 				green_level += square(p_src[0] - centerH);
 			}
+//			uchar *p_dst = CV_MOVE_TO(pos_dst, x, y, 3);
+//			p_dst[0] = ((uchar)(0x12345678*lavel[y][x]))/2;
+//			p_dst[1] = (uchar)(0x34567812*lavel[y][x]);
+//			p_dst[2] = (uchar)(0x56781234*lavel[y][x]);
 		}
 	}
 
 	printf("lavel_no %d\n", cur_lavel_no);
 	printf("green area (0-%llu, higher is larger): %llu\n",
 		   KPOC_MEASURE,
-		   KPOC_MEASURE*max_area/(tmp->height*tmp->width));
+		   KPOC_MEASURE*max_area/(src->height*src->width));
 	printf("green level (0-%llu, lower is better): %llu\n",
 		   KPOC_MEASURE,
 		   KPOC_MEASURE*green_level/max_area/100);
