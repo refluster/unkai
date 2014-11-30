@@ -15,10 +15,7 @@ unsigned long long green_level;
 
 using namespace std;
 
-void GetMaskHSV(IplImage* src, IplImage* mask, int erosions, int dilations) {
-	int x = 0, y = 0;
-	uchar H, S, V;
-
+void GetMaskHSV(IplImage* src, IplImage* mask) {
 	CvPixelPosition8u pos_src, pos_dst;
 	IplImage* tmp;
 
@@ -27,50 +24,132 @@ void GetMaskHSV(IplImage* src, IplImage* mask, int erosions, int dilations) {
 	cvCvtColor(src, tmp, CV_RGB2HSV);
 
 	CV_INIT_PIXEL_POS(pos_src, (unsigned char*) tmp->imageData,
-					   tmp->widthStep,cvGetSize(tmp), x, y, tmp->origin);
+					  tmp->widthStep,cvGetSize(tmp), 0, 0, tmp->origin);
 
 	CV_INIT_PIXEL_POS(pos_dst, (unsigned char*) mask->imageData,
-					   mask->widthStep, cvGetSize(mask), x, y, mask->origin);
+					  mask->widthStep, cvGetSize(mask), 0, 0, mask->origin);
 
 	area = 0;
 	green_level = 0;
 	int centerH = (minH + maxH) / 2;
 	int centerS = (minS + maxS) / 2;
 	int centerV = (minV + maxV) / 2;
+		
+	// filter
+	uint *_lavel = new uint [tmp->height*tmp->width];
+	uint **lavel = new uint* [tmp->height];
 
-	for(y = 0; y < tmp->height; y++) {
-		for(x = 0; x < tmp->width; x++) {
+	for (int y = 0; y < tmp->height; y++) {
+		lavel[y] = _lavel + y*tmp->width;
+	}
+
+	for (int y = 0; y < tmp->height; y++) {
+		for (int x = 0; x < tmp->width; x++) {
 			uchar *p_src = CV_MOVE_TO(pos_src, x, y, 3);
-			uchar *p_dst = CV_MOVE_TO(pos_dst, x, y, 3);
-
-			H = p_src[0];
-			S = p_src[1];
-			V = p_src[2];
-
+			uchar H = p_src[0], S = p_src[1], V = p_src[2];
 			if (minH <= H && H <= maxH &&
 				minS <= S && S <= maxS &&
 				minV <= V && V <= maxV) {
-				p_dst[0] = p_dst[1] = p_dst[2] = 255;
-
-				++ area;
-				green_level += square(H - centerH) +
-					square(S - centerS) +
-					square(V - centerS);
-			} else {
-				p_dst[0] = p_dst[1] = p_dst[2] = 0;
+				lavel[y][x] = 0xffffffff;
 			}
 		}
 	}
 
-	if(erosions > 0)  cvErode(mask, mask, 0, erosions);
-	if(dilations > 0) cvDilate(mask, mask, 0, dilations);
+	// lavel
+	int lavel_no = 0;
 
+	int max_area_lavel_no = 0xffffffff;
+	int max_area = 0;
+	
+	for (int y = 0; y < tmp->height; y++) {
+		for (int x = 0; x < tmp->width; x++) {
+			if (lavel[y][x] == 0xffffffff) {
+				typedef struct {
+					int x, y;
+				} point;
+
+				int area = 0;
+				int stp = 0;
+				point stack[tmp->width*tmp->height];
+
+				// push
+				stack[stp].x = x;
+				stack[stp].y = y;
+				++stp;
+
+				++lavel_no;
+				// stack operation
+				while(stp != 0) {
+					// pop
+					int xx, yy;
+					--stp;
+					xx = stack[stp].x;
+					yy = stack[stp].y;
+
+					// push arround
+					if (xx - 1 >= 0 && lavel[yy][xx - 1] == 0xffffffff) {
+						stack[stp].x = xx - 1;
+						stack[stp].y = yy;
+						++stp;
+					}
+					if (xx + 1 < tmp->width && lavel[yy][xx + 1] == 0xffffffff) {
+						stack[stp].x = xx + 1;
+						stack[stp].y = yy;
+						++stp;
+					}
+					if (yy - 1 >= 0 && lavel[yy - 1][xx] == 0xffffffff) {
+						stack[stp].x = xx;
+						stack[stp].y = yy - 1;
+						++stp;
+					}
+					if (yy + 1 < tmp->height && lavel[yy + 1][xx] == 0xffffffff) {
+						stack[stp].x = xx;
+						stack[stp].y = yy + 1;
+						++stp;
+					}
+					
+					// laveling
+					lavel[yy][xx] = lavel_no;
+					
+					uchar *p_dst = CV_MOVE_TO(pos_dst, xx, yy, 3);
+//					p_dst[0] = ((uchar)(0x12345678*lavel_no))/2;
+//					p_dst[1] = (uchar)(0x34567812*lavel_no);
+//					p_dst[2] = (uchar)(0x56781234*lavel_no);
+
+					++area;
+				}
+
+				if (max_area < area) {
+					max_area_lavel_no = lavel_no;
+					max_area = area;
+				}
+			}
+		}
+	}
+
+	area = max_area;
+
+	for (int y = 0; y < tmp->height; y++) {
+		for (int x = 0; x < tmp->width; x++) {
+			if (lavel[y][x] == max_area_lavel_no) {
+				uchar *p_dst = CV_MOVE_TO(pos_dst, x, y, 3);
+				uchar *p_src = CV_MOVE_TO(pos_src, x, y, 3);
+				p_dst[0] = p_dst[1] = p_dst[2] = 255;
+				green_level += square(p_src[0] - centerH);
+			}
+		}
+	}
+
+	printf("lavel_no %d\n", lavel_no);
+
+#if 1
 	printf("green area (0-%llu, higher is larger): %llu\n",
 		   KPOC_MEASURE,
 		   KPOC_MEASURE*area/(tmp->height*tmp->width));
 	printf("green level (0-%llu, lower is better): %llu\n",
 		   KPOC_MEASURE,
-		   KPOC_MEASURE*green_level/area/(255*255*3));
+		   KPOC_MEASURE*green_level/area/1000);
+#endif
 	
 	cvReleaseImage(&tmp);
 }
@@ -135,24 +214,25 @@ int main(int argc, char **argv) {
 	mask = cvCreateImage(cvSize(frame->width, frame->height), IPL_DEPTH_8U, 3);
 	dst = cvCreateImage(cvSize(frame->width, frame->height), IPL_DEPTH_8U, 3);
 
-	GetMaskHSV(frame, mask, 1, 1);
+	GetMaskHSV(frame, mask);
 	
 	if (display) {
 		cvAnd(frame, mask, dst);
 
-		// original
+		// show original image
 		cvNamedWindow("src", CV_WINDOW_AUTOSIZE);
 		cvShowImage("src", frame);
 		
-		// mask
+		// show mask image
 		cvNamedWindow("mask", CV_WINDOW_AUTOSIZE);
 		cvShowImage("mask", mask);
 
-		// masked
+		// show masked image
 		cvNamedWindow("dst", CV_WINDOW_AUTOSIZE);
 		cvShowImage("dst", dst);
 
 		cvWaitKey(0);
+
 		cvDestroyWindow("src");
 		cvDestroyWindow("mask");
 		cvDestroyWindow("dst");
