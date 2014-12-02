@@ -35,21 +35,24 @@ void laveling(uint **lavel, uint width, uint height, list<uint> *lavel_area) {
 				stack<point> stack;
 				int area = 0;
 
-				++cur_lavel_no;
-
 				point p = {x, y};
 				stack.push(p);
 
+				++cur_lavel_no;
+
+				// set lavel to the same area
 				while(! stack.empty()) {
 					// pop
 					int xx = stack.top().x, yy = stack.top().y;
 					stack.pop();
 					
-					// laveling
-					lavel[yy][xx] = cur_lavel_no;
+					if (lavel[yy][xx] == INVALID) {
+						++area;
+						
+						// laveling
+						lavel[yy][xx] = cur_lavel_no;
+					}
 					
-					++area;
-
 					// push arround
 					if (xx - 1 >= 0 && lavel[yy][xx - 1] == INVALID) {
 						point p = {xx - 1, yy};
@@ -124,10 +127,13 @@ void GetMaskHSV(IplImage* src, IplImage* mask, HSV_filter *hsv_filter) {
 		}
 		lavel_area.pop_front();
 	}
-	
+
+//////////////////////////////
+	CV_INIT_PIXEL_POS(pos_src, (unsigned char*) tmp->imageData,
+					  tmp->widthStep,cvGetSize(tmp), 0, 0, tmp->origin);
 	CV_INIT_PIXEL_POS(pos_dst, (unsigned char*) mask->imageData,
 					  mask->widthStep, cvGetSize(mask), 0, 0, mask->origin);
-		
+
 	for (int y = 0; y < src->height; y++) {
 		for (int x = 0; x < src->width; x++) {
 			if (lavel[y][x] == max_area_lavel_no) {
@@ -143,6 +149,9 @@ void GetMaskHSV(IplImage* src, IplImage* mask, HSV_filter *hsv_filter) {
 		}
 	}
 
+	printf("%llu %u %llu %d %d\n",
+		   KPOC_MEASURE,
+		   max_area, (src->height*src->width), src->height, src->width);
 	printf("green area (0-%llu, higher is larger): %llu\n",
 		   KPOC_MEASURE,
 		   KPOC_MEASURE*max_area/(src->height*src->width));
