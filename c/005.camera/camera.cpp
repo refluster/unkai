@@ -24,6 +24,48 @@ typedef struct {
 	uchar V_min, V_max;
 } HSV_filter;
 
+class image {
+	char *infile;
+	CvCapture *capture;
+	IplImage *frame;
+
+public:
+	image(char *infile);
+	~image();
+	IplImage *getImage();
+};
+
+image::image(char *infile) {
+	double w = 320, h = 240;
+
+	this->infile = infile;
+	capture = NULL;
+
+	// set capture image size
+	cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_WIDTH, w);
+	cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_HEIGHT, h);
+}
+
+image::~image() {
+	if (infile) {
+		cvReleaseImage(&frame);
+	} else {
+		cvReleaseCapture(&capture);
+	}
+}
+
+IplImage *image::getImage() {
+	IplImage *frame = 0;
+
+	if (infile) {
+		frame = cvLoadImage(infile, CV_LOAD_IMAGE_ANYCOLOR | CV_LOAD_IMAGE_ANYDEPTH);
+	} else {
+		capture = cvCreateCameraCapture(0);
+		frame = cvQueryFrame (capture);
+	}
+	return frame;
+}
+
 void laveling(uint **lavel, uint width, uint height, list<uint> *lavel_area) {
 	// lavel
 	int cur_lavel_no = 0;
@@ -134,13 +176,14 @@ void GetMaskHSV(IplImage* src, IplImage* mask, HSV_filter *hsv_filter) {
 	CV_INIT_PIXEL_POS(pos_dst, (unsigned char*) mask->imageData,
 					  mask->widthStep, cvGetSize(mask), 0, 0, mask->origin);
 
+	// create mask to pass only the largest lavel
 	for (int y = 0; y < src->height; y++) {
 		for (int x = 0; x < src->width; x++) {
 			if (lavel[y][x] == max_area_lavel_no) {
 				uchar *p_dst = CV_MOVE_TO(pos_dst, x, y, 3);
 				uchar *p_src = CV_MOVE_TO(pos_src, x, y, 3);
 				p_dst[0] = p_dst[1] = p_dst[2] = 255;
-				green_level += square(p_src[0] - centerH);
+				green_level += square(p_src[0] - centerH)*3;
 			}
 //			uchar *p_dst = CV_MOVE_TO(pos_dst, x, y, 3);
 //			p_dst[0] = ((uchar)(0x12345678*lavel[y][x]))/2;
@@ -149,7 +192,7 @@ void GetMaskHSV(IplImage* src, IplImage* mask, HSV_filter *hsv_filter) {
 		}
 	}
 
-	printf("%llu %u %llu %d %d\n",
+	printf("%llu %u %d %d %d\n",
 		   KPOC_MEASURE,
 		   max_area, (src->height*src->width), src->height, src->width);
 	printf("green area (0-%llu, higher is larger): %llu\n",
@@ -157,7 +200,7 @@ void GetMaskHSV(IplImage* src, IplImage* mask, HSV_filter *hsv_filter) {
 		   KPOC_MEASURE*max_area/(src->height*src->width));
 	printf("green level (0-%llu, lower is better): %llu\n",
 		   KPOC_MEASURE,
-		   KPOC_MEASURE*green_level/max_area/100);
+		   KPOC_MEASURE*green_level/max_area/(src->height*src->width));
 	
 	cvReleaseImage(&tmp);
 }
@@ -166,8 +209,10 @@ void measure(char *infile, char *outfile, int display, HSV_filter *hsv_filter) {
 	IplImage* frame = NULL;
 	IplImage* mask = NULL;
 	IplImage* dst = NULL;
+	image *image = new class image(infile);
 
-	frame = cvLoadImage(infile, CV_LOAD_IMAGE_ANYCOLOR | CV_LOAD_IMAGE_ANYDEPTH);
+	frame = image->getImage();
+
 	mask = cvCreateImage(cvSize(frame->width, frame->height), IPL_DEPTH_8U, 3);
 	dst = cvCreateImage(cvSize(frame->width, frame->height), IPL_DEPTH_8U, 3);
 
@@ -200,9 +245,10 @@ void measure(char *infile, char *outfile, int display, HSV_filter *hsv_filter) {
 		cvSaveImage(outfile, dst);
 	}
 
-	cvReleaseImage(&frame);
 	cvReleaseImage(&dst);
 	cvReleaseImage(&mask);
+
+	delete image;
 }
 
 int main(int argc, char **argv) {
@@ -239,6 +285,11 @@ int main(int argc, char **argv) {
 		return -1;
 	}
 
+	if (infile != NULL && stat(infile, &st) != 0) {
+		fprintf(stderr, "input file not exist\n");
+		return -1;
+	}
+
 	hsv_filter.H_min = atoi(argv[optind + 0]);
 	hsv_filter.H_max = atoi(argv[optind + 1]);
 	hsv_filter.S_min = atoi(argv[optind + 2]);
@@ -250,16 +301,6 @@ int main(int argc, char **argv) {
 	printf("HSV param: %d-%d %d-%d %d-%d\n", hsv_filter.H_min, hsv_filter.H_max,
 		   hsv_filter.S_min, hsv_filter.S_max,
 		   hsv_filter.V_min, hsv_filter.V_max);
-
-	// argument check
-	if (infile == NULL) {
-		fprintf(stderr, "input file is not specified\n");
-		return -1;
-	}
-	if (stat(infile, &st) != 0) {
-		fprintf(stderr, "input file not exist\n");
-		return -1;
-	}
 
 	measure(infile, outfile, display, &hsv_filter);
 
