@@ -28,7 +28,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <linux/videodev.h>
+#include <linux/videodev2.h>
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 #include "v4l2uvc.h"
@@ -202,7 +202,7 @@ init_v4l2 (struct vdIn *vd)
     goto fatal;
   }
   /* map the buffers */
-  for (i = 0; i < NB_BUFFER; i++) {
+  for (i = 0; i < vd->rb.count; i++) {
     memset (&vd->buf, 0, sizeof (struct v4l2_buffer));
     vd->buf.index = i;
     vd->buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -226,7 +226,7 @@ init_v4l2 (struct vdIn *vd)
       fprintf (stderr, "Buffer mapped at address %p.\n", vd->mem[i]);
   }
   /* Queue the buffers. */
-  for (i = 0; i < NB_BUFFER; ++i) {
+  for (i = 0; i < vd->rb.count; ++i) {
     memset (&vd->buf, 0, sizeof (struct v4l2_buffer));
     vd->buf.index = i;
     vd->buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -335,7 +335,7 @@ close_v4l2 (struct vdIn *vd)
 
   /* If the memory maps are not released the device will remain opened even
      after a call to close(); */
-  for (i = 0; i < NB_BUFFER; i++) {
+  for (i = 0; i < vd->rb.count; i++) {
     munmap (vd->mem[i], vd->buf.length);
   }
 
@@ -397,15 +397,13 @@ v4l2SetControl (struct vdIn *vd, int control, int value)
 {
   struct v4l2_control control_s;
   struct v4l2_queryctrl queryctrl;
-  int min, max, step, val_def;
+  int min, max;
   int err;
 
   if (isv4l2Control (vd, control, &queryctrl) < 0)
     return -1;
   min = queryctrl.minimum;
   max = queryctrl.maximum;
-  step = queryctrl.step;
-  val_def = queryctrl.default_value;
   if ((value >= min) && (value <= max)) {
     control_s.id = control;
     control_s.value = value;
@@ -422,15 +420,13 @@ v4l2UpControl (struct vdIn *vd, int control)
 {
   struct v4l2_control control_s;
   struct v4l2_queryctrl queryctrl;
-  int min, max, current, step, val_def;
+  int max, current, step;
   int err;
 
   if (isv4l2Control (vd, control, &queryctrl) < 0)
     return -1;
-  min = queryctrl.minimum;
   max = queryctrl.maximum;
   step = queryctrl.step;
-  val_def = queryctrl.default_value;
   current = v4l2GetControl (vd, control);
   current += step;
   if (current <= max) {
@@ -449,15 +445,13 @@ v4l2DownControl (struct vdIn *vd, int control)
 {
   struct v4l2_control control_s;
   struct v4l2_queryctrl queryctrl;
-  int min, max, current, step, val_def;
+  int min, current, step;
   int err;
 
   if (isv4l2Control (vd, control, &queryctrl) < 0)
     return -1;
   min = queryctrl.minimum;
-  max = queryctrl.maximum;
   step = queryctrl.step;
-  val_def = queryctrl.default_value;
   current = v4l2GetControl (vd, control);
   current -= step;
   if (current >= min) {

@@ -12,6 +12,8 @@ CPPFLAGS = $(CFLAGS)
 
 OBJECTS= uvccapture.o v4l2uvc.o
 
+%.o: %.c v4l2uvc.h
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 all:    uvccapture
 
