@@ -76,7 +76,6 @@ static unsigned char dht_data[DHT_SIZE] = {
 static int init_v4l2 (struct vdIn *vd);
 
 int init_videoIn (struct vdIn *vd, char *device, int width, int height, int format, int grabmethod) {
-
 	if (vd == NULL || device == NULL)
 		return -1;
 	if (width == 0 || height == 0)

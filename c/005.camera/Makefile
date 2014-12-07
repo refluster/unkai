@@ -18,3 +18,13 @@ camera.o: camera.cpp
 
 run:
 	$(TARGET) -i jpg/before.jpg 35 100 60 255 20 255
+
+####################
+v4l2uvc.o: uvccapture-0.5/v4l2uvc.c
+	g++ -Wall -DVERSION=\"0.4\" -c uvccapture-0.5/v4l2uvc.c -o v4l2uvc.o
+
+test: camera.o v4l2uvc.o
+	g++ camera.o v4l2uvc.o -o test.out `pkg-config --libs opencv`
+
+test-run:
+	./test.out 35 100 60 255 20 255
