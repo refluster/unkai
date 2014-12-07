@@ -16,7 +16,96 @@ using namespace std;
 #define KPOC_MEASURE ((unsigned long long)10000)
 #define INVALID 0xffffffff
 
-IplImage *capture_uvc() {
+typedef struct {
+	int x, y;
+} point;
+
+typedef struct {
+	uchar H_min, H_max;
+	uchar S_min, S_max;
+	uchar V_min, V_max;
+} HSV_filter;
+
+class image {
+	char *infile;
+	CvCapture *capture;
+	IplImage *frame;
+
+public:
+	image(char *infile);
+	~image();
+	IplImage *get_image();
+	void convert_yuyv_to_rgb(const unsigned char *yuyv, unsigned char *bgr, int width, int height);
+	IplImage *capture_uvc_camera();
+};
+
+image::image(char *file) {
+	infile = file;
+	capture = NULL;
+	frame = NULL;
+}
+
+image::~image() {
+	cvReleaseImage(&frame);
+}
+
+IplImage *image::getImage() {
+	double w = 320, h = 240;
+
+	if (infile) {
+		frame = cvLoadImage(infile, CV_LOAD_IMAGE_ANYCOLOR | CV_LOAD_IMAGE_ANYDEPTH);
+	} else {
+#if 0
+		capture = cvCreateCameraCapture(-1);
+		// set capture image size
+		cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_WIDTH, w);
+		cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_HEIGHT, h);
+
+		printf("capture : %p\n", capture);
+		frame = cvQueryFrame (capture);
+		printf("frame : %p\n", frame);
+#else
+		frame = capture_uvc();
+#endif
+	}
+	return frame;
+}
+
+void image::convert_yuyv_to_rgb(const unsigned char *yuyv, unsigned char *bgr, int width, int height) {
+	// convert yuyv to rgb
+	int z = 0;
+	int x;
+	int yline;
+ 
+	for (yline = 0; yline < height; yline++){
+		for (x = 0; x < width; x++){
+			int r, g, b;
+			int y, u, v;
+ 
+			if (!z)
+				y = yuyv[0] << 8;
+			else
+				y = yuyv[2] << 8;
+			u = yuyv[1] - 128;
+			v = yuyv[3] - 128;
+ 
+			r = (y + (359 * v)) >> 8;
+			g = (y - (88 * u) - (183 * v)) >> 8;
+			b = (y + (454 * u)) >> 8;
+ 
+			*(bgr++) = (b > 255) ? 255 : ((b < 0) ? 0 : b);
+			*(bgr++) = (g > 255) ? 255 : ((g < 0) ? 0 : g);
+			*(bgr++) = (r > 255) ? 255 : ((r < 0) ? 0 : r);
+ 
+			if (z++) {
+				z = 0;
+				yuyv += 4;
+			}
+		}
+	}
+}
+
+IplImage *image::capture_uvc_camera() {
 	int brightness = 20;
 	int contrast = 60;
 	int saturation = 40;
@@ -57,112 +146,15 @@ IplImage *capture_uvc() {
 	// IplImage
 	frame = cvCreateImage(cvSize(videoIn->width, videoIn->height), IPL_DEPTH_8U, 3);	
 
-	//////////////////////////////
-	// convert yuyv to rgb
-	unsigned char *yuyv = videoIn->framebuffer;
-	unsigned char *bgr = (unsigned char*)frame->imageData;
-	int z = 0;
-	int x;
-	int yline;
- 
-	for (yline = 0; yline < videoIn->height; yline++){
-		for (x = 0; x < videoIn->width; x++){
-			int r, g, b;
-			int y, u, v;
- 
-			if (!z)
-				y = yuyv[0] << 8;
-			else
-				y = yuyv[2] << 8;
-			u = yuyv[1] - 128;
-			v = yuyv[3] - 128;
- 
-			r = (y + (359 * v)) >> 8;
-			g = (y - (88 * u) - (183 * v)) >> 8;
-			b = (y + (454 * u)) >> 8;
- 
-			*(bgr++) = (b > 255) ? 255 : ((b < 0) ? 0 : b);
-			*(bgr++) = (g > 255) ? 255 : ((g < 0) ? 0 : g);
-			*(bgr++) = (r > 255) ? 255 : ((r < 0) ? 0 : r);
- 
-			if (z++) {
-				z = 0;
-				yuyv += 4;
-			}
-		}
-	}
+	// convert image format
+	convert_yuyv_to_rgb(videoIn->framebuffer, (unsigned char*)frame->imageData,
+						videoIn->width, videoIn->height);
 
-//	cvSaveImage("out.jpg", frame);
+	cvSaveImage("src.jpg", frame);
 
 	close_v4l2 (videoIn);
 	free (videoIn);
 
-	return frame;
-}
-
-//////////////////////////////
-
-typedef struct {
-	int x, y;
-} point;
-
-typedef struct {
-	uchar H_min, H_max;
-	uchar S_min, S_max;
-	uchar V_min, V_max;
-} HSV_filter;
-
-class image {
-	char *infile;
-	CvCapture *capture;
-	IplImage *frame;
-
-public:
-	image(char *infile);
-	~image();
-	IplImage *getImage();
-};
-
-image::image(char *file) {
-	infile = file;
-	capture = NULL;
-	frame = NULL;
-
-}
-
-image::~image() {
-	if (infile) {
-		cvReleaseImage(&frame);
-	} else {
-#if 0
-		cvReleaseCapture(&capture);
-#else
-		cvReleaseImage(&frame);
-#endif
-
-	}
-}
-
-IplImage *image::getImage() {
-	double w = 320, h = 240;
-
-	if (infile) {
-		frame = cvLoadImage(infile, CV_LOAD_IMAGE_ANYCOLOR | CV_LOAD_IMAGE_ANYDEPTH);
-	} else {
-#if 0
-		capture = cvCreateCameraCapture(-1);
-//		capture = cvCaptureFromCAM(-1);
-		// set capture image size
-		cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_WIDTH, w);
-		cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_HEIGHT, h);
-
-		printf("capture : %p\n", capture);
-		frame = cvQueryFrame (capture);
-		printf("frame : %p\n", frame);
-#else
-		frame = capture_uvc();
-#endif
-	}
 	return frame;
 }
 
@@ -339,6 +331,21 @@ void measure(char *infile, char *outfile, int display, HSV_filter *hsv_filter) {
 		cvDestroyWindow("mask");
 		cvDestroyWindow("dst");
 	}
+
+#if 0
+	{
+		cvAnd(frame, mask, dst);
+
+		// show original image
+		cvSaveImage("src.jpg", frame);
+		
+		// show mask image
+		cvSaveImage("mask.jpg", mask);
+
+		// show masked image
+		cvSaveImage("dst.jpg", dst);
+	}
+#endif
 
 	if (outfile) {
 		cvAnd(frame, mask, dst);
