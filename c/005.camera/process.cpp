@@ -71,7 +71,7 @@ void laveling(uint **lavel, uint width, uint height, list<uint> *lavel_area) {
 	printf("lavel_no %d\n", cur_lavel_no);
 }
 
-void GetMaskHSV(IplImage* src, IplImage* mask, HSV_filter *hsv_filter) {
+void get_mask_hsv(IplImage* src, IplImage* mask, hsv_filter *hsv_filter) {
 	CvPixelPosition8u pos_src;
 	IplImage* tmp;
 
@@ -92,9 +92,9 @@ void GetMaskHSV(IplImage* src, IplImage* mask, HSV_filter *hsv_filter) {
 		for (int x = 0; x < src->width; x++) {
 			uchar *p_src = CV_MOVE_TO(pos_src, x, y, 3);
 			uchar H = p_src[0], S = p_src[1], V = p_src[2];
-			if (hsv_filter->H_min <= H && H <= hsv_filter->H_max &&
-				hsv_filter->S_min <= S && S <= hsv_filter->S_max &&
-				hsv_filter->V_min <= V && V <= hsv_filter->V_max) {
+			if (hsv_filter->h_min <= H && H <= hsv_filter->h_max &&
+				hsv_filter->s_min <= S && S <= hsv_filter->s_max &&
+				hsv_filter->v_min <= V && V <= hsv_filter->v_max) {
 				lavel[y][x] = INVALID;
 			}
 		}
@@ -104,7 +104,7 @@ void GetMaskHSV(IplImage* src, IplImage* mask, HSV_filter *hsv_filter) {
 	list<uint> lavel_area;
 	laveling(lavel, src->width, src->height, &lavel_area);
 
-	int centerH = (hsv_filter->H_min + hsv_filter->H_max) / 2;
+	int centerH = (hsv_filter->h_min + hsv_filter->h_max) / 2;
 	CvPixelPosition8u pos_dst;
 	uint max_area = 0;
 	int max_area_lavel_no = INVALID;
@@ -154,18 +154,14 @@ void GetMaskHSV(IplImage* src, IplImage* mask, HSV_filter *hsv_filter) {
 	cvReleaseImage(&tmp);
 }
 
-void measure(char *infile, char *outfile, int display, HSV_filter *hsv_filter) {
-	IplImage* frame = NULL;
+void measure(IplImage* frame, char *outfile, int display, hsv_filter *hsv_filter) {
 	IplImage* mask = NULL;
 	IplImage* dst = NULL;
-	image *image = new class image(infile);
-
-	frame = image->get_image();
 	
 	mask = cvCreateImage(cvSize(frame->width, frame->height), IPL_DEPTH_8U, 3);
 	dst = cvCreateImage(cvSize(frame->width, frame->height), IPL_DEPTH_8U, 3);
-
-	GetMaskHSV(frame, mask, hsv_filter);
+	
+	get_mask_hsv(frame, mask, hsv_filter);
 	
 	if (display) {
 		cvAnd(frame, mask, dst);
@@ -211,8 +207,6 @@ void measure(char *infile, char *outfile, int display, HSV_filter *hsv_filter) {
 
 	cvReleaseImage(&dst);
 	cvReleaseImage(&mask);
-
-	delete image;
 }
 
 int main(int argc, char **argv) {
@@ -220,8 +214,10 @@ int main(int argc, char **argv) {
 	char *infile = NULL;
 	char *outfile = NULL;
 	struct stat st;
+	image_input *image = NULL;
+	camera_property camconf;
 
-	HSV_filter hsv_filter;
+	hsv_filter hsv_filter;
 
 	int go_res;
 
@@ -254,19 +250,34 @@ int main(int argc, char **argv) {
 		return -1;
 	}
 
-	hsv_filter.H_min = atoi(argv[optind + 0]);
-	hsv_filter.H_max = atoi(argv[optind + 1]);
-	hsv_filter.S_min = atoi(argv[optind + 2]);
-	hsv_filter.S_max = atoi(argv[optind + 3]);
-	hsv_filter.V_min = atoi(argv[optind + 4]);
-	hsv_filter.V_max = atoi(argv[optind + 5]);
+	hsv_filter.h_min = atoi(argv[optind + 0]);
+	hsv_filter.h_max = atoi(argv[optind + 1]);
+	hsv_filter.s_min = atoi(argv[optind + 2]);
+	hsv_filter.s_max = atoi(argv[optind + 3]);
+	hsv_filter.v_min = atoi(argv[optind + 4]);
+	hsv_filter.v_max = atoi(argv[optind + 5]);
+
+	camconf.brightness = 20;
+	camconf.contrast = 60;
+	camconf.saturation = 40;
+	camconf.gain = 80;
+	camconf.width = 320;
+	camconf.height = 240;
 
 	printf("infile: %s\n", infile);
-	printf("HSV param: %d-%d %d-%d %d-%d\n", hsv_filter.H_min, hsv_filter.H_max,
-		   hsv_filter.S_min, hsv_filter.S_max,
-		   hsv_filter.V_min, hsv_filter.V_max);
+	printf("HSV param: %d-%d %d-%d %d-%d\n", hsv_filter.h_min, hsv_filter.h_max,
+		   hsv_filter.s_min, hsv_filter.s_max,
+		   hsv_filter.v_min, hsv_filter.v_max);
 
-	measure(infile, outfile, display, &hsv_filter);
+	if (infile) {
+		image = new class image_input(infile);
+	} else {
+		image = new class image_input(&camconf);
+	}
+
+	measure(image->get_image(), outfile, display, &hsv_filter);
+
+	delete image;
 
 	return(0);
 }

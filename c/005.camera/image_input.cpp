@@ -5,17 +5,33 @@
 #include "uvccapture-0.5/v4l2uvc.h"
 #include "image_input.h"
 
-image::image(char *file) {
+image_input::image_input(char *file) {
 	infile = file;
-	capture = NULL;
 	frame = NULL;
 }
 
-image::~image() {
+image_input::image_input(camera_property *cp) {
+	infile = NULL;
+	frame = NULL;
+
+	if (cp != NULL) {
+		camera = *cp;
+	} else {
+		// default settings
+		camera.brightness = 20;
+		camera.contrast = 60;
+		camera.saturation = 40;
+		camera.gain = 80;
+		camera.width = 320;
+		camera.height = 240;
+	}
+}
+
+image_input::~image_input() {
 	cvReleaseImage(&frame);
 }
 
-IplImage *image::get_image() {
+IplImage *image_input::get_image() {
 	if (infile) {
 		frame = cvLoadImage(infile, CV_LOAD_IMAGE_ANYCOLOR | CV_LOAD_IMAGE_ANYDEPTH);
 	} else {
@@ -24,7 +40,7 @@ IplImage *image::get_image() {
 	return frame;
 }
 
-void image::convert_yuyv_to_rgb(const unsigned char *yuyv, unsigned char *bgr, int width, int height) {
+void image_input::convert_yuyv_to_rgb(const unsigned char *yuyv, unsigned char *bgr, int width, int height) {
 	// convert yuyv to rgb
 	int z = 0;
 	int x;
@@ -58,21 +74,15 @@ void image::convert_yuyv_to_rgb(const unsigned char *yuyv, unsigned char *bgr, i
 	}
 }
 
-IplImage *image::capture_uvc_camera() {
-	int brightness = 20;
-	int contrast = 60;
-	int saturation = 40;
-	int gain = 80;
+IplImage *image_input::capture_uvc_camera() {
 	struct vdIn *videoIn;
 	char *videodevice = (char*)"/dev/video0";
-	int width = 320;
-	int height = 240;
 	int format = V4L2_PIX_FMT_YUYV;
 	int grabmethod = 1;
 	IplImage* frame;
 
 	videoIn = (struct vdIn *) calloc (1, sizeof (struct vdIn));
-	if (init_videoIn(videoIn, (char *) videodevice, width, height, format, grabmethod) < 0) {
+	if (init_videoIn(videoIn, videodevice, camera.width, camera.height, format, grabmethod) < 0) {
 		puts("init failed");
 		exit (1);
 	}
@@ -84,16 +94,16 @@ IplImage *image::capture_uvc_camera() {
 	v4l2ResetControl (videoIn, V4L2_CID_GAIN);
 
 	//Setup Camera Parameters
-	v4l2SetControl (videoIn, V4L2_CID_BRIGHTNESS, brightness);
-	v4l2SetControl (videoIn, V4L2_CID_CONTRAST, contrast);
-	v4l2SetControl (videoIn, V4L2_CID_SATURATION, saturation);
-	v4l2SetControl (videoIn, V4L2_CID_GAIN, gain);
+	v4l2SetControl (videoIn, V4L2_CID_BRIGHTNESS, camera.brightness);
+	v4l2SetControl (videoIn, V4L2_CID_CONTRAST, camera.contrast);
+	v4l2SetControl (videoIn, V4L2_CID_SATURATION, camera.saturation);
+	v4l2SetControl (videoIn, V4L2_CID_GAIN, camera.gain);
 
 	if (uvcGrab (videoIn) < 0) {
-		fprintf (stderr, "Error grabbing\n");
-		close_v4l2 (videoIn);
-		free (videoIn);
-		exit (1);
+		fprintf(stderr, "Error grabbing\n");
+		close_v4l2(videoIn);
+		free(videoIn);
+		exit(1);
 	}
 
 	// IplImage

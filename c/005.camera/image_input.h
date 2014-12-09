@@ -6,19 +6,32 @@ typedef struct {
 } point;
 
 typedef struct {
-	uchar H_min, H_max;
-	uchar S_min, S_max;
-	uchar V_min, V_max;
-} HSV_filter;
+	uchar h_min;
+	uchar h_max;
+	uchar s_min;
+	uchar s_max;
+	uchar v_min;
+	uchar v_max;
+} hsv_filter;
 
-class image {
+typedef struct {
+	int brightness;
+	int contrast;
+	int saturation;
+	int gain;
+	int width;
+	int height;
+} camera_property;	
+
+class image_input {
 	char *infile;
-	CvCapture *capture;
 	IplImage *frame;
+	camera_property	camera;
 
 public:
-	image(char *infile);
-	~image();
+	image_input(char *infile);
+	image_input(camera_property *cp);
+	~image_input();
 	IplImage *get_image();
 	void convert_yuyv_to_rgb(const unsigned char *yuyv, unsigned char *bgr, int width, int height);
 	IplImage *capture_uvc_camera();
