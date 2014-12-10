@@ -23,7 +23,7 @@ v4l2uvc.o: uvccapture-0.5/v4l2uvc.c
 	g++ -Wall -DVERSION=\"0.4\" -c uvccapture-0.5/v4l2uvc.c -o v4l2uvc.o
 
 run:
-	./$(TARGET) -i jpg/before.jpg 35 100 60 255 20 255
+	./$(TARGET) -i jpg/before.jpg -l "35:100:60:255:20:255"
 
 run2:
 	./$(TARGET) -b 20 -c 60 -g 80 -s 40 -r 640x480 -l "35:100:60:255:20:255"
