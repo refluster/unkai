@@ -1,6 +1,7 @@
 #include <cv.h>
 #include <highgui.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -216,21 +217,58 @@ int main(int argc, char **argv) {
 	struct stat st;
 	image_input *image = NULL;
 	camera_property camconf;
-
 	hsv_filter hsv_filter;
 
-	int go_res;
+	// set default value
+	camconf.brightness = 20;
+	camconf.contrast = 60;
+	camconf.saturation = 40;
+	camconf.gain = 80;
+	camconf.width = 320;
+	camconf.height = 240;
 
-	while ((go_res = getopt(argc, argv, "di:o:")) != -1) {
+	hsv_filter.h_min = 30;
+	hsv_filter.h_max = 100;
+	hsv_filter.s_min = 60;
+	hsv_filter.s_max = 255;
+	hsv_filter.v_min = 20;
+	hsv_filter.v_max = 255;
+
+	int go_res;
+	while ((go_res = getopt(argc, argv, "di:o:b:c:s:g:r:l:")) != -1) {
 		switch (go_res) {
-		case 'd':
+		case 'b': // camera brightness
+			camconf.brightness = atoi(optarg);;
+			break;
+		case 'c': // camera contrast
+			camconf.contrast = atoi(optarg);;
+			break;
+		case 'd': // display image 
 			display = 1;
 			break;
-		case 'i':
+		case 'g': // camera gain
+			camconf.gain = atoi(optarg);;
+			break;
+		case 'i': // input image file
 			infile = optarg;
 			break;
-		case 'o':
+		case 'o': // set output file
 			outfile = optarg;
+			break;
+		case 's': // camera saturation
+			camconf.saturation = atoi(optarg);
+			break;
+		case 'r': // camera resolution
+			camconf.width = atoi(strtok(optarg, "x"));
+			camconf.height = atoi(strtok(NULL, "x"));
+			break;
+		case 'l': // hsv sub space to filter green area
+			hsv_filter.h_min = atoi(strtok(optarg, ":"));
+			hsv_filter.h_max = atoi(strtok(NULL, ":"));
+			hsv_filter.s_min = atoi(strtok(NULL, ":"));
+			hsv_filter.s_max = atoi(strtok(NULL, ":"));
+			hsv_filter.v_min = atoi(strtok(NULL, ":"));
+			hsv_filter.v_max = atoi(strtok(NULL, ":"));
 			break;
 		case ':':
 			fprintf(stdout, "%c needs value\n", go_res);
@@ -240,38 +278,22 @@ int main(int argc, char **argv) {
 		}
 	}
 	
-	if (argc - optind != 6) {
-		fprintf(stdout, "HSV param is not set\n");
-		return -1;
-	}
-
 	if (infile != NULL && stat(infile, &st) != 0) {
 		fprintf(stderr, "input file not exist\n");
 		return -1;
 	}
 
-	hsv_filter.h_min = atoi(argv[optind + 0]);
-	hsv_filter.h_max = atoi(argv[optind + 1]);
-	hsv_filter.s_min = atoi(argv[optind + 2]);
-	hsv_filter.s_max = atoi(argv[optind + 3]);
-	hsv_filter.v_min = atoi(argv[optind + 4]);
-	hsv_filter.v_max = atoi(argv[optind + 5]);
-
-	camconf.brightness = 20;
-	camconf.contrast = 60;
-	camconf.saturation = 40;
-	camconf.gain = 80;
-	camconf.width = 320;
-	camconf.height = 240;
-
-	printf("infile: %s\n", infile);
-	printf("HSV param: %d-%d %d-%d %d-%d\n", hsv_filter.h_min, hsv_filter.h_max,
+	printf("HSV filter: %d-%d %d-%d %d-%d\n", hsv_filter.h_min, hsv_filter.h_max,
 		   hsv_filter.s_min, hsv_filter.s_max,
 		   hsv_filter.v_min, hsv_filter.v_max);
 
 	if (infile) {
+		printf("load image from %s\n", infile);
 		image = new class image_input(infile);
 	} else {
+		printf("capture image B:%d S:%d G:%d C:%d [%dx%d]\n",
+			   camconf.brightness, camconf.saturation, camconf.gain, camconf.contrast,
+			   camconf.width, camconf.height);
 		image = new class image_input(&camconf);
 	}
 
