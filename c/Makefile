@@ -3,7 +3,7 @@ ifndef MAKEROOT
 endif
 
 SUBDIR = 000.gpio-set 001.led-driver 002.humidity-sensor 003.tlc5940 \
-		004.hc-sr04
+		004.hc-sr04 005.camera
 
 include $(MAKEROOT)/mk/base.mk
 
