@@ -10,28 +10,25 @@ endif
 
 TARGET = 005.camera
 
+ifeq ($(CAMERA),DISABLE)
+SOURCE = process.cpp image_input.cpp
+else
+SOURCE = process.cpp image_input.cpp uvccapture-0.5/v4l2uvc.cpp
+endif
+
+OBJECT = $(SOURCE:%.cpp=%.o)
+
 all: $(TARGET)
 
-ifeq ($(CAMERA),DISABLE)
-$(TARGET): process.o image_input.o
-	g++ process.o image_input.o -o $(TARGET) `pkg-config --libs opencv`
-else
-$(TARGET): process.o image_input.o v4l2uvc.o
-	g++ process.o image_input.o v4l2uvc.o -o $(TARGET) `pkg-config --libs opencv`
+$(TARGET): $(OBJECT)
+	g++ $^ -o $(TARGET) `pkg-config --libs opencv`
+ifneq ($(CAMERA),DISABLE)
 	sudo chown root:root $(TARGET)
 	sudo chmod u+s $(TARGET)
 endif
 
-process.o: process.cpp
-	g++ $(CFLAGS) -c process.cpp -o process.o `pkg-config --cflags opencv`
-
-image_input.o: image_input.cpp
-	g++ $(CFLAGS) -c image_input.cpp -o image_input.o `pkg-config --cflags opencv`
-
-ifneq ($(CAMERA),DISABLE)
-v4l2uvc.o: uvccapture-0.5/v4l2uvc.c
-	g++ $(CFLAGS) -c uvccapture-0.5/v4l2uvc.c -o v4l2uvc.o -DVERSION=\"0.4\"
-endif
+.cpp.o:
+	g++ $(CFLAGS) -c $< -o $@ `pkg-config --cflags opencv`
 
 run:
 	./$(TARGET) -i jpg/before.jpg -l "35:100:60:255:20:255"
