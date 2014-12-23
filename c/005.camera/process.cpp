@@ -278,16 +278,16 @@ int main(int argc, char **argv) {
 		}
 	}
 	
-	if (infile != NULL && stat(infile, &st) != 0) {
-		fprintf(stderr, "input file not exist\n");
-		return -1;
-	}
 #ifndef ENABLE_CAMERA
-	else {
+	if (infile == NULL) {
 		fprintf(stderr, "camera is not enabled\n");
 		return -1;
 	}
 #endif
+	if (infile != NULL && stat(infile, &st) != 0) {
+		fprintf(stderr, "input file not exist\n");
+		return -1;
+	}
 
 	printf("HSV filter: %d-%d %d-%d %d-%d\n", hsv_filter.h_min, hsv_filter.h_max,
 		   hsv_filter.s_min, hsv_filter.s_max,
