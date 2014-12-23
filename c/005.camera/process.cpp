@@ -282,6 +282,12 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "input file not exist\n");
 		return -1;
 	}
+#ifndef ENABLE_CAMERA
+	else {
+		fprintf(stderr, "camera is not enabled\n");
+		return -1;
+	}
+#endif
 
 	printf("HSV filter: %d-%d %d-%d %d-%d\n", hsv_filter.h_min, hsv_filter.h_max,
 		   hsv_filter.s_min, hsv_filter.s_max,

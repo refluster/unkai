@@ -1,9 +1,11 @@
 #include <cv.h>
 #include <highgui.h>
 #include <stdio.h>
+#include "image_input.h"
+#ifdef ENABLE_CAMERA
 #include <linux/videodev2.h>
 #include "uvccapture-0.5/v4l2uvc.h"
-#include "image_input.h"
+#endif
 
 image_input::image_input(char *file) {
 	infile = file;
@@ -75,6 +77,7 @@ void image_input::convert_yuyv_to_rgb(const unsigned char *yuyv, unsigned char *
 }
 
 IplImage *image_input::capture_uvc_camera() {
+#ifdef ENABLE_CAMERA
 	struct vdIn *videoIn;
 	char *videodevice = (char*)"/dev/video0";
 	int format = V4L2_PIX_FMT_YUYV;
@@ -119,4 +122,7 @@ IplImage *image_input::capture_uvc_camera() {
 	free (videoIn);
 
 	return frame;
+#else  // ENABLE_CAMERA
+	return NULL;
+#endif // ENABLE_CAMERA
 }
