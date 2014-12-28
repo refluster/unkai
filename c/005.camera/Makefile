@@ -34,5 +34,12 @@ run:
 	./$(TARGET) -i jpg/before.jpg -l "35:100:60:255:20:255"
 
 run2:
-	./$(TARGET) -b 20 -c 60 -g 80 -s 40 -r 640x480 -l "35:100:60:255:20:255"
+	./$(TARGET) -b 20 -c 60 -g 80 -s 40 -r 320x240 -l "35:100:60:255:20:255"
 
+############################################################
+
+test:
+	g++ -Wall test.cpp `pkg-config --cflags --libs opencv` -o test-app
+
+test-run:
+	./test-app ~/save2.work/test000_env.jpg 1 ~/save2.work/test000_env_led.jpg 1.2
