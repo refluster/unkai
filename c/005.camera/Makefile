@@ -42,4 +42,4 @@ test:
 	g++ -Wall test.cpp `pkg-config --cflags --libs opencv` -o test-app
 
 test-run:
-	./test-app ~/save2.work/test000_env.jpg 1 ~/save2.work/test000_env_led.jpg 1.2
+	./test-app ~/save2.work/test000_env.jpg 1.1 ~/save2.work/test000_env_led.jpg 1.2
