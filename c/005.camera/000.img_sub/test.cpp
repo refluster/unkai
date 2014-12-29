@@ -7,7 +7,6 @@
 #include <sys/stat.h>
 #include <stack>
 #include <list>
-#include "image_input.h"
 
 using namespace std;
 
@@ -36,15 +35,43 @@ void test000(char *infile1, float scale1, char *infile2, float scale2) {
 		}
 	}
 
+#if 0
+	IplImage* sub_hsv = NULL;
+	sub_hsv = cvCreateImage(cvSize(img1->width, img1->height), IPL_DEPTH_8U, 3);
+	cvCvtColor(sub, sub_hsv, CV_RGB2HSV);
+
+	for (int i = 2; i < img1->widthStep*img1->height; i++ ) {
+		int c = (int)((uint)(uchar)sub->imageData[i]+30);
+		if (c > 255) {
+			c = 255;
+		}
+		sub_hsv->imageData[i] = c;
+	}
+
+	for (int i = 1; i < img1->widthStep*img1->height; i++ ) {
+		int c = (int)((uint)(uchar)sub->imageData[i]-30);
+		if (c < 0) {
+			c = 0;
+		}
+		sub_hsv->imageData[i] = c;
+	}
+#endif
+
 	cvNamedWindow("img", CV_WINDOW_AUTOSIZE);
-	cvShowImage("img", sub);
+#if 0
+	cvShowImage("img", sub_hsv);
+#endif
 	cvWaitKey(0);
 	cvDestroyWindow("img");
+
 	cvSaveImage("sub.jpg", sub);
 
 	cvReleaseImage(&img1);
 	cvReleaseImage(&img2);
 	cvReleaseImage(&sub);
+#if 0
+	cvReleaseImage(&sub_hsv);
+#endif
 }
 
 int main(int argc, char **argv) {
