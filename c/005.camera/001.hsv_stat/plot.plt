@@ -37,8 +37,8 @@ set size 0.33,0.33
 plot '~/save2.work/test000_env.dat' u 1:2 w l
 unset label 1
 
-set origin 0.33,0.33
-set size 0.35,0.33
+set origin 0.35,0.33
+set size 0.33,0.33
 plot '~/save2.work/test000_env.dat' u 1:3 w l
 
 set origin 0.66,0.33
