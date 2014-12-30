@@ -20,6 +20,7 @@ void test000(char *infile1, int upper, int bottom, int left, int right) {
 	cvCvtColor(img, img_hsv, CV_RGB2HSV);
 
 	int sum[3] = {0};
+	int count = (bottom - upper)*(right - left);
 	for (int y = upper; y < bottom; y++) {
 		for (int x = left; x < right; x++) {
 			sum[0] += (uint)(uchar)img->imageData[x*3 + y*320 + 0];
@@ -28,7 +29,7 @@ void test000(char *infile1, int upper, int bottom, int left, int right) {
 		}
 	}
 	
-	printf("%d %d %d\n", sum[0]/16, sum[1]/16, sum[2]/16);
+	printf("%d %d %d\n", sum[0]/count, sum[1]/count, sum[2]/count);
 
 	cvReleaseImage(&img);
 	cvReleaseImage(&img_hsv);
