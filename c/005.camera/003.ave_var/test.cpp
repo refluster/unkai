@@ -58,7 +58,7 @@ void test000(char *infile) {
 
 	printf("ave ( %d %d %d )\n", ave[0], ave[1], ave[2]);
 	printf("var ( %d %d %d )\n", var[0], var[1], var[2]);
-	printf("var ( %d %d %d )\n", (int)sqrt(var[0]), (int)sqrt(var[1]), (int)sqrt(var[2]));
+	printf("standard-deviation ( %d %d %d )\n", (int)sqrt(var[0]), (int)sqrt(var[1]), (int)sqrt(var[2]));
 	
 	cvReleaseImage(&img);
 	cvReleaseImage(&img_hsv);
