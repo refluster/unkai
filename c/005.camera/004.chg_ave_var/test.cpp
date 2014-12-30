@@ -104,7 +104,7 @@ void test000(char *infile, float sat_tgt_ave, float sat_tgt_deviation,
 	img_hsv = cvCreateImage(cvSize(img->width, img->height), IPL_DEPTH_8U, 3);
 	cvCvtColor(img, img_hsv, CV_RGB2HSV);
 
-#if 0
+#if 1
 	for (int i = 0; i < img_hsv->widthStep*img_hsv->height; i += 3 ) {
 		img_hsv->imageData[i + 1] = sat_conv_tab[(uint)(uchar)img_hsv->imageData[i + 1]];
 	}
