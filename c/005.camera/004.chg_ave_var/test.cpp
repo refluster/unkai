@@ -60,18 +60,15 @@ void test000(char *infile, float sat_tgt_ave, float sat_tgt_deviation,
 	char val_conv_tab[256];
 	img_stat img_stat;
 
-	printf("ave ( . %f %f )\n", sat_tgt_ave, val_tgt_ave);
-	printf("sd  ( . %f %f )\n", sat_tgt_deviation, val_tgt_deviation);
 
 	get_img_statistics(&img_stat, infile);
+	
+	printf("ave ( . %f %f ) << ( . %d %d )\n", sat_tgt_ave, val_tgt_ave, img_stat.ave[1], img_stat.ave[2]);
+	printf("sd  ( . %f %f ) << ( . %d %d )\n", sat_tgt_deviation, val_tgt_deviation,
+		   img_stat.sd[1], img_stat.sd[2]);
 
 	for (int i = 0; i < sizeof(sat_conv_tab)/sizeof(sat_conv_tab[0]); i++) {
-#if 1
-		float t = i + (sat_tgt_ave - img_stat.ave[1]) +
-			(i - img_stat.ave[1])*sat_tgt_deviation/img_stat.sd[1];
-#else
-		float t = i + (sat_tgt_ave - img_stat.ave[1]);
-#endif
+		float t = sat_tgt_ave + (i - img_stat.ave[1])*sat_tgt_deviation/img_stat.sd[1];
 		if (t < 0) {
 			sat_conv_tab[i] = 0;
 		} else if (t > 255) {
@@ -82,12 +79,7 @@ void test000(char *infile, float sat_tgt_ave, float sat_tgt_deviation,
 	}
 
 	for (int i = 0; i < sizeof(val_conv_tab)/sizeof(val_conv_tab[0]); i++) {
-#if 1
-		float t = i + (val_tgt_ave - img_stat.ave[2]) +
-			(i - img_stat.ave[2])*val_tgt_deviation/img_stat.sd[2];
-#else
-		float t = i + (val_tgt_ave - img_stat.ave[2]);
-#endif
+		float t = val_tgt_ave + (i - img_stat.ave[2])*val_tgt_deviation/img_stat.sd[2];
 		if (t < 0) {
 			val_conv_tab[i] = 0;
 		} else if (t > 255) {
@@ -104,11 +96,9 @@ void test000(char *infile, float sat_tgt_ave, float sat_tgt_deviation,
 	img_hsv = cvCreateImage(cvSize(img->width, img->height), IPL_DEPTH_8U, 3);
 	cvCvtColor(img, img_hsv, CV_RGB2HSV);
 
-#if 1
 	for (int i = 0; i < img_hsv->widthStep*img_hsv->height; i += 3 ) {
 		img_hsv->imageData[i + 1] = sat_conv_tab[(uint)(uchar)img_hsv->imageData[i + 1]];
 	}
-#endif
 	
 	for (int i = 0; i < img_hsv->widthStep*img_hsv->height; i += 3 ) {
 		img_hsv->imageData[i + 2] = val_conv_tab[(uint)(uchar)img_hsv->imageData[i + 2]];
