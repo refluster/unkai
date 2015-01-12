@@ -6,7 +6,7 @@
 #define MAX_TIME 85
 #define DHT11PIN 7
 
-static int dht11_read_val_test(float *humidity, float *temperature, float *farenheit) {
+static int dht11_read_val_test(float *humidity, float *temperature, float *fahrenheit) {
 	uint8_t lststate = HIGH;
 	uint8_t counter = 0;
 	uint8_t j = 0, i;
@@ -43,7 +43,7 @@ static int dht11_read_val_test(float *humidity, float *temperature, float *faren
 	// verify cheksum and print the verified data
 	if((dht11_val[4] == ((dht11_val[0] + dht11_val[1] + dht11_val[2] + dht11_val[3]) & 0xFF)) &&
 	   (dht11_val[0] != 0 && dht11_val[2] != 0)) {
-		*farenheit = dht11_val[2]*9.0/5.0 + 32;
+		*fahrenheit = dht11_val[2]*9.0/5.0 + 32;
 		*humidity = dht11_val[0] + dht11_val[1]*0.01;
 		*temperature = dht11_val[2] + dht11_val[3]*0.01;
 		return 0;
@@ -53,12 +53,12 @@ static int dht11_read_val_test(float *humidity, float *temperature, float *faren
 }
 
 void dht11_read_val() {
-	float humidity, temperature, farenheit;
+	float humidity, temperature, fahrenheit;
 	
-	while (dht11_read_val_test(&humidity, &temperature, &farenheit) != 0);
+	while (dht11_read_val_test(&humidity, &temperature, &fahrenheit) != 0);
 
-	printf("humidity:%.1f celsius:%.1f farenheit:%.1f\n",
-		   humidity, temperature, farenheit);
+	printf("humidity:%.1f celsius:%.1f fahrenheit:%.1f\n",
+		   humidity, temperature, fahrenheit);
 }
 
 int dht11_init() {
