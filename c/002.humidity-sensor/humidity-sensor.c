@@ -6,12 +6,12 @@
 #define MAX_TIME 85
 #define DHT11PIN 7
 
-void dht11_read_val() {
+static int dht11_read_val_test(float *humidity, float *temperature, float *farenheit) {
 	uint8_t lststate = HIGH;
 	uint8_t counter = 0;
 	uint8_t j = 0, i;
 	int dht11_val[5];
-	float farenheit;
+//	float farenheit;
 
 	for(i = 0; i < 5; i++)
 		dht11_val[i] = 0;
@@ -42,14 +42,27 @@ void dht11_read_val() {
 		}
 	}
 	// verify cheksum and print the verified data
-	if((dht11_val[4] == ((dht11_val[0] + dht11_val[1] + dht11_val[2] + dht11_val[3]) & 0xFF))) {
-		farenheit = dht11_val[2]*9.0/5.0 + 32;
-
-		printf("humidity:%d.%d celsius:%d.%d fahrenheit:%.1f\n",
-			   dht11_val[0], dht11_val[1], dht11_val[2], dht11_val[3], farenheit);
+	if((dht11_val[4] == ((dht11_val[0] + dht11_val[1] + dht11_val[2] + dht11_val[3]) & 0xFF)) &&
+	   (dht11_val[0] != 0 && dht11_val[2] != 0)) {
+		*farenheit = dht11_val[2]*9.0/5.0 + 32;
+		*humidity = dht11_val[0] + dht11_val[1]*0.01;
+		*temperature = dht11_val[2] + dht11_val[3]*0.01;
+//		printf("humidity:%d.%d celsius:%d.%d fahrenheit:%.1f\n",
+//			   dht11_val[0], dht11_val[1], dht11_val[2], dht11_val[3], farenheit);
+		return 0;
 	} else {
-		printf("Invalid Data!!\n");
+//		printf("Invalid Data!!\n");
+		return -1;
 	}
+}
+
+void dht11_read_val() {
+	float humidity, temperature, farenheit;
+	
+	while (dht11_read_val_test(&humidity, &temperature, &farenheit) != 0);
+
+	printf("humidity:%.1f celsius:%.1f farenheit:%.1f\n",
+		   humidity, temperature, farenheit);
 }
 
 int dht11_init() {
