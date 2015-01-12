@@ -14,6 +14,9 @@ int main(int argc, char **argv) {
 		exit(1);
 	}
 
+	// wait for the the setup of DHT11
+	delay(10);
+
 	if (onetime_mode) {
 		dht11_read_val();
 	} else {
