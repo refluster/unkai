@@ -11,7 +11,6 @@ static int dht11_read_val_test(float *humidity, float *temperature, float *faren
 	uint8_t counter = 0;
 	uint8_t j = 0, i;
 	int dht11_val[5];
-//	float farenheit;
 
 	for(i = 0; i < 5; i++)
 		dht11_val[i] = 0;
@@ -47,11 +46,8 @@ static int dht11_read_val_test(float *humidity, float *temperature, float *faren
 		*farenheit = dht11_val[2]*9.0/5.0 + 32;
 		*humidity = dht11_val[0] + dht11_val[1]*0.01;
 		*temperature = dht11_val[2] + dht11_val[3]*0.01;
-//		printf("humidity:%d.%d celsius:%d.%d fahrenheit:%.1f\n",
-//			   dht11_val[0], dht11_val[1], dht11_val[2], dht11_val[3], farenheit);
 		return 0;
 	} else {
-//		printf("Invalid Data!!\n");
 		return -1;
 	}
 }
