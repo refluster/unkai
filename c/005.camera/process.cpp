@@ -155,59 +155,56 @@ void get_mask_hsv(IplImage* src, IplImage* mask, hsv_filter *hsv_filter) {
 	cvReleaseImage(&tmp);
 }
 
-void measure(IplImage* frame, char *outfile, int display, hsv_filter *hsv_filter) {
-	IplImage* mask = NULL;
-	IplImage* dst = NULL;
+void measure(IplImage* img_src, int display, hsv_filter *hsv_filter) {
+	IplImage* img_mask = NULL;
+	IplImage* img_dst = NULL;
 	
-	mask = cvCreateImage(cvSize(frame->width, frame->height), IPL_DEPTH_8U, 3);
-	dst = cvCreateImage(cvSize(frame->width, frame->height), IPL_DEPTH_8U, 3);
+	img_mask = cvCreateImage(cvSize(img_src->width, img_src->height), IPL_DEPTH_8U, 3);
+	img_dst = cvCreateImage(cvSize(img_src->width, img_src->height), IPL_DEPTH_8U, 3);
 	
-	get_mask_hsv(frame, mask, hsv_filter);
+	get_mask_hsv(img_src, img_mask, hsv_filter);
 	
 	if (display) {
-		cvAnd(frame, mask, dst);
+		cvAnd(img_src, img_mask, img_dst);
 
 		// show original image
 		cvNamedWindow("src", CV_WINDOW_AUTOSIZE);
-		cvShowImage("src", frame);
+		cvShowImage("src", img_src);
 		
 		// show mask image
-		cvNamedWindow("mask", CV_WINDOW_AUTOSIZE);
-		cvShowImage("mask", mask);
+		cvNamedWindow("img_mask", CV_WINDOW_AUTOSIZE);
+		cvShowImage("img_mask", img_mask);
 
 		// show masked image
-		cvNamedWindow("dst", CV_WINDOW_AUTOSIZE);
-		cvShowImage("dst", dst);
+		cvNamedWindow("img_dst", CV_WINDOW_AUTOSIZE);
+		cvShowImage("img_dst", img_dst);
 
 		cvWaitKey(0);
 
 		cvDestroyWindow("src");
-		cvDestroyWindow("mask");
-		cvDestroyWindow("dst");
+		cvDestroyWindow("img_mask");
+		cvDestroyWindow("img_dst");
 	}
 
 #if 0
 	{
-		cvAnd(frame, mask, dst);
+		cvAnd(img_src, img_mask, img_dst);
 
-		// show original image
-		cvSaveImage("src.jpg", frame);
+		// save original image
+		cvSaveImage("img_src.jpg", img_src);
 		
-		// show mask image
-		cvSaveImage("mask.jpg", mask);
+		// save mask image
+		cvSaveImage("img_mask.jpg", img_mask);
 
-		// show masked image
-		cvSaveImage("dst.jpg", dst);
+		// save masked image
+		cvSaveImage("img_dst.jpg", img_dst);
 	}
 #endif
 
-	if (outfile) {
-		cvAnd(frame, mask, dst);
-		cvSaveImage(outfile, dst);
-	}
+	cvAnd(img_src, img_mask, img_src);
 
-	cvReleaseImage(&dst);
-	cvReleaseImage(&mask);
+	cvReleaseImage(&img_dst);
+	cvReleaseImage(&img_mask);
 }
 
 int main(int argc, char **argv) {
@@ -215,9 +212,11 @@ int main(int argc, char **argv) {
 	char *infile = NULL;
 	char *outfile = NULL;
 	struct stat st;
-	image_input *image = NULL;
+	image_input *image_input = NULL;
 	camera_property camconf;
 	hsv_filter hsv_filter;
+	int process_image;
+	IplImage *image = NULL;
 
 	// set default value
 	camconf.brightness = 20;
@@ -233,6 +232,8 @@ int main(int argc, char **argv) {
 	hsv_filter.s_max = 255;
 	hsv_filter.v_min = 20;
 	hsv_filter.v_max = 255;
+
+	process_image = 0;
 
 	int go_res;
 	while ((go_res = getopt(argc, argv, "di:o:b:c:s:g:r:l:")) != -1) {
@@ -263,6 +264,7 @@ int main(int argc, char **argv) {
 			camconf.height = atoi(strtok(NULL, "x"));
 			break;
 		case 'l': // hsv sub space to filter green area
+			process_image = 1;
 			hsv_filter.h_min = atoi(strtok(optarg, ":"));
 			hsv_filter.h_max = atoi(strtok(NULL, ":"));
 			hsv_filter.s_min = atoi(strtok(NULL, ":"));
@@ -289,23 +291,34 @@ int main(int argc, char **argv) {
 		return -1;
 	}
 
-	printf("HSV filter: %d-%d %d-%d %d-%d\n", hsv_filter.h_min, hsv_filter.h_max,
-		   hsv_filter.s_min, hsv_filter.s_max,
-		   hsv_filter.v_min, hsv_filter.v_max);
+	if (process_image) {
+		printf("HSV filter: %d-%d %d-%d %d-%d\n", hsv_filter.h_min, hsv_filter.h_max,
+			   hsv_filter.s_min, hsv_filter.s_max,
+			   hsv_filter.v_min, hsv_filter.v_max);
+	}
 
 	if (infile) {
 		printf("load image from %s\n", infile);
-		image = new class image_input(infile);
+		image_input = new class image_input(infile);
 	} else {
 		printf("capture image B:%d S:%d G:%d C:%d [%dx%d]\n",
 			   camconf.brightness, camconf.saturation, camconf.gain, camconf.contrast,
 			   camconf.width, camconf.height);
-		image = new class image_input(&camconf);
+		image_input = new class image_input(&camconf);
 	}
 
-	measure(image->get_image(), outfile, display, &hsv_filter);
+	image = image_input->get_image();
 
-	delete image;
+	if (process_image) {
+		measure(image, display, &hsv_filter);
+	}
+
+	if (outfile) {
+		// save image
+		cvSaveImage(outfile, image);
+	}
+
+	delete image_input;
 
 	return(0);
 }

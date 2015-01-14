@@ -116,8 +116,6 @@ IplImage *image_input::capture_uvc_camera() {
 	convert_yuyv_to_rgb(videoIn->framebuffer, (unsigned char*)frame->imageData,
 						videoIn->width, videoIn->height);
 
-	cvSaveImage("src.jpg", frame);
-
 	close_v4l2 (videoIn);
 	free (videoIn);
 
