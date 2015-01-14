@@ -13,7 +13,7 @@ socket.on('connect', function(msg) {
 socket.on('chat send_server_to_clients', function(msg) {
   // display message
   console.log('recv msg');
-  document.getElementById("receive_message").innerHTML = msg.value;
+  document.getElementById("receive_message").innerHTML += '<br>' + msg.value;
 });
 
 // send message
@@ -47,7 +47,7 @@ function disconnect() {
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
-    <h1>socket.io sample program</h1>
+    <h1><%= title %></h1>
     <div id="connectId"></div>
     <div id="type"></div>
     <br>
