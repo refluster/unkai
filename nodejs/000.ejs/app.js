@@ -10,6 +10,8 @@ var path = require('path');
 
 var app = express();
 
+var logger = require('./unkai-log');
+
 var routes = require('./routes');
 var user = require('./routes/user');
 
