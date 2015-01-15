@@ -2,6 +2,7 @@
 /**
  * Module dependencies.
  */
+var with_old_ver = 0;
 
 var express = require('express');
 var http = require('http');
@@ -11,33 +12,43 @@ var app = express();
 
 var routes = require('./routes');
 var user = require('./routes/user');
+
 var chat = require('./routes/chat');
 var humidity = require('./routes/humidity');
 var led_ctrl = require('./routes/led-ctrl');
 var tlc5940 = require('./routes/tlc5940');
 
-// all environments
-app.configure('development', function(){
-	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-});
+if (with_old_ver) {
+	// all environments
+	app.configure('development', function(){
+		app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+	});
+}
+
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-app.use(express.favicon());
-app.use(express.logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded());
-app.use(express.methodOverride());
-app.use(app.router);
+
+if (with_old_ver) {
+	app.use(express.favicon());
+	app.use(express.logger('dev'));
+	app.use(express.json());
+	app.use(express.urlencoded());
+	app.use(express.methodOverride());
+	app.use(app.router);
+}
 app.use(express.static(path.join(__dirname, 'public')));
 
-// development only
-if ('development' == app.get('env')) {
-	app.use(express.errorHandler());
+if (with_old_ver) {
+	// development only
+	if ('development' == app.get('env')) {
+		app.use(express.errorHandler());
+	}
 }
 
 app.get('/', routes.index);
 app.get('/users', user.list);
+
 app.get('/chat', chat.index);
 app.get('/humidity', humidity.index);
 app.get('/led-ctrl', led_ctrl.index);
@@ -63,3 +74,4 @@ io.sockets.on('connection', function(client) {
 		console.log("disconnect");
 	});
 });
+
