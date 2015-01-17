@@ -36,3 +36,6 @@ run:
 run2:
 	./$(TARGET) -b 20 -c 60 -g 80 -s 40 -r 320x240 -l "35:100:60:255:20:255"
 
+run-loop:
+	dir="$${HOME}/img"; mkdir -p $$dir; i=0; while [ true ]; do i=`expr $$i \+ 1`; \
+		echo =========== $$i; ./005.camera -o $$dir/`date +'%Y%m%d_%H%M%S'`.jpg; sleep 1; done
