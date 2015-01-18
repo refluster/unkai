@@ -1,6 +1,8 @@
 var exec = require('child_process').exec;
 
 function humidity_get_val(callback) {
+	var humidity, celsius, fahrenheit;
+
 	// get humidity ,celsius, fahrenheit
 	var cmd = "../../c/002.humidity-sensor/002.humidity -1";
 	exec(cmd, {timeout: 1000}, function(error, stdout, stderr) {
@@ -42,7 +44,6 @@ exports.index = function(req, res){
 exports.init_socket = function(io, client){
 	// for humidity
 	client.on('humidity get_value', function(data) {
-		var humidity, celsius, fahrenheit;
 		console.log("get humidity");
 
 		humidity_get_val(function(value) {
