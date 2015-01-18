@@ -1,5 +1,28 @@
 var exec = require('child_process').exec;
 
+function humidity_get_val(callback) {
+	// get humidity ,celsius, fahrenheit
+	var cmd = "../../c/002.humidity-sensor/002.humidity -1";
+	exec(cmd, {timeout: 1000}, function(error, stdout, stderr) {
+		console.log('stdout: '+(stdout||'none'));
+		console.log('stderr: '+(stderr||'none'));
+		if (error !== null) {
+			console.log('exec error: '+error);
+		} else {
+			var re = /humidity:(\d+\.\d+) celsius:(\d+\.\d+) fahrenheit:(\d+\.\d+)/;
+			var re_match = stdout.match(re);
+			if (re_match) {
+				humidity = re_match[1];
+				celsius = re_match[2];
+				fahrenheit = re_match[3];
+			}
+		}
+		callback([humidity, celsius, fahrenheit]);
+	});
+}
+
+
+
 exports.index = function(req, res){
 	// get user-agent
 	var ua = JSON.stringify(req.headers['user-agent']);
@@ -44,3 +67,6 @@ exports.init_socket = function(io, client){
 		});
 	});
 };
+
+exports.get = humidity_get_val;
+exports.set = function(val){};
