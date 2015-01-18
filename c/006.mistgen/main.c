@@ -7,6 +7,7 @@
 #include <time.h>
 
 #define MIST_GEN_INTERVAL_USEC 1000000 // usec
+#define MISTGEN_CONTINUE_TH_USEC 1000 // usec
 
 void mist_on();
 void mist_off();
@@ -26,13 +27,17 @@ static timer_t timerId;
 static int mist_gen_usec = 0;
 
 static void handler(int signo) {
-	mist_on();
-	printf("mist on\n");
+	if (mist_gen_usec > 0) {
+		mist_on();
+		printf("mist on\n");
+	}
 
-	usleep(mist_gen_usec);
-
-	mist_off();
-	printf("mist off\n");
+	if (mist_gen_usec < MIST_GEN_INTERVAL_USEC - MISTGEN_CONTINUE_TH_USEC) {
+		usleep(mist_gen_usec);
+		mist_off();
+		printf("mist off\n");
+	} else {
+	}
 }
 
 static int start_cyclic_handler() {
@@ -76,7 +81,7 @@ static int msg_decode(char *cmd, mistgen_ctrl_info *ctrl_info) {
 
 	static int count;
 
-	printf("mistgen i/f cmd: %s\n", cmd);
+	printf("mistgen i/f cmd: %s", cmd);
 
 	cmd_val = (char*)strtok(cmd, " ");
 	ctrl_info->type = (MISTGEN_CTRL_INFO)atoi(cmd_val);
