@@ -11,7 +11,8 @@ socket.on('connect', function(msg) {
 socket.on('illuminance ret_value', function(data) {
   update_time ++;
   console.log('receive msg');
-  document.getElementById("illuminance").innerHTML = data.humidity;
+  document.getElementById("illuminance").innerHTML = data.illuminance;
+  document.getElementById("update").innerHTML = update_time;
 });
 
 // send message
@@ -38,7 +39,7 @@ function send_request() {
   <body>
     <h1><%= title %></h1>
     <br>
-	illuminance: <span id="humidity"></span><br>
+	illuminance: <span id="illuminance"></span><br>
     <hr>
     update: <span id="update"></span>
   </body>

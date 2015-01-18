@@ -9,7 +9,7 @@ function njl7502_get_val(callback) {
 		if (error !== null) {
 			console.log('exec error: '+error);
 		} else {
-			var re = /illuminance:(\d+\.\d+)/;
+			var re = /illuminance: (\d+\.\d+) lux/;
 			var re_match = stdout.match(re);
 			if (re_match) {
 				illuminance = re_match[1];
@@ -36,7 +36,6 @@ exports.index = function(req, res){
 
 exports.init_socket = function(io, client){
 	client.on('illuminance get_value', function(data) {
-		var illuminance;
 		console.log("get illuminance");
 		njl7502_get_val(function(illuminance) {
 			client.emit('illuminance ret_value', {illuminance: illuminance});
