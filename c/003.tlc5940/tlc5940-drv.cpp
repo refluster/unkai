@@ -58,7 +58,7 @@ void update_thread() {
 	RaspberryGPIOPin tlc_gsclk(11);
 #else
 	RaspberryGPIOPin tlc_sin(1);
-	RaspberryGPIOPin tlc_sclk(1);
+	RaspberryGPIOPin tlc_sclk(2);
 	RaspberryGPIOPin tlc_blank(4);
 	RaspberryGPIOPin tlc_dcprg(5);
 	RaspberryGPIOPin tlc_vprg(6); // Not used in this example
