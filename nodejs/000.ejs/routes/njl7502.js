@@ -15,6 +15,7 @@ function njl7502_get_val(callback) {
 				illuminance = re_match[1];
 			}
 		}
+		console.log('-- njl cb: %d', illuminance);
 		callback(illuminance);
 	});
 }

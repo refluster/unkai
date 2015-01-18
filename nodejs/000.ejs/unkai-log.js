@@ -11,77 +11,37 @@ function is(type, obj) {
     return obj !== undefined && obj !== null && clas === type;
 }
 
+var record;
+
 function record_data() {
 	var dt = new Date();
-	var record = "";
 	var date = dt.toFormat("YYYY/MM/DD HH24:MI:SS");
+	var devnum = 0;
 
 	function correct_data_from_a_device(value) {
-		var dev = devices.pop();
-
+		var dev = devices[devnum];
+		devnum ++;
+		record += ',' + value;
 		if (dev != undefined) {
 			dev.get(correct_data_from_a_device)
-			devices.push(dev);
-		}
-
-		if (value == undefined) {
-			var writeData = date + record + "\n";
+		} else {
+			var writeData = record + "\n";
 			fs.writeFile('writetest.txt', writeData, {flag: 'a'}, function(err) {
 				console.log(err);
 			});
-				
-			console.log("record : " + date + record);
-		} else {
-			record += "," + value;
 		}
 	}
 
-	correct_data_from_a_device();
-}
+	record = '';
+	correct_data_from_a_device(date);
+};
 
-exports.init = function(_camera, _humidity, _led_ctrl, _tlc5940, _njl5702) {
-	camera = _camera;
-	humidity = _humidity;
-	led_ctrl = led_ctrl;
-	tlc5940 = _tlc5940;
-	njl5702 = _njl5702;
-
-	devices.push(camera);
-	devices.push(humidity);
-	devices.push(led_ctrl);
-	devices.push(tlc5940);
-	devices.push(njl5702);
+exports.dev_add = function(dev) {
+	devices.push(dev);
 };
 
 exports.start = function() {
-	
-};
-
-var test_dev = function() {
-	this.get = function(callback) {
-		callback(101);
-	};
-};
-
-var test_dev1 = function() {
-	this.get = function(callback) {
-		callback(102);
-	};
-};
-
-
-function test() {
-	console.log("test()");
-
-	// set device
-	devices.push(new test_dev());
-	devices.push(new test_dev1());
-	devices.push(new test_dev1());
-
-	// record data
-	//record_data();
-	
 	setInterval(record_data, 1000);
 }
 
-test();
+
