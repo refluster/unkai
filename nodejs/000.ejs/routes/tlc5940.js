@@ -1,7 +1,23 @@
 // init tlc5940 driver daemon
 const num_led = 8; // # of led to control
 var spawn = require('child_process').spawn;
-var tlc5940_drv = spawn("../../c/003.tlc5940/003.tlc5940", ["-p", "1000", "-t", "2", "-n", String(num_led)]);
+var tlc5940_drv = spawn("../../c/003.tlc5940/003.tlc5940",
+						["-p", "1000", "-t", "2", "-n", String(num_led)]);
+var tlc5940_brightness = [];
+
+function tlc5940_set_val(brightness) {
+	var cmd = "1"; // update cmd
+	for (var i = 0; i < num_led; i++) {
+		cmd += " " + brightness[i];
+	}
+	cmd += "\n";
+	tlc5940_drv.stdin.write(cmd);
+	tlc5940_brightness = brightness;
+}
+
+function tlc5940_get_val(callback) {
+	callback(tlc5940_brightness);
+}
 
 exports.index = function(req, res){
 	// get user-agent
@@ -20,12 +36,7 @@ exports.index = function(req, res){
 
 exports.init_socket = function(io, client){
 	client.on('tlc5940 update', function(data) {
-		var cmd = "1"; // update cmd
-		for (var i = 0; i < num_led; i++) {
-			cmd += " " + data.brightness[i];
-		}
-		cmd += "\n";
-		tlc5940_drv.stdin.write(cmd);
+		tlc5940_set_val(data.brightness);
 		console.log("tlc5940 update " + data.brightness);
 	});
 
@@ -33,3 +44,16 @@ exports.init_socket = function(io, client){
 		console.log('stdout: ' + data);
 	})
 };
+
+exports.set = tlc5940_set_val;
+exports.get = tlc5940_get_val;
+
+function init() {
+	var b = [];
+	for (var i = 0; i < num_led; i++) {
+		b[i] = 0;
+	}
+	tlc5940_set_val(b);
+}
+
+init();

@@ -27,6 +27,8 @@ var njl7502 = require('./routes/njl7502');
 var mistgen = require('./routes/mistgen');
 
 if (logger) {
+//	logger.dev_add(humidity);
+	logger.dev_add(tlc5940);
 	logger.dev_add(njl7502);
 	logger.dev_add(mistgen);
 	logger.start();
