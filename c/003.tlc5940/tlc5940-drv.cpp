@@ -48,6 +48,7 @@ static int tlc5940_update_interval = TLC5940_UPDATE_INTERVAL_DEFAULT; // msec
 static int tlc5940_print_interval = 0; // msec, do not print if this var is zero
 
 void update_thread() {
+#if 0
 	RaspberryGPIOPin tlc_sin(1);
 	RaspberryGPIOPin tlc_sclk(14);
 	RaspberryGPIOPin tlc_blank(4);
@@ -55,7 +56,16 @@ void update_thread() {
 	RaspberryGPIOPin tlc_vprg(6); // Not used in this example
 	RaspberryGPIOPin tlc_xlat(10);
 	RaspberryGPIOPin tlc_gsclk(11);
-	
+#else
+	RaspberryGPIOPin tlc_sin(1);
+	RaspberryGPIOPin tlc_sclk(1);
+	RaspberryGPIOPin tlc_blank(4);
+	RaspberryGPIOPin tlc_dcprg(5);
+	RaspberryGPIOPin tlc_vprg(6); // Not used in this example
+	RaspberryGPIOPin tlc_xlat(7);
+	RaspberryGPIOPin tlc_gsclk(0);
+#endif	
+
 	tlc_sin.setOutput();
 	tlc_sclk.setOutput();
 	tlc_blank.setOutput();
