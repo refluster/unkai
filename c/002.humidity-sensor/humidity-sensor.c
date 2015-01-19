@@ -4,7 +4,7 @@
 #include "humidity-sensor.h"
 
 #define MAX_TIME 85
-#define DHT11PIN 7
+#define DHT11PIN 8
 
 static int dht11_read_val_test(float *humidity, float *temperature, float *fahrenheit) {
 	uint8_t lststate = HIGH;
