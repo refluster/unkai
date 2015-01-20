@@ -6,11 +6,8 @@ var tlc5940_drv = spawn("../../c/003.tlc5940/003.tlc5940",
 var tlc5940_brightness = [];
 
 function tlc5940_set_val(brightness) {
-	var cmd = "1"; // update cmd
-	for (var i = 0; i < num_led; i++) {
-		cmd += " " + brightness[i];
-	}
-	cmd += "\n";
+	// update cmd
+	var cmd = "1 " + brightness.join(" ") + "\n";
 	tlc5940_drv.stdin.write(cmd);
 	tlc5940_brightness = brightness;
 }
