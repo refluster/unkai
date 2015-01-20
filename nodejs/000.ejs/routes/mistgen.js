@@ -23,7 +23,8 @@ exports.index = function(req, res){
 		ua.indexOf('Android') > 0) {
 		is_mobile = true;
 	}
-	res.render('mistgen', { title: 'mist control', host: req.headers.host, is_mobile: is_mobile});
+	res.render('mistgen', { title: 'mist control', host: req.headers.host, is_mobile: is_mobile,
+							init_val: mistgen_percent});
 };
 
 exports.init_socket = function(io, client){

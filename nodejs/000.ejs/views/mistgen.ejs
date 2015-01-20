@@ -30,7 +30,7 @@ function mistgen_update() {
   <body>
     <h1><%= title %></h1>
     <br>
-    <input id="mistgen-percent" type="range" min="0" max="100" step="1"
+    <input id="mistgen-percent" type="range" min="0" max="100" step="1" value="<%= init_val %>"
       onchange="mistgen_update()" style="width: 200px"/>
     <br>
     <br>

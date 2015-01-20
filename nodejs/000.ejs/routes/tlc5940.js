@@ -30,7 +30,7 @@ exports.index = function(req, res){
 		is_mobile = true;
 	}
 	res.render('tlc5940', { title: 'tlc5940 control', host: req.headers.host, is_mobile: is_mobile,
-							num_led: num_led});
+							num_led: num_led, init_val: tlc5940_brightness});
 };
 
 exports.init_socket = function(io, client){
