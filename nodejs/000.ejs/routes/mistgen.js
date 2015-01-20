@@ -39,3 +39,5 @@ exports.init_socket = function(io, client){
 
 exports.set = mistgen_set_val;
 exports.get = mistgen_get_val;
+
+exports.path = '/mistgen';

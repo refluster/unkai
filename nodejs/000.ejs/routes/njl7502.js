@@ -42,3 +42,5 @@ exports.init_socket = function(io, client){
 
 exports.get = njl7502_get_val;
 exports.set = function(val){};
+
+exports.path = '/njl7502';

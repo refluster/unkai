@@ -21,3 +21,6 @@ exports.init_socket = function(io, client){
 		io.sockets.emit('chat send_server_to_clients', { value: data.value });
 	});
 }
+
+exports.path = '/chat';
+

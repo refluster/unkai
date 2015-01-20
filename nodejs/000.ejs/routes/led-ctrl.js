@@ -24,3 +24,5 @@ exports.init_socket = function(io, client){
 		});
 	});
 };
+
+exports.path = '/led-ctrl';

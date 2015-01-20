@@ -16,8 +16,10 @@ if (WITH_DATA_RECORD) {
 	logger = require('./unkai-log');
 }
 
+var pages = [];
+
 var routes = require('./routes');
-var user = require('./routes/user');
+//var user = require('./routes/user');
 
 var chat = require('./routes/chat');
 var humidity = require('./routes/humidity');
@@ -25,6 +27,14 @@ var led_ctrl = require('./routes/led-ctrl');
 var tlc5940 = require('./routes/tlc5940');
 var njl7502 = require('./routes/njl7502');
 var mistgen = require('./routes/mistgen');
+
+pages.push(routes);
+pages.push(chat);
+pages.push(humidity);
+pages.push(led_ctrl);
+pages.push(tlc5940);
+pages.push(njl7502);
+pages.push(mistgen);
 
 if (logger) {
 	logger.dev_add(humidity);
@@ -62,15 +72,9 @@ if (WITH_OLD_VER) {
 	}
 }
 
-app.get('/', routes.index);
-app.get('/users', user.list);
-
-app.get('/chat', chat.index);
-app.get('/humidity', humidity.index);
-app.get('/led-ctrl', led_ctrl.index);
-app.get('/tlc5940', tlc5940.index);
-app.get('/njl7502', njl7502.index);
-app.get('/mistgen', mistgen.index);
+for (var i = 0; i < pages.length; i++) {
+	app.get(pages[i].path, pages[i].index);
+}
 
 var server = http.createServer(app);
 server.listen(app.get('port'), function(){
@@ -82,12 +86,11 @@ var io = require('socket.io').listen(server);
 // client connected
 io.sockets.on('connection', function(client) {
 	console.log("connection");
-	chat.init_socket(io, client);
-	humidity.init_socket(io, client);
-	led_ctrl.init_socket(io, client);
-	tlc5940.init_socket(io, client);
-	njl7502.init_socket(io, client);
-	mistgen.init_socket(io, client);
+	for (var i = 0; i < pages.length; i++) {
+		if (pages[i].init_socket) {
+			pages[i].init_socket(io, client);
+		}
+	}
 
 	// client disconnected
 	client.on('disconnect', function(){

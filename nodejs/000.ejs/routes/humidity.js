@@ -52,3 +52,5 @@ exports.init_socket = function(io, client){
 
 exports.get = humidity_get_val;
 exports.set = function(val){};
+
+exports.path = '/humidity';

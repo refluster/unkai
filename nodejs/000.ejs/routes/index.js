@@ -16,3 +16,5 @@ exports.index = function(req, res){
 	console.log('UA ' + ua);
 	res.render('index', { title: 'Unkai', host: req.headers.host, is_mobile: is_mobile, contents: [ 'chat', 'humidity', 'led-ctrl', 'tlc5940', 'njl7502', 'mistgen']});
 };
+
+exports.path = '/';

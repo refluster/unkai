@@ -44,6 +44,8 @@ exports.init_socket = function(io, client){
 exports.set = tlc5940_set_val;
 exports.get = tlc5940_get_val;
 
+exports.path = '/tlc5940';
+
 function init() {
 	var b = [];
 	for (var i = 0; i < num_led; i++) {
