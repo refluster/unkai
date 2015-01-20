@@ -19,8 +19,6 @@ if (WITH_DATA_RECORD) {
 var pages = [];
 
 var routes = require('./routes');
-//var user = require('./routes/user');
-
 var chat = require('./routes/chat');
 var humidity = require('./routes/humidity');
 var led_ctrl = require('./routes/led-ctrl');
