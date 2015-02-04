@@ -6,6 +6,7 @@
 
 extern volatile int brightness[];
 extern int num_led;
+extern void update_br();
 
 static void msg_decode(char *cmd, tlc5940_ctrl_info *ctrl_info) {
 	int ret = 0;
@@ -50,6 +51,7 @@ void pattern_thread() {
 				brightness[i] = ctrl_info.brightness[i];;
 			}
 			update_brightness = 1;
+			update_br();
 			break;
 		default:
 			printf("unknown command\n");

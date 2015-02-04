@@ -81,21 +81,16 @@ public:
 RaspberryGPIOPin *sin_pin;
 RaspberryGPIOPin *sclk_pin;
 RaspberryGPIOPin *blank_pin;
-RaspberryGPIOPin *dcprg_pin;
-RaspberryGPIOPin *vprg_pin;
 RaspberryGPIOPin *xlat_pin;
 RaspberryGPIOPin *gsclk_pin;
-int first_cycle;
 
 void tlc_init() {
 	sin_pin->setLow();
 	sclk_pin->setLow();
 	blank_pin->setHigh();
-	dcprg_pin->setLow();
 	vprg_pin->setLow();
 	xlat_pin->setLow();
 	gsclk_pin->setLow();
-	first_cycle = true;
 }
 
 int update_brightness = 0;
@@ -114,6 +109,7 @@ void update_br() {
 	}
 	
 	sin_pin->setLow();
+	xlat_pin->pulse();
 
 	update_brightness = 0;
 }
@@ -132,7 +128,7 @@ void tlc_update() {
 	blank_pin->setLow();
 
 	for (int i = 0; i < 4096; ++i) {
-			gsclk_pin->pulse();
+		gsclk_pin->pulse();
 	}
 
 	blank_pin->setHigh();
@@ -146,16 +142,12 @@ void update_thread() {
 	sin_pin = new RaspberryGPIOPin(4);
 	sclk_pin = new RaspberryGPIOPin(2);
 	blank_pin = new RaspberryGPIOPin(0);
-	dcprg_pin = new RaspberryGPIOPin(5);
-	vprg_pin = new RaspberryGPIOPin(6);
 	xlat_pin = new RaspberryGPIOPin(1);
 	gsclk_pin = new RaspberryGPIOPin(7);
 	
 	sin_pin->setOutput();
 	sclk_pin->setOutput();
 	blank_pin->setOutput();
-	dcprg_pin->setOutput();
-	vprg_pin->setOutput();
 	xlat_pin->setOutput();
 	gsclk_pin->setOutput();
 
