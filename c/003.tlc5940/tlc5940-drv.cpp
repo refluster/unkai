@@ -88,17 +88,11 @@ void tlc_init() {
 	sin_pin->setLow();
 	sclk_pin->setLow();
 	blank_pin->setHigh();
-	vprg_pin->setLow();
 	xlat_pin->setLow();
 	gsclk_pin->setLow();
 }
 
-int update_brightness = 0;
-	
-void update_br() {
-	// Start with the highest channel
-	int channel_counter = 15;
-	
+void update_brightness() {
 	for (int ch = 15; ch >= 0; --ch) {
 		for(int i = 11; i >= 0; --i) {
 			int value = (brightness[ch] >> i) & 1;
@@ -110,30 +104,14 @@ void update_br() {
 	
 	sin_pin->setLow();
 	xlat_pin->pulse();
-
-	update_brightness = 0;
 }
 
 void tlc_update() {
-	////////////////////////////////////////////////////////////
-	// Start with the highest channel
-	int channel_counter = 15;
-	int gsclk_counter = 0;
-	bool pulse_gsclk = true;
-
-	if (update_brightness) {
-		update_br();
-	}
-
 	blank_pin->setLow();
-
 	for (int i = 0; i < 4096; ++i) {
 		gsclk_pin->pulse();
 	}
-
 	blank_pin->setHigh();
-	
-	////////////////////////////////////////////////////////////
 }
 
 void update_thread() {
