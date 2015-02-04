@@ -114,14 +114,19 @@ void tlc_update() {
 	blank_pin->setHigh();
 }
 
+int pwm_clock = 20;
+int pwm_range= 4;
+
 void update_thread() {
+	int interval_msec = (int)(1000*(4096ull*pwm_clock*pwm_range)/19600000); // 1/freq * 4096 (sec)
+
 	wiringPiSetup();
 
 	sin_pin = new RaspberryGPIOPin(4);
 	sclk_pin = new RaspberryGPIOPin(2);
 	blank_pin = new RaspberryGPIOPin(0);
-	xlat_pin = new RaspberryGPIOPin(1);
-	gsclk_pin = new RaspberryGPIOPin(7);
+	xlat_pin = new RaspberryGPIOPin(7);
+	gsclk_pin = new RaspberryGPIOPin(1);
 	
 	sin_pin->setOutput();
 	sclk_pin->setOutput();
@@ -131,39 +136,43 @@ void update_thread() {
 
 	tlc_init();
 
+	printf("blank pulse interval: %d\n", interval_msec);
+
+ 	pinMode(1, PWM_OUTPUT);
+	pwmSetMode(PWM_MODE_MS);
+
+	pwmSetClock(pwm_clock);
+	pwmSetRange(pwm_range);
+	pwmWrite(1, pwm_range/2);
+
+	std::chrono::milliseconds duration(interval_msec);
+	
 	while (true) {
 		// This thread only reads the bit pattern so no lock is required
-		tlc_update();
-		
-		std::chrono::milliseconds duration(tlc5940_update_interval);
 		std::this_thread::sleep_for(duration);
-
-		// for verification
-		if (tlc5940_print_interval > 0) {
-			static int count = 0;
-			count += tlc5940_update_interval;
-
-			printf(".");
-			// display message every tlc5940_print_interval msec
-			if (count >= tlc5940_print_interval) {
-				count -= tlc5940_print_interval;
-				printf("tlc5940 brightness:");
-				for (int i = 0; i < num_led; i++) {
-					printf(" %4d", brightness[i]);
-				}
-				printf("\n");
-				fflush(stdout);
-			}
-		}
+		blank_pin->setHigh();
+		blank_pin->setLow();
 	}
 }
 
 void chk_arg(int argc, char **argv) {
 	int result;
 
-	while ((result = getopt(argc, argv, "n:p:t:")) != -1){
+	while ((result = getopt(argc, argv, "c:r:n:p:t:")) != -1){
 		int t;
 		switch (result) {
+		case 'c':  // pwm clock
+			t = atoi(optarg);
+			if (t > 0) {
+				pwm_clock = t;
+			}
+			break;
+		case 'r':  // pwm range
+			t = atoi(optarg);
+			if (t > 0) {
+				pwm_range = t;
+			}
+			break;
 		case 'n':  // the number of leds to control
 			t = atoi(optarg);
 			if (t > 0) {
