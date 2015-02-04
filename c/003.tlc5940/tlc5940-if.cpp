@@ -28,6 +28,8 @@ static void msg_decode(char *cmd, tlc5940_ctrl_info *ctrl_info) {
 	}
 }
 
+extern int update_brightness;
+
 void pattern_thread() {
 	int end = 0;
 	tlc5940_ctrl_info ctrl_info;
@@ -47,6 +49,7 @@ void pattern_thread() {
 			for (i = 0; i < num_led; i++) {
 				brightness[i] = ctrl_info.brightness[i];;
 			}
+			update_brightness = 1;
 			break;
 		default:
 			printf("unknown command\n");

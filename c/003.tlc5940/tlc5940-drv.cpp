@@ -92,60 +92,52 @@ void tlc_init() {
 	sclk_pin->setLow();
 	blank_pin->setHigh();
 	dcprg_pin->setLow();
-	vprg_pin->setHigh();
+	vprg_pin->setLow();
 	xlat_pin->setLow();
 	gsclk_pin->setLow();
 	first_cycle = true;
 }
 
-void tlc_update() {
-	////////////////////////////////////////////////////////////
-	if (first_cycle) {
-		vprg_pin->setLow();
+int update_brightness = 0;
+	
+void update_br() {
+	// Start with the highest channel
+	int channel_counter = 15;
+	
+	for (int ch = 15; ch >= 0; --ch) {
+		for(int i = 11; i >= 0; --i) {
+			int value = (brightness[ch] >> i) & 1;
+			
+			sin_pin->setValue(value);
+			sclk_pin->pulse();
+		}
 	}
 	
-	blank_pin->setLow();
-	
+	sin_pin->setLow();
+
+	update_brightness = 0;
+}
+
+void tlc_update() {
 	////////////////////////////////////////////////////////////
 	// Start with the highest channel
 	int channel_counter = 15;
 	int gsclk_counter = 0;
 	bool pulse_gsclk = true;
-	
-	while(gsclk_counter < 4096) {
-		if(channel_counter >= 0) {						
-			// Send the first 12 bits of the color to the TLC, MSB first
-			for(int i = 11; i >= 0; i--) {				
-				int value = (brightness[channel_counter] >> i) & 1;
 
-				sin_pin->setValue(value);				
-				sclk_pin->pulse();
-				
-				gsclk_pin->pulse();
-				gsclk_counter++;
-			}
-
-			channel_counter--;
-		} else {
-			sin_pin->setLow();			
-
-			gsclk_pin->pulse();
-			gsclk_counter++;
-		}		
+	if (update_brightness) {
+		update_br();
 	}
+
+	blank_pin->setLow();
+
+	for (int i = 0; i < 4096; ++i) {
+			gsclk_pin->pulse();
+	}
+
+	blank_pin->setHigh();
 	
 	////////////////////////////////////////////////////////////
-	// If we reach here all color data has been sent to the TLC
-	// And the full PWM cycle has been completed
-	// Send a blank signal (so the internal GSCLK counter of the TLC is reset to zero)
-	// and pulse the XLAT signal, so all data is latched in
-	blank_pin->setHigh();
-	xlat_pin->pulse();
-	
-	if(first_cycle) {
-		sclk_pin->pulse();
-		first_cycle = false;
-	}
 }
 
 void update_thread() {
@@ -166,13 +158,11 @@ void update_thread() {
 	vprg_pin->setOutput();
 	xlat_pin->setOutput();
 	gsclk_pin->setOutput();
-	
 
 	tlc_init();
 
 	while (true) {
 		// This thread only reads the bit pattern so no lock is required
-//		tlc_controller.update();
 		tlc_update();
 		
 		std::chrono::milliseconds duration(tlc5940_update_interval);
