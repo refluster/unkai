@@ -32,9 +32,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <tlc5940-raspberry/tlc-controller.h>
-#include <tlc5940-raspberry/raspberry-gpio.h>
-
 #include <wiringPi.h>
 #include <iostream>
 #include <thread>
@@ -47,33 +44,136 @@ int num_led = NUM_LED_MAX; // the number of leds to control
 static int tlc5940_update_interval = TLC5940_UPDATE_INTERVAL_DEFAULT; // msec
 static int tlc5940_print_interval = 0; // msec, do not print if this var is zero
 
-void update_thread() {
-	RaspberryGPIOPin tlc_sin(4);
-	RaspberryGPIOPin tlc_sclk(2);
-	RaspberryGPIOPin tlc_blank(0);
-	RaspberryGPIOPin tlc_dcprg(5);
-	RaspberryGPIOPin tlc_vprg(6); // Not used in this example
-	RaspberryGPIOPin tlc_xlat(1);
-	RaspberryGPIOPin tlc_gsclk(7);
-
-	tlc_sin.setOutput();
-	tlc_sclk.setOutput();
-	tlc_blank.setOutput();
-	tlc_dcprg.setOutput();
-	tlc_vprg.setOutput();
-	tlc_xlat.setOutput();
-	tlc_gsclk.setOutput();
+class RaspberryGPIOPin {
+	int pin;
 	
-	SingleTLCController tlc_controller(&tlc_sin, &tlc_sclk, &tlc_blank, &tlc_dcprg,
-									   &tlc_vprg, &tlc_xlat, &tlc_gsclk);
+public:
+	RaspberryGPIOPin(int _pin) {
+		pin = _pin;
+	};
+
+	void setOutput() {
+		pinMode(pin, OUTPUT);
+	};
+
+	void setLow() {
+		digitalWrite(pin, 0);
+	};
+
+	void setHigh() {
+		digitalWrite(pin, 1);
+	};
+
+	void pulse() {
+		setHigh();
+		setLow();
+	};
+
+	void setValue(int val) {
+		if (val == 0) {
+			setLow();
+		} else {
+			setHigh();
+		}
+	};
+};
+
+RaspberryGPIOPin *sin_pin;
+RaspberryGPIOPin *sclk_pin;
+RaspberryGPIOPin *blank_pin;
+RaspberryGPIOPin *dcprg_pin;
+RaspberryGPIOPin *vprg_pin;
+RaspberryGPIOPin *xlat_pin;
+RaspberryGPIOPin *gsclk_pin;
+int first_cycle;
+
+void tlc_init() {
+	sin_pin->setLow();
+	sclk_pin->setLow();
+	blank_pin->setHigh();
+	dcprg_pin->setLow();
+	vprg_pin->setHigh();
+	xlat_pin->setLow();
+	gsclk_pin->setLow();
+	first_cycle = true;
+}
+
+void tlc_update() {
+	////////////////////////////////////////////////////////////
+	if (first_cycle) {
+		vprg_pin->setLow();
+	}
+	
+	blank_pin->setLow();
+	
+	////////////////////////////////////////////////////////////
+	// Start with the highest channel
+	int channel_counter = 15;
+	int gsclk_counter = 0;
+	bool pulse_gsclk = true;
+	
+	while(gsclk_counter < 4096) {
+		if(channel_counter >= 0) {						
+			// Send the first 12 bits of the color to the TLC, MSB first
+			for(int i = 11; i >= 0; i--) {				
+				int value = (brightness[channel_counter] >> i) & 1;
+
+				sin_pin->setValue(value);				
+				sclk_pin->pulse();
+				
+				gsclk_pin->pulse();
+				gsclk_counter++;
+			}
+
+			channel_counter--;
+		} else {
+			sin_pin->setLow();			
+
+			gsclk_pin->pulse();
+			gsclk_counter++;
+		}		
+	}
+	
+	////////////////////////////////////////////////////////////
+	// If we reach here all color data has been sent to the TLC
+	// And the full PWM cycle has been completed
+	// Send a blank signal (so the internal GSCLK counter of the TLC is reset to zero)
+	// and pulse the XLAT signal, so all data is latched in
+	blank_pin->setHigh();
+	xlat_pin->pulse();
+	
+	if(first_cycle) {
+		sclk_pin->pulse();
+		first_cycle = false;
+	}
+}
+
+void update_thread() {
+	wiringPiSetup();
+
+	sin_pin = new RaspberryGPIOPin(4);
+	sclk_pin = new RaspberryGPIOPin(2);
+	blank_pin = new RaspberryGPIOPin(0);
+	dcprg_pin = new RaspberryGPIOPin(5);
+	vprg_pin = new RaspberryGPIOPin(6);
+	xlat_pin = new RaspberryGPIOPin(1);
+	gsclk_pin = new RaspberryGPIOPin(7);
+	
+	sin_pin->setOutput();
+	sclk_pin->setOutput();
+	blank_pin->setOutput();
+	dcprg_pin->setOutput();
+	vprg_pin->setOutput();
+	xlat_pin->setOutput();
+	gsclk_pin->setOutput();
+	
+
+	tlc_init();
 
 	while (true) {
 		// This thread only reads the bit pattern so no lock is required
-		for (int i = 0; i < num_led; i++) {
-			tlc_controller.setChannel(i, brightness[i]);
-		}
-
-		tlc_controller.update();
+//		tlc_controller.update();
+		tlc_update();
 		
 		std::chrono::milliseconds duration(tlc5940_update_interval);
 		std::this_thread::sleep_for(duration);
