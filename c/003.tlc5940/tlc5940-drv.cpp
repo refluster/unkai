@@ -79,6 +79,21 @@ void update_brightness() {
 	xlat_pin->pulse();
 }
 
+void pwm_init() {
+ 	pinMode(1, PWM_OUTPUT);
+	pwmSetMode(PWM_MODE_MS);
+	pwmSetClock(pwm_clock);
+	pwmSetRange(pwm_range);
+	pwmWrite(1, pwm_range/2);
+}
+
+void pwm_exit() {
+	pwmSetClock(4095);
+	pwmSetRange(4095);
+	pwmWrite(1, 4095);
+ 	pinMode(1, INPUT);
+}
+
 void update_thread() {
 	int interval_msec = (int)(1000*(4096ull*pwm_clock*pwm_range)/PWM_CLK_HZ); // 1/freq * 4096 (sec)
 
@@ -96,21 +111,15 @@ void update_thread() {
 	xlat_pin->setOutput();
 	gsclk_pin->setOutput();
 
-	tlc_init();
-
 	printf("blank pulse interval: %d\n", interval_msec);
-
- 	pinMode(1, PWM_OUTPUT);
-	pwmSetMode(PWM_MODE_MS);
-
-	pwmSetClock(pwm_clock);
-	pwmSetRange(pwm_range);
-	pwmWrite(1, pwm_range/2);
 
 	std::chrono::milliseconds duration(interval_msec);
 	
+	tlc_init();
+
+	pwm_init();
+
 	while (true) {
-		// This thread only reads the bit pattern so no lock is required
 		std::this_thread::sleep_for(duration);
 		blank_pin->setHigh();
 		blank_pin->setLow();
