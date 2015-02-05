@@ -1,33 +1,3 @@
-/**
- * TLC5940 controller library for the Raspberry Pi
- * ===============================================
- *
- * With this library it is possible to control your TLC5940 LED driver
- * from your Raspberry Pi. It is a pure software based solution,
- * and does not require any kernel modifcations or whatsoever.
- *
- * Copyright (c) 2013 Lucas van Dijk <info@return1.net>
- * http://return1.net
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation 
- * the rights to use, copy, modify, merge, publish, distribute, sublicense, 
- * and/or sell copies of the Software, and to permit persons to whom the Software 
- * is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in 
- * all copies or substantial portions of the Software.
- * 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
- * THE SOFTWARE.
- */
-
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -39,16 +9,16 @@
 
 #include "common.h"
 
+#define PWM_CLK_HZ 19600000
+
 volatile int brightness[NUM_LED_MAX]; // brightness for each led
 int num_led = NUM_LED_MAX; // the number of leds to control
-static int tlc5940_update_interval = TLC5940_UPDATE_INTERVAL_DEFAULT; // msec
-static int tlc5940_print_interval = 0; // msec, do not print if this var is zero
 
-class RaspberryGPIOPin {
+class GPIOPin {
 	int pin;
 	
 public:
-	RaspberryGPIOPin(int _pin) {
+	GPIOPin(int _pin) {
 		pin = _pin;
 	};
 
@@ -78,11 +48,14 @@ public:
 	};
 };
 
-RaspberryGPIOPin *sin_pin;
-RaspberryGPIOPin *sclk_pin;
-RaspberryGPIOPin *blank_pin;
-RaspberryGPIOPin *xlat_pin;
-RaspberryGPIOPin *gsclk_pin;
+static GPIOPin *sin_pin;
+static GPIOPin *sclk_pin;
+static GPIOPin *blank_pin;
+static GPIOPin *xlat_pin;
+static GPIOPin *gsclk_pin;
+
+static int pwm_clock = 20;
+static int pwm_range= 4;
 
 void tlc_init() {
 	sin_pin->setLow();
@@ -106,27 +79,16 @@ void update_brightness() {
 	xlat_pin->pulse();
 }
 
-void tlc_update() {
-	blank_pin->setLow();
-	for (int i = 0; i < 4096; ++i) {
-		gsclk_pin->pulse();
-	}
-	blank_pin->setHigh();
-}
-
-int pwm_clock = 20;
-int pwm_range= 4;
-
 void update_thread() {
-	int interval_msec = (int)(1000*(4096ull*pwm_clock*pwm_range)/19600000); // 1/freq * 4096 (sec)
+	int interval_msec = (int)(1000*(4096ull*pwm_clock*pwm_range)/PWM_CLK_HZ); // 1/freq * 4096 (sec)
 
 	wiringPiSetup();
 
-	sin_pin = new RaspberryGPIOPin(4);
-	sclk_pin = new RaspberryGPIOPin(2);
-	blank_pin = new RaspberryGPIOPin(0);
-	xlat_pin = new RaspberryGPIOPin(7);
-	gsclk_pin = new RaspberryGPIOPin(1);
+	sin_pin = new GPIOPin(4);
+	sclk_pin = new GPIOPin(2);
+	blank_pin = new GPIOPin(0);
+	xlat_pin = new GPIOPin(7);
+	gsclk_pin = new GPIOPin(1);
 	
 	sin_pin->setOutput();
 	sclk_pin->setOutput();
@@ -179,18 +141,6 @@ void chk_arg(int argc, char **argv) {
 				num_led = t;
 			}
 			break;
-		case 'p':  // tlc5940 print interval, usually larger than update interval
-			t = atoi(optarg);
-			if (t > 0) {
-				tlc5940_print_interval = t;
-			}
-			break;
-		case 't':  // tlc5940 update interval
-			t = atoi(optarg);
-			if (t > 0) {
-				tlc5940_update_interval = t;
-			}
-			break;
 		}
 	}
 }
@@ -198,8 +148,6 @@ void chk_arg(int argc, char **argv) {
 int initialize() {
 	memset((void*)brightness, 0, sizeof(brightness));
 	num_led = NUM_LED_MAX;
-	tlc5940_update_interval = TLC5940_UPDATE_INTERVAL_DEFAULT; // msec
-	tlc5940_print_interval = 0; // msec, do not print if this var is zero
 	return 0;
 }
 
