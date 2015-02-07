@@ -57,26 +57,26 @@ static GPIOPin *gsclk_pin;
 static int pwm_clock = 20;
 static int pwm_range= 4;
 
-void tlc_init() {
+void gpio_init() {
+	wiringPiSetup();
+
+	sin_pin = new GPIOPin(4);
+	sclk_pin = new GPIOPin(2);
+	blank_pin = new GPIOPin(0);
+	xlat_pin = new GPIOPin(7);
+	gsclk_pin = new GPIOPin(1);
+	
+	sin_pin->setOutput();
+	sclk_pin->setOutput();
+	blank_pin->setOutput();
+	xlat_pin->setOutput();
+	gsclk_pin->setOutput();
+
 	sin_pin->setLow();
 	sclk_pin->setLow();
 	blank_pin->setHigh();
 	xlat_pin->setLow();
 	gsclk_pin->setLow();
-}
-
-void update_brightness() {
-	for (int ch = 15; ch >= 0; --ch) {
-		for(int i = 11; i >= 0; --i) {
-			int value = (brightness[ch] >> i) & 1;
-			
-			sin_pin->setValue(value);
-			sclk_pin->pulse();
-		}
-	}
-	
-	sin_pin->setLow();
-	xlat_pin->pulse();
 }
 
 void pwm_init() {
@@ -97,28 +97,9 @@ void pwm_exit() {
 void update_thread() {
 	int interval_msec = (int)(1000*(4096ull*pwm_clock*pwm_range)/PWM_CLK_HZ); // 1/freq * 4096 (sec)
 
-	wiringPiSetup();
-
-	sin_pin = new GPIOPin(4);
-	sclk_pin = new GPIOPin(2);
-	blank_pin = new GPIOPin(0);
-	xlat_pin = new GPIOPin(7);
-	gsclk_pin = new GPIOPin(1);
-	
-	sin_pin->setOutput();
-	sclk_pin->setOutput();
-	blank_pin->setOutput();
-	xlat_pin->setOutput();
-	gsclk_pin->setOutput();
-
-	printf("blank pulse interval: %d\n", interval_msec);
-
 	std::chrono::milliseconds duration(interval_msec);
+	printf("blank pulse interval: %d\n", interval_msec);
 	
-	tlc_init();
-
-	pwm_init();
-
 	while (true) {
 		std::this_thread::sleep_for(duration);
 		blank_pin->setHigh();
@@ -154,18 +135,28 @@ void chk_arg(int argc, char **argv) {
 	}
 }
 
-int initialize() {
+void initialize() {
 	memset((void*)brightness, 0, sizeof(brightness));
 	num_led = NUM_LED_MAX;
-	return 0;
+	gpio_init();
+	pwm_init();
+}
+
+void update_brightness() {
+	for (int ch = 15; ch >= 0; --ch) {
+		for(int i = 11; i >= 0; --i) {
+			int value = (brightness[ch] >> i) & 1;
+			
+			sin_pin->setValue(value);
+			sclk_pin->pulse();
+		}
+	}
+	
+	sin_pin->setLow();
+	xlat_pin->pulse();
 }
 
 int main(int argc, char **argv) {
-	// Initialize GPIO Pins
-	if (wiringPiSetup() == -1) {
-		throw std::runtime_error("Could not setup wiringPi, running as root?");
-	}
-
 	initialize();
 	chk_arg(argc, argv);
 
