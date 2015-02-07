@@ -28,7 +28,7 @@ static void msg_decode(char *cmd, tlc5940_ctrl_info *ctrl_info) {
 	}
 }
 
-void pattern_thread() {
+void userif() {
 	int end = 0;
 	tlc5940_ctrl_info ctrl_info;
 

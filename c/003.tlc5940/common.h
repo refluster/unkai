@@ -24,7 +24,7 @@ typedef struct {
 	unsigned short brightness[NUM_LED_MAX];
 } tlc5940_ctrl_info;
 
-void pattern_thread();
-void update_thread();
+void userif();
+void update();
 
 #endif /* #ifndef COMMON_H_ */

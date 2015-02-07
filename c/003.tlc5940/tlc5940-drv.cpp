@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-
+#include <signal.h>
 #include <wiringPi.h>
+
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -56,6 +57,9 @@ static GPIOPin *gsclk_pin;
 static int pwm_clock = 20;
 static int pwm_range= 4;
 
+static std::thread *update_thread;
+static std::thread *userif_thread;
+	
 void gpio_init() {
 	wiringPiSetup();
 
@@ -78,6 +82,14 @@ void gpio_init() {
 	gsclk_pin->setLow();
 }
 
+void gpio_exit() {
+	delete sin_pin;
+	delete sclk_pin;
+	delete blank_pin;
+	delete xlat_pin;
+	delete gsclk_pin;
+}
+
 void pwm_init() {
  	pinMode(1, PWM_OUTPUT);
 	pwmSetMode(PWM_MODE_MS);
@@ -93,9 +105,11 @@ void pwm_exit() {
  	pinMode(1, INPUT);
 }
 
-void update_thread() {
-	int interval_msec = (int)(1000*(4096ull*pwm_clock*pwm_range)/PWM_CLK_HZ); // 1/freq * 4096 (sec)
+void update() {
+	int interval_msec;
 
+	// interval: 1/freq * 4096 (sec)
+	interval_msec = (int)(1000*(4096ull*pwm_clock*pwm_range)/PWM_CLK_HZ);
 	std::chrono::milliseconds duration(interval_msec);
 	printf("blank pulse interval: %d\n", interval_msec);
 	
@@ -104,6 +118,26 @@ void update_thread() {
 		blank_pin->setHigh();
 		blank_pin->setLow();
 	}
+}
+
+void signal_handler(int signo) {
+	printf("sighandler : %d\n", signo);
+
+	delete update_thread;
+	delete userif_thread;
+	pwm_exit();
+	gpio_exit();
+}
+
+void set_sighandler() {
+	signal(SIGINT, signal_handler);
+}	
+
+void initialize() {
+	num_led = NUM_LED_MAX;
+	set_sighandler();
+	gpio_init();
+	pwm_init();
 }
 
 void chk_arg(int argc, char **argv) {
@@ -134,17 +168,10 @@ void chk_arg(int argc, char **argv) {
 	}
 }
 
-void initialize() {
-	num_led = NUM_LED_MAX;
-	gpio_init();
-	pwm_init();
-}
-
 void update_brightness(unsigned short brightness[]) {
 	for (int ch = 15; ch >= 0; --ch) {
 		for(int i = 11; i >= 0; --i) {
 			int value = (brightness[ch] >> i) & 1;
-			
 			sin_pin->setValue(value);
 			sclk_pin->pulse();
 		}
@@ -158,9 +185,9 @@ int main(int argc, char **argv) {
 	initialize();
 	chk_arg(argc, argv);
 
-	std::thread thread1(update_thread);
-	std::thread thread2(pattern_thread);
-	
-	thread1.join();
-	thread2.join();
+	update_thread = new std::thread(update);
+	userif_thread = new std::thread(userif);
+
+	update_thread->join();
+	userif_thread->join();
 }
