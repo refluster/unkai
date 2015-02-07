@@ -11,7 +11,6 @@
 
 #define PWM_CLK_HZ 19600000
 
-volatile int brightness[NUM_LED_MAX]; // brightness for each led
 int num_led = NUM_LED_MAX; // the number of leds to control
 
 class GPIOPin {
@@ -136,13 +135,12 @@ void chk_arg(int argc, char **argv) {
 }
 
 void initialize() {
-	memset((void*)brightness, 0, sizeof(brightness));
 	num_led = NUM_LED_MAX;
 	gpio_init();
 	pwm_init();
 }
 
-void update_brightness() {
+void update_brightness(unsigned short brightness[]) {
 	for (int ch = 15; ch >= 0; --ch) {
 		for(int i = 11; i >= 0; --i) {
 			int value = (brightness[ch] >> i) & 1;

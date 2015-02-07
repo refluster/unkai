@@ -4,9 +4,8 @@
 
 #define BUFSIZE 256
 
-extern volatile int brightness[];
 extern int num_led;
-extern void update_brightness();
+extern void update_brightness(unsigned short brightness[]);
 
 static void msg_decode(char *cmd, tlc5940_ctrl_info *ctrl_info) {
 	int ret = 0;
@@ -44,10 +43,7 @@ void pattern_thread() {
 			end = 1;
 			break;
 		case TLC5940_UPDATE:
-			for (int i = 0; i < num_led; i++) {
-				brightness[i] = ctrl_info.brightness[i];;
-			}
-			update_brightness();
+			update_brightness(ctrl_info.brightness);
 			break;
 		default:
 			printf("unknown command\n");
