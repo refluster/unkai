@@ -25,6 +25,7 @@ var led_ctrl = require('./routes/led-ctrl');
 var tlc5940 = require('./routes/tlc5940');
 var njl7502 = require('./routes/njl7502');
 var mistgen = require('./routes/mistgen');
+var light = require('./routes/light');
 
 pages.push(routes);
 pages.push(chat);
@@ -33,6 +34,7 @@ pages.push(led_ctrl);
 pages.push(tlc5940);
 pages.push(njl7502);
 pages.push(mistgen);
+pages.push(light);
 
 if (logger) {
 	logger.dev_add(humidity);
