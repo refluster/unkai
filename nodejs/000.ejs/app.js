@@ -2,7 +2,6 @@
 /**
  * Module dependencies.
  */
-const WITH_OLD_VER = 0;
 const WITH_DATA_RECORD = 1;
 
 var express = require('express');
@@ -44,33 +43,11 @@ if (logger) {
 	logger.start();
 }
 
-if (WITH_OLD_VER) {
-	// all environments
-	app.configure('development', function(){
-		app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-	});
-}
-
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-if (WITH_OLD_VER) {
-	app.use(express.favicon());
-	app.use(express.logger('dev'));
-	app.use(express.json());
-	app.use(express.urlencoded());
-	app.use(express.methodOverride());
-	app.use(app.router);
-}
 app.use(express.static(path.join(__dirname, 'public')));
-
-if (WITH_OLD_VER) {
-	// development only
-	if ('development' == app.get('env')) {
-		app.use(express.errorHandler());
-	}
-}
 
 for (var i = 0; i < pages.length; i++) {
 	app.get(pages[i].path, pages[i].index);
