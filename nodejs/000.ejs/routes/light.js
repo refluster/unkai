@@ -31,9 +31,9 @@ exports.index = function(req, res){
 };
 
 exports.init_socket = function(io, client){
-	client.on('tlc5940 update', function(data) {
+	client.on('light update', function(data) {
 		tlc5940_set_val(data.brightness);
-		console.log("tlc5940 update " + data.brightness);
+		console.log("light update " + data.brightness);
 	});
 
 	tlc5940_drv.stdout.on('data', function(data) {

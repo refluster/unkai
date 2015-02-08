@@ -8,8 +8,8 @@ socket.on('connect', function(msg) {
 });
 
 function tlc5940_update(brightness) {
-  socket.emit('tlc5940 update', {brightness: brightness});
-  console.log('tlc5940 update ' + brightness);
+  socket.emit('light update', {brightness: brightness});
+  console.log('light update ' + brightness);
 }
 </script>
 
