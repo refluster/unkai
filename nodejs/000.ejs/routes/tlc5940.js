@@ -1,8 +1,8 @@
 // init tlc5940 driver daemon
-const num_led = 8; // # of led to control
+const num_led = 6; // # of led to control
 var spawn = require('child_process').spawn;
 var tlc5940_drv = spawn("../../c/003.tlc5940/003.tlc5940",
-						["-p", "1000", "-t", "2", "-n", String(num_led)]);
+						["-n", String(num_led)]);
 var tlc5940_brightness = [];
 
 function tlc5940_set_val(brightness) {
