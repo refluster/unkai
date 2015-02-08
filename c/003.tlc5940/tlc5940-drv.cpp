@@ -108,6 +108,8 @@ void pwm_exit() {
 void update() {
 	int interval_msec;
 
+	nice(-2);
+
 	// interval: 1/freq * 4096 (sec)
 	interval_msec = (int)(1000*(4096ull*pwm_clock*pwm_range)/PWM_CLK_HZ);
 	std::chrono::milliseconds duration(interval_msec);
