@@ -7,12 +7,9 @@ int main(int argc, char **argv) {
 	time_t t_time;
 
 	if (argc == 1) {
-		puts("AA");
 		memset((void *)&t_tm , 0, sizeof(t_tm));
-		puts("BB");
 		time(&t_time);
 
-		puts("CC");
 		printf("get %s", ctime(&t_time));		
 	} else if (strcmp(argv[1], "-s") == 0) {
 		int year, mon, day, hour, min;
