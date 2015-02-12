@@ -1,15 +1,19 @@
 var exec = require('child_process').exec;
 var date_util = require('date-utils');
+var client = null;
 
 function camera_capture() {
     var dt = new Date();
     var date = dt.toFormat("YYYY-MM-DD_HH24:MI:SS");
 
 	// get humidity ,celsius, fahrenheit
-	var cmd = '../../c/005.camera/005.camera -r 320x240 -o /home/uehara/' + date + '.jpg';
+	var cmd = '../../c/005.camera/005.camera -r 320x240 -o public/' + date + '.jpg';
 	exec(cmd, {timeout: 3000}, function(error, stdout, stderr) {
 		console.log('stdout: '+(stdout||'none'));
 		console.log('stderr: '+(stderr||'none'));
+		if (client) {
+			client.emit('camera update', {value: date + '.jpg'});
+		}
 	});
 }
 
@@ -26,8 +30,8 @@ exports.index = function(req, res){
 	res.render('camera', { title: 'Camera', host: req.headers.host, is_mobile: is_mobile });
 };
 
-exports.init_socket = function(io, client){
-	
+exports.init_socket = function(io, _client){
+	client = _client;
 };
 
 exports.get = camera_capture;

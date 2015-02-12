@@ -37,6 +37,7 @@ pages.push(njl7502);
 pages.push(mistgen);
 pages.push(light);
 pages.push(date);
+pages.push(camera);
 
 if (logger) {
 	logger.dev_add(humidity);
