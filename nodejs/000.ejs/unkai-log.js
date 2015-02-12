@@ -39,7 +39,7 @@ exports.dev_add = function(dev) {
 };
 
 exports.start = function() {
-	setInterval(record_data, 1000);
+	setInterval(record_data, 3000);
 }
 
 

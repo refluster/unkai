@@ -26,6 +26,7 @@ var njl7502 = require('./routes/njl7502');
 var mistgen = require('./routes/mistgen');
 var light = require('./routes/light');
 var date = require('./routes/date');
+var camera = require('./routes/camera');
 
 pages.push(routes);
 pages.push(chat);
@@ -42,6 +43,7 @@ if (logger) {
 	logger.dev_add(tlc5940);
 	logger.dev_add(njl7502);
 	logger.dev_add(mistgen);
+	logger.dev_add(camera);
 	logger.start();
 }
 
