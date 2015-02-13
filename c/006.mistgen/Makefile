@@ -12,3 +12,6 @@ all:
 	gcc main.o  dev.o -L/usr/local/lib -o $(TARGET) -lrt -lwiringPi
 	sudo chown root:root $(TARGET)
 	sudo chmod u+s $(TARGET)
+
+clean:
+	rm -f *.o $(TARGET)

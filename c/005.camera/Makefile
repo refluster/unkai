@@ -39,3 +39,6 @@ run2:
 run-loop:
 	dir="$${HOME}/img"; mkdir -p $$dir; i=0; while [ true ]; do i=`expr $$i \+ 1`; \
 		echo =========== $$i; ./005.camera -o $$dir/`date +'%Y%m%d_%H%M%S'`.jpg; sleep 600; done
+
+clean:
+	rm -f $(OBJECT) $(TARGET)

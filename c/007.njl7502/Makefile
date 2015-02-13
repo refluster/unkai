@@ -10,3 +10,6 @@ all:
 	gcc main.c -L/usr/local/lib -lwiringPi -lrt -o $(TARGET)
 	sudo chown root:root $(TARGET)
 	sudo chmod u+s $(TARGET)
+
+clean:
+	rm -f *.o $(TARGET)
