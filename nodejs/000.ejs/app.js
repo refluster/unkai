@@ -11,8 +11,9 @@ var path = require('path');
 var app = express();
 
 var logger;
+
 if (WITH_DATA_RECORD) {
-	logger = require('./unkai-log');
+	logger = require('./routes/unkai-log');
 }
 
 var pages = [];
@@ -38,6 +39,10 @@ pages.push(mistgen);
 pages.push(light);
 pages.push(date);
 pages.push(camera);
+pages.push(logger);
+
+var tmp_dev = {};
+tmp_dev.get = function(fn) {fn(123);};
 
 if (logger) {
 	logger.dev_add(humidity);
@@ -45,7 +50,8 @@ if (logger) {
 	logger.dev_add(njl7502);
 	logger.dev_add(mistgen);
 	logger.dev_add(camera);
-	logger.start();
+	logger.dev_add(tmp_dev);
+//	logger.start();
 }
 
 app.set('port', process.env.PORT || 3000);
