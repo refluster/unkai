@@ -60,6 +60,8 @@ static int pwm_range= 4;
 static std::thread *update_thread;
 static std::thread *userif_thread;
 	
+static unsigned short brightness[NUM_LED_MAX];
+
 void gpio_init() {
 	wiringPiSetup();
 
@@ -105,6 +107,23 @@ void pwm_exit() {
  	pinMode(1, INPUT);
 }
 
+static int update_flg = 0;
+
+void __update_brightness() {
+	for (int ch = 15; ch >= 0; --ch) {
+		for(int i = 11; i >= 0; --i) {
+			int value = (brightness[ch] >> i) & 1;
+			sin_pin->setValue(value);
+			sclk_pin->pulse();
+		}
+	}
+	
+	sin_pin->setLow();
+	xlat_pin->pulse();
+
+	update_flg = 0;
+}
+
 void update() {
 	int interval_msec;
 
@@ -114,10 +133,15 @@ void update() {
 	interval_msec = (int)(1000*(4096ull*pwm_clock*pwm_range)/PWM_CLK_HZ);
 	std::chrono::milliseconds duration(interval_msec);
 	printf("blank pulse interval: %d\n", interval_msec);
-	
+
 	while (true) {
 		std::this_thread::sleep_for(duration);
 		blank_pin->setHigh();
+#if 1
+		if (update_flg) {
+			__update_brightness();
+		}
+#endif
 		blank_pin->setLow();
 	}
 }
@@ -170,17 +194,9 @@ void chk_arg(int argc, char **argv) {
 	}
 }
 
-void update_brightness(unsigned short brightness[]) {
-	for (int ch = 15; ch >= 0; --ch) {
-		for(int i = 11; i >= 0; --i) {
-			int value = (brightness[ch] >> i) & 1;
-			sin_pin->setValue(value);
-			sclk_pin->pulse();
-		}
-	}
-	
-	sin_pin->setLow();
-	xlat_pin->pulse();
+void update_brightness(unsigned short b[]) {
+	update_flg = 1;
+	memcpy(brightness, b, sizeof(brightness[0])*num_led);
 }
 
 int main(int argc, char **argv) {
