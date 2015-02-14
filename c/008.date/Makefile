@@ -10,3 +10,6 @@ all:
 	gcc date.c -o $(TARGET)
 	sudo chown root:root $(TARGET)
 	sudo chmod u+s $(TARGET)
+
+clean:
+	rm -f *.o $(TARGET)

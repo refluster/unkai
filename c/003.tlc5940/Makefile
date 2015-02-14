@@ -18,3 +18,6 @@ tlc5940-drv.o: tlc5940-drv.cpp
 
 tlc5940-if.o: tlc5940-if.cpp
 	g++ tlc5940-if.cpp -c
+
+clean:
+	rm -f *.o $(TARGET)
