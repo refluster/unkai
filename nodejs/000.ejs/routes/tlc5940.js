@@ -1,5 +1,5 @@
 // init tlc5940 driver daemon
-const num_led = 6; // # of led to control
+const num_led = 15; // # of led to control
 var spawn = require('child_process').spawn;
 var tlc5940_drv = spawn("../../c/003.tlc5940/003.tlc5940",
 						["-n", String(num_led)]);
