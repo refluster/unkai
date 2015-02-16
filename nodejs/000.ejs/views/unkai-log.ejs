@@ -15,6 +15,20 @@ socket.on('unkai-log status', function(msg) {
   console.log("socke status " + msg.value);
 });
 
+socket.on('unkai-log get-res', function(msg) {
+	var link;
+
+	link = document.getElementById("archive");
+	if (link) {
+		link.parentNode.removeChild(link);
+	}
+
+	link = document.createElement("a");
+	link.id = "archive";
+	link.innerHTML = "archive (" + msg.date + ")";
+	link.href = msg.href;
+	document.body.appendChild(link);
+});
 
 // send message
 function start_stop() {
@@ -42,6 +56,11 @@ function get_log() {
     <% } %>
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+	<style>
+	 input {
+	   width: 120px;
+	 }
+	</style>
   </head>
   <body>
     <h1><%= title %></h1>

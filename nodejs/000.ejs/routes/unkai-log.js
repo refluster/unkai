@@ -28,7 +28,7 @@ function record_data() {
 			dev.get(correct_data_from_a_device)
 		} else {
 			var writeData = record.join(',') + "\n";
-			fs.writeFile('writetest.txt', writeData, {flag: 'a'}, function(err) {
+			fs.writeFile('log/data.txt', writeData, {flag: 'a'}, function(err) {
 				console.log(err);
 			});
 		}
@@ -76,9 +76,12 @@ exports.init_socket = function(io, client){
 
 	client.on('unkai-log get', function(data) {
 		// must be implemented to archve and download the data
-		var cmd = "echo unkai  ";
+		var dt = new Date();
+		var file = "log.tar.gz";
+		var cmd = "tar czf public/" + file + " log";
 		console.log('unkai-log get');
-		exec(cmd, {timeout: 1000}, function(error, stdout, stderr) {
+		exec(cmd, {timeout: 30000}, function(error, stdout, stderr) {
+			client.emit("unkai-log get-res", {href: file, date: dt.toFormat("YYYY/MM/DD HH24:MI:SS")});
 			console.log('stdout: '+(stdout||'none'));
 			console.log('stderr: '+(stderr||'none'));
 		});
@@ -89,7 +92,12 @@ exports.init_socket = function(io, client){
 		if (data.value == 'start') {
 			console.log('start int');
 			start_logging();
-			client.emit('unkai-log status', {value: "stop"});
+			var cmd = "echo rm -f log/*";
+			exec(cmd, {timeout: 30000}, function(error, stdout, stderr) {
+				client.emit('unkai-log status', {value: "stop"});
+				console.log('stdout: '+(stdout||'none'));
+				console.log('stderr: '+(stderr||'none'));
+			});
 		} else if (data.value == 'stop') {
 			console.log('stop  int');
 			stop_logging();
