@@ -16,29 +16,29 @@ socket.on('unkai-log status', function(msg) {
 });
 
 socket.on('unkai-log get-res', function(msg) {
-	var link;
-
-	link = document.getElementById("archive");
-	if (link) {
-		link.parentNode.removeChild(link);
-	}
-
-	link = document.createElement("a");
-	link.id = "archive";
-	link.innerHTML = "archive (" + msg.date + ")";
-	link.href = msg.href;
-	document.body.appendChild(link);
+  var link;
+  
+  link = document.createElement("a");
+  link.id = "archive";
+  link.innerHTML = "archive [" + msg.date + "]";
+  link.href = msg.href;
+  document.body.appendChild(link);
 });
 
 // send message
 function start_stop() {
-	console.log("hoge");
+  console.log("start_stop");
   var start_stop_btn = document.getElementById("start_stop");
   socket.emit('unkai-log start_stop', {value: start_stop_btn.value});
 }
 
 // send message
 function get_log() {
+  link = document.getElementById("archive");
+  if (link) {
+    link.parentNode.removeChild(link);
+  }
+
 //  var get_log_btn = document.getElementById("get_log").value;
   socket.emit('unkai-log get');
 }
