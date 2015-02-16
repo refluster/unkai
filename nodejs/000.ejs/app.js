@@ -2,7 +2,7 @@
 /**
  * Module dependencies.
  */
-const WITH_DATA_RECORD = 1;
+const LOG_TEST_MODE = 0;
 
 var express = require('express');
 var http = require('http');
@@ -12,13 +12,10 @@ var app = express();
 
 var logger;
 
-if (WITH_DATA_RECORD) {
-	logger = require('./routes/unkai-log');
-}
-
 var pages = [];
 
 var routes = require('./routes');
+if (LOG_TEST_MODE == 0) {
 var chat = require('./routes/chat');
 var humidity = require('./routes/humidity');
 var led_ctrl = require('./routes/led-ctrl');
@@ -28,8 +25,11 @@ var mistgen = require('./routes/mistgen');
 var light = require('./routes/light');
 var date = require('./routes/date');
 var camera = require('./routes/camera');
+}
+logger = require('./routes/unkai-log');
 
 pages.push(routes);
+if (LOG_TEST_MODE == 0) {
 pages.push(chat);
 pages.push(humidity);
 pages.push(led_ctrl);
@@ -39,17 +39,22 @@ pages.push(mistgen);
 pages.push(light);
 pages.push(date);
 pages.push(camera);
+}
 pages.push(logger);
 
-var tmp_dev = {};
-tmp_dev.get = function(fn) {fn(123);};
+if (LOG_TEST_MODE == 1) {
+	var tmp_dev = {};
+	tmp_dev.get = function(fn) {fn(123);};
+}
 
 if (logger) {
+	if (LOG_TEST_MODE == 0) {
 	logger.dev_add(humidity);
 	logger.dev_add(tlc5940);
 	logger.dev_add(njl7502);
 	logger.dev_add(mistgen);
 	logger.dev_add(camera);
+	}
 	logger.dev_add(tmp_dev);
 //	logger.start();
 }

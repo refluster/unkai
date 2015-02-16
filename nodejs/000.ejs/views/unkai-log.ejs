@@ -1,0 +1,53 @@
+<script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript">
+var socket;
+
+socket = io.connect('http://<%= host %>');
+socket.on('connect', function(msg) {
+  console.log('connect' + msg);
+});
+
+socket.on('unkai-log status', function(msg) {
+  var newElement = document.createElement("input");
+
+  var start_stop = document.getElementById("start_stop");
+  start_stop.value = msg.value;
+  console.log("socke status " + msg.value);
+});
+
+
+// send message
+function start_stop() {
+	console.log("hoge");
+  var start_stop_btn = document.getElementById("start_stop");
+  socket.emit('unkai-log start_stop', {value: start_stop_btn.value});
+}
+
+// send message
+function get_log() {
+//  var get_log_btn = document.getElementById("get_log").value;
+  socket.emit('unkai-log get');
+}
+</script>
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta content="text/html; charset=EUC-JP">
+    <% if (is_mobile) { %>
+    <meta name="viewport" content="width=320, user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
+    <% } %>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1><%= title %></h1>
+    <br>
+	<input type="button" id="start_stop" onclick="start_stop()" /><br>
+	<input type="button" id="get_log" onclick="get_log()" value="get log" />
+	<hr>
+  </body>
+</html>
