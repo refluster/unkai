@@ -9,7 +9,7 @@ function toColor(colorData) {
 	g = colorData.g*colorData.val;
 	b = colorData.b*colorData.val;
 
-	tlc5940_update([parseInt(r*4095/255), parseInt(g*4095/255), parseInt(b*4095/255)]);
+	brightness_update_from_hue([parseInt(r*4095/255), parseInt(g*4095/255), parseInt(b*4095/255)]);
 
 	msg.innerHTML = parseInt(r) + ' ' + parseInt(g) + ' ' + parseInt(b);
 
@@ -20,7 +20,7 @@ function toColor(colorData) {
 }
 
 // ½é´ü²½
-function init() {
+function init_color() {
 	var canvas = document.getElementById("canvas");
 	var context = canvas.getContext("2d");
 	var color = document.getElementById("color");
