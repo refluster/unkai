@@ -26,6 +26,7 @@ var light = require('./routes/light');
 var date = require('./routes/date');
 var camera = require('./routes/camera');
 }
+var update = require('./routes/update');
 logger = require('./routes/unkai-log');
 
 pages.push(routes);
@@ -40,6 +41,7 @@ pages.push(light);
 pages.push(date);
 pages.push(camera);
 }
+pages.push(update);
 pages.push(logger);
 
 if (LOG_TEST_MODE == 1) {
