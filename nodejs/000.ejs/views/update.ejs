@@ -15,17 +15,22 @@ socket.on('disconnect', function() {
 });
 
 socket.on('update process', function(data) {
-	var msg;
-	msg = data.msg;
-	if (data.complete == false) {
-		msg += '<br><span style="color: blue">stdout: ' + data.stdout + '</span>';
-		msg += '<br><span style="color: red">stderr: ' + data.stderr + '</span>';
+	if (data.msg != null) {
+		append_message(data.msg);
 	}
-	append_message(msg);
 });
 
 socket.on('update process-result', function(data) {
-	append_message_result(data.result == true? "complete": "failed");
+	var msg;
+	if (data.result == true) {
+		msg = "complete";
+	} else {
+		msg = "failed";
+		msg += '<br><span style="color: blue">stdout: ' + data.stdout + '</span>';
+		msg += '<br><span style="color: red">stderr: ' + data.stderr + '</span>';
+	}
+
+	append_message_result(msg);
 });
 
 var latest_li;

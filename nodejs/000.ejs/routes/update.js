@@ -17,12 +17,11 @@ exports.index = function(req, res){
 };
 
 var command = [
-	{cmdline: "dir ~/", msg: "ls ~/ ..."},
-	{cmdline: "ls ~/work", msg: "ls ~/work ..."},
-	{cmdline: "ls ~/work/unka", msg: "ls ~/work/unka ..."},
-	{cmdline: "ls ~/work/unkai", msg: "ls ~/work/unkai ..."},
-	{callback: server_stop, msg: ""},
-	{callback: process.exit, msg: ""},
+	{cmdline: "make clean -C ../..", msg: "clean built objects ..."},
+	{cmdline: "git pull", msg: "update program code ..."},
+	{cmdline: "make -C ../..", msg: "build software ..."},
+	{callback: server_stop},
+	{callback: process.exit},
 ];
 
 function exec_commands(client, command_idx) {
@@ -35,7 +34,7 @@ function exec_commands(client, command_idx) {
 	client.emit("update process", {msg: cmd.msg});
 
 	if (cmd.cmdline) {
-		exec(cmd.cmdline, {timeout: 1000}, function(error, stdout, stderr) {
+		exec(cmd.cmdline, {timeout: 1200000}, function(error, stdout, stderr) {
 			if (error == null) {
 				client.emit("update process-result", {result: true});
 				exec_commands(client, command_idx + 1);
