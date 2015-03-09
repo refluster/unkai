@@ -10,20 +10,10 @@ var path = require('path');
 
 var app = express();
 
-var logger;
-
 var pages = [];
-var routes;
-var chat;
-var humidity;
-var led_ctrl;
-var tlc5940;
-var njl7502;
-var mistgen;
-var light;
-var date;
-var camera;
-var update;
+
+var routes, chat ,humidity ,led_ctrl ,tlc5940 ,njl7502 ,mistgen ,light,
+	date ,camera ,logger ,update;
 
 function start() {
 	// start services
@@ -39,8 +29,8 @@ function start() {
 		date = require('./routes/date');
 		camera = require('./routes/camera');
 	}
-	update = require('./routes/update');
 	logger = require('./routes/unkai-log');
+	update = require('./routes/update');
 
 	// add services into pages array
 	pages.push(routes);
