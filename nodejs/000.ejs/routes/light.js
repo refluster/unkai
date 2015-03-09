@@ -46,6 +46,10 @@ exports.get = tlc5940_get_val;
 
 exports.path = '/light';
 
+exports.terminate = function() {
+	tlc5940_drv.stdin.write("0\n");
+};
+
 function init() {
 	var b = [];
 	for (var i = 0; i < num_led; i++) {

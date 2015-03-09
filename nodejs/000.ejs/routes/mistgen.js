@@ -40,4 +40,8 @@ exports.init_socket = function(io, client){
 exports.set = mistgen_set_val;
 exports.get = mistgen_get_val;
 
+exports.terminate = function() {
+	mistgen_drv.stdin.write("0\n");
+};
+
 exports.path = '/mistgen';

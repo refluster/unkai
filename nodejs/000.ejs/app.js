@@ -9,11 +9,23 @@ var http = require('http');
 var path = require('path');
 
 var app = express();
-
 var pages = [];
+var routes, chat, humidity, led_ctrl, tlc5940, njl7502, mistgen, light,
+	date, camera, logger, update;
 
-var routes, chat ,humidity ,led_ctrl ,tlc5940 ,njl7502 ,mistgen ,light,
-	date ,camera ,logger ,update;
+var server;
+
+function stop() {
+	// terminate background processes
+	for (var i = 0; i < pages.length; i++) {
+		if (pages[i].terminate) {
+			pages[i].terminate();
+		}
+	}
+
+	// close http server
+	server.close();
+}
 
 function start() {
 	// start services
@@ -67,6 +79,11 @@ function start() {
 		}
 	}
 
+	// add close handler into update service
+	if (update) {
+		update.set_close_handler(stop);
+	}
+
 	// server settings
 	app.set('port', process.env.PORT || 3000);
 	app.set('views', path.join(__dirname, 'views'));
@@ -77,8 +94,8 @@ function start() {
 	}
 
 	// start server
-	var server = http.createServer(app);
-	server.listen(app.get('port'), function(){
+	server = http.createServer(app);
+	server.listen(app.get('port'), function() {
 		console.log('Express server listening on port ' + app.get('port'));
 	});
 
@@ -99,7 +116,6 @@ function start() {
 			console.log("disconnect");
 		});
 	});
-
 }
 
 start();

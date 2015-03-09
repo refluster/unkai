@@ -1,4 +1,5 @@
 var exec = require('child_process').exec;
+var server_stop;
 
 //////////////////////////////
 
@@ -16,39 +17,52 @@ exports.index = function(req, res){
 };
 
 var command = [
-	{cmdline: "ls ~/", complete: "ls ~/ done", fail: "ls ~/ failed"},
-	{cmdline: "ls ~/work", complete: "ls ~/work done", fail: "ls ~/work failed"},
-	{cmdline: "ls ~/work/unka", complete: "ls ~/work/unka done", fail: "ls ~/work/unka failed"},
-	{cmdline: "ls ~/work/unkai", complete: "ls ~/work/unkai done", fail: "ls ~/work/unkai failed"},
+	{cmdline: "dir ~/", msg: "ls ~/ ..."},
+	{cmdline: "ls ~/work", msg: "ls ~/work ..."},
+	{cmdline: "ls ~/work/unka", msg: "ls ~/work/unka ..."},
+	{cmdline: "ls ~/work/unkai", msg: "ls ~/work/unkai ..."},
+	{callback: server_stop, msg: ""},
+	{callback: process.exit, msg: ""},
 ];
 
 function exec_commands(client, command_idx) {
 	if (command.length <= command_idx) {
 		return;
 	}
-	
+
 	var cmd = command[command_idx];
-	exec(cmd.cmdline, {timeout: 1000}, function(error, stdout, stderr) {
-		if (error == null) {
-			client.emit("update report", {complete: true, msg: cmd.complete});
-			exec_commands(client, command_idx + 1);
-		} else {
-			client.emit("update report", {complete: false,
-										  msg: cmd.fail,
-										  stdout: stdout,
-										  stderr: stderr
-										 });
-		}
-	});
+
+	client.emit("update process", {msg: cmd.msg});
+
+	if (cmd.cmdline) {
+		exec(cmd.cmdline, {timeout: 1000}, function(error, stdout, stderr) {
+			if (error == null) {
+				client.emit("update process-result", {result: true});
+				exec_commands(client, command_idx + 1);
+			} else {
+				client.emit("update process-result", {result: false,
+													  stdout: stdout,
+													  stderr: stderr
+													 });
+				exec_commands(client, command_idx + 1);
+			}
+		});
+	} else if (cmd.callback) {
+		cmd.callback();
+		exec_commands(client, command_idx + 1);
+	} else {
+		exec_commands(client, command_idx + 1);
+	}
 }
 
 exports.init_socket = function(io, client){
-	client.emit('update welcome');
-
 	client.on('update start-update', function(data) {
-		console.log('update start');
 		exec_commands(client, 0);
 	});
 };
+
+exports.set_close_handler = function(_server_stop) {
+	server_stop = _server_stop;
+}
 
 exports.path = '/update';

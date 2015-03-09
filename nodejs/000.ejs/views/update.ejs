@@ -1,19 +1,20 @@
 <script src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
 var socket;
-var is_updating = false;
 
 socket = io.connect('http://<%= host %>');
 
 socket.on('connect', function() {
+	console.log("connect");
 	append_message("connected");
 });
 
-socket.on('update welcome', function(data) {
-	append_message("welcome");
+socket.on('disconnect', function() {
+	console.log("disconnect");
+	append_message("server shutdown");
 });
 
-socket.on('update report', function(data) {
+socket.on('update process', function(data) {
 	var msg;
 	msg = data.msg;
 	if (data.complete == false) {
@@ -23,16 +24,27 @@ socket.on('update report', function(data) {
 	append_message(msg);
 });
 
+socket.on('update process-result', function(data) {
+	append_message_result(data.result == true? "complete": "failed");
+});
+
+var latest_li;
+
 function append_message(msg) {
 	var ul = document.getElementById('message');
 	var li = document.createElement('li');
 	li.innerHTML = msg;
 	ul.appendChild(li);
+	latest_li = li;
+}
+
+function append_message_result(result) {
+	latest_li.innerHTML += " " + result;
 }
 
 // send message
 function start_update() {
-  socket.emit('update start-update');
+	socket.emit('update start-update');
 }
 </script>
 
