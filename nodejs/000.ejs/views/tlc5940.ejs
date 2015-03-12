@@ -23,6 +23,9 @@ function menu_display_update() {
       contents[i].style.display = "none";
     }
   }
+
+  brightness_update_to_slider();
+  brightness_update_to_hue();
 }
 
 var menu_radios = document.getElementsByName("tlc5940.disp.sel");
@@ -36,11 +39,17 @@ function tlc5940_update() {
   console.log('tlc5940 update ' + brightness);
 }
 
-function brightness_update_from_slider(b) {
+function brightness_update_from_slider() {
   for (var i = 0; i < <%= num_led%> ; i++) {
     brightness[i] = document.getElementById("tlc5940-brightness-" + i).value;
   }
   tlc5940_update();
+}
+
+function brightness_update_to_slider() {
+  for (var i = 0; i < <%= num_led%> ; i++) {
+    document.getElementById("tlc5940-brightness-" + i).value = brightness[i];
+  }
 }
 
 function brightness_update_from_hue(b) {
@@ -49,6 +58,15 @@ function brightness_update_from_hue(b) {
     brightness[base + i] = b[i];
   }
   tlc5940_update();
+}
+
+function brightness_update_to_hue() {
+  var base = 3*document.querySelector('input[name="lednum"]:checked').value;
+  var b = [];
+  for (var i = 0; i < 3 ; i++) {
+    b[i] = brightness[base + i];
+  }
+  setColor({r: b[0], g: b[1], b: b[2], val: 1});
 }
 
 function init() {

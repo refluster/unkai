@@ -2,8 +2,9 @@ var msg;
 var colorData = {r: 0, g: 0, b: 0, val: 1};
 var baseDistance;
 
-function toColor(colorData) {
+function setColor(colorData) {
 	var r, g, b;
+	var color = document.getElementById("color");
 
 	r = colorData.r*colorData.val;
 	g = colorData.g*colorData.val;
@@ -11,12 +12,20 @@ function toColor(colorData) {
 
 	brightness_update_from_hue([parseInt(r*4095/255), parseInt(g*4095/255), parseInt(b*4095/255)]);
 
+	msg = document.getElementById("msg");
 	msg.innerHTML = parseInt(r) + ' ' + parseInt(g) + ' ' + parseInt(b);
 
+	color.style.backgroundColor = 'rgb(' +
+		parseInt(r) + ',' +
+		parseInt(g) + ',' +
+		parseInt(b) + ')';
+
+/*
 	return 'rgb(' +
 		parseInt(r) + ',' +
 		parseInt(g) + ',' +
 		parseInt(b) + ')';
+*/
 }
 
 // ½é´ü²½
@@ -33,7 +42,7 @@ function init_color() {
 	canvas.addEventListener("touchmove", touchMoveHandler, false);
 	canvas.addEventListener("touchend", touchEndHandler, false);
 
-	document.addEventListener("mousedown", mouseDownHandler, false);
+	canvas.addEventListener("mousedown", mouseDownHandler, false);
 
 	image.src = "color.jpg";
 	image.onload = function() {
@@ -46,13 +55,13 @@ function changeHueSaturation(x, y) {
 	var context = canvas.getContext("2d");
 	var imagedata = context.getImageData(x, y, 1, 1);
 	var data = Array.prototype.slice.apply(imagedata.data);
-	var color = document.getElementById("color");
+//	var color = document.getElementById("color");
 	
 	colorData.r = data[0];
 	colorData.g = data[1];
 	colorData.b = data[2];
-	color.style.backgroundColor = toColor(colorData);
-	//document.bgColor = toColor(colorData);
+	//	color.style.backgroundColor = toColor(colorData);
+	setColor(colorData);
 }
 
 function changeValue(inc) {
@@ -62,7 +71,8 @@ function changeValue(inc) {
 	} else if (colorData.val < 0.0) {
 		colorData.val = 0;
 	}
-	color.style.backgroundColor = toColor(colorData);
+	//	color.style.backgroundColor = toColor(colorData);
+	setColor(colorData);
 }
 
 function touchStartHandler(event) {
