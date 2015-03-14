@@ -2,7 +2,7 @@ var exec = require('child_process').exec;
 var date_util = require('date-utils');
 var client = null;
 
-function camera_capture() {
+function camera_capture(callback) {
     var dt = new Date();
     var date = dt.toFormat("YYYY-MM-DD_HH24:MI:SS");
 
@@ -12,8 +12,9 @@ function camera_capture() {
 		console.log('stdout: '+(stdout||'none'));
 		console.log('stderr: '+(stderr||'none'));
 		if (client) {
-			client.emit('camera update', {value: date + '.jpg'});
+			client.emit('camera update', {value: 'img/' + date + '.jpg'});
 		}
+		callback(date + '.jpg');
 	});
 }
 

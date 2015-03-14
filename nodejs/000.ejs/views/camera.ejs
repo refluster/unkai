@@ -3,7 +3,7 @@
 var socket = io.connect('http://<%= host %>');
 socket.on('connect', function(msg) {
   console.log('connect');
-  led_ctrl();
+//  led_ctrl();
 });
 socket.on('camera update', function(msg) {
 	console.log('camera update');
