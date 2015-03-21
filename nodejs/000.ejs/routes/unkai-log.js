@@ -4,7 +4,7 @@ var fs = require('fs');
 var date_util = require('date-utils');
 var exec = require('child_process').exec;
 
-const RECORD_INTERVAL_MSEC = 3000;
+const RECORD_INTERVAL_MSEC = 60000;
 
 var devices = [];
 var interval_object;
@@ -92,7 +92,7 @@ exports.init_socket = function(io, client){
 		if (data.value == 'start') {
 			console.log('start int');
 			start_logging();
-			var cmd = "echo rm -f log/*";
+			var cmd = "rm -f log/*";
 			exec(cmd, {timeout: 30000}, function(error, stdout, stderr) {
 				client.emit('unkai-log status', {value: "stop"});
 				console.log('stdout: '+(stdout||'none'));
