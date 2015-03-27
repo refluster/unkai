@@ -8,7 +8,7 @@ function camera_capture(callback) {
 
 	// get humidity ,celsius, fahrenheit
 	var cmd = '../../c/005.camera/005.camera -r 320x240 -o log/' + date + '.jpg';
-	exec(cmd, {timeout: 3000}, function(error, stdout, stderr) {
+	exec(cmd, {timeout: 10000}, function(error, stdout, stderr) {
 		console.log('stdout: '+(stdout||'none'));
 		console.log('stderr: '+(stderr||'none'));
 		if (client) {
