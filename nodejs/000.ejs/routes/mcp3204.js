@@ -1,8 +1,8 @@
 var exec = require('child_process').exec;
 
-function njl7502_get_val(callback) {
+function mcp3204_get_val(callback) {
 	var illuminance;
-	var cmd = "../../c/007.njl7502/007.njl7502";
+	var cmd = "../../c/007.mcp3204/007.mcp3204";
 	exec(cmd, {timeout: 1000}, function(error, stdout, stderr) {
 		console.log('stdout: '+(stdout||'none'));
 		console.log('stderr: '+(stderr||'none'));
@@ -29,18 +29,18 @@ exports.index = function(req, res){
 		ua.indexOf('Android') > 0) {
 		is_mobile = true;
 	}
-	res.render('njl7502', { title: 'illuminance', host: req.headers.host, is_mobile: is_mobile});
+	res.render('mcp3204', { title: 'illuminance', host: req.headers.host, is_mobile: is_mobile});
 };
 
 exports.init_socket = function(io, client){
 	client.on('illuminance get_value', function(data) {
-		njl7502_get_val(function(illuminance) {
+		mcp3204_get_val(function(illuminance) {
 			client.emit('illuminance ret_value', {illuminance: illuminance});
 		});
 	});
 };
 
-exports.get = njl7502_get_val;
+exports.get = mcp3204_get_val;
 exports.set = function(val){};
 
-exports.path = '/njl7502';
+exports.path = '/mcp3204';

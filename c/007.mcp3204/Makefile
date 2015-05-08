@@ -4,7 +4,7 @@ endif
 
 include $(MAKEROOT)/mk/base.mk
 
-TARGET = 007.njl7502
+TARGET = 007.mcp3204
 
 all:
 	gcc main.c -L/usr/local/lib -lwiringPi -lrt -o $(TARGET)

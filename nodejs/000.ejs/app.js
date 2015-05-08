@@ -10,7 +10,7 @@ var path = require('path');
 
 var app = express();
 var pages = [];
-var routes, chat, humidity, led_ctrl, tlc5940, njl7502, mistgen, light,
+var routes, chat, humidity, led_ctrl, tlc5940, mcp3204, mistgen, light,
 	date, camera, logger, update;
 
 var server;
@@ -35,7 +35,7 @@ function start() {
 		humidity = require('./routes/humidity');
 		led_ctrl = require('./routes/led-ctrl');
 		tlc5940 = require('./routes/tlc5940');
-		njl7502 = require('./routes/njl7502');
+		mcp3204 = require('./routes/mcp3204');
 		mistgen = require('./routes/mistgen');
 		light = require('./routes/light');
 		date = require('./routes/date');
@@ -51,7 +51,7 @@ function start() {
 		pages.push(humidity);
 		pages.push(led_ctrl);
 		pages.push(tlc5940);
-		pages.push(njl7502);
+		pages.push(mcp3204);
 		pages.push(mistgen);
 		pages.push(light);
 		pages.push(date);
@@ -71,7 +71,7 @@ function start() {
 		if (TEST_MODE == 0) {
 			logger.dev_add(humidity);
 			logger.dev_add(tlc5940);
-			logger.dev_add(njl7502);
+			logger.dev_add(mcp3204);
 			logger.dev_add(mistgen);
 			logger.dev_add(camera);
 		} else {
