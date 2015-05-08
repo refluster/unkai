@@ -8,17 +8,18 @@ socket.on('connect', function(msg) {
 });
 
 // receive message
-socket.on('illuminance ret_value', function(data) {
+socket.on('mcp3204 ret_value', function(data) {
   update_time ++;
   console.log('receive msg');
   document.getElementById("illuminance").innerHTML = data.illuminance;
+  document.getElementById("moisture").innerHTML = data.moisture;
   document.getElementById("update").innerHTML = update_time;
 });
 
 // send message
 function send_request() {
   console.log('send msg');
-  socket.emit('illuminance get_value', {});
+  socket.emit('mcp3204 get_value', {});
 }
 
 </script>
@@ -40,6 +41,7 @@ function send_request() {
     <h1><%= title %></h1>
     <br>
 	illuminance: <span id="illuminance"></span><br>
+	moisture: <span id="moisture"></span><br>
     <hr>
     update: <span id="update"></span>
   </body>
