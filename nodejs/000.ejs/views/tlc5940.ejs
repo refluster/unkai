@@ -88,6 +88,20 @@ function init() {
     <% } %>
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/tlc5940-sight.js"></script>
+
+    <style>
+      div.color_disp {
+      float: left;
+      border: 1px solid black;
+      margin: 0px;
+      padding: 0px;
+      height: 20px;
+      width: 40px;
+      }
+    </style>
+
   </head>
   <body onLoad="init();">
     <h1><%= title %></h1>
@@ -96,10 +110,11 @@ function init() {
     <input type="radio" name="tlc5940.disp.sel" value="tlc5940.disp.0" id="tlc5940.disp.0" onclick="menu_display_update();" checked>
       <label for="tlc5940.disp.0" style="width: 100px">slider</label>
     </input>
-	</input>
     <input type="radio" name="tlc5940.disp.sel" value="tlc5940.disp.1" id="tlc5940.disp.1" onclick="menu_display_update();">
       <label for="tlc5940.disp.1" style="width: 100px">color pad</label>
 	</input>
+    <input type="radio" name="tlc5940.disp.sel" value="tlc5940.disp.2" id="tlc5940.disp.2" onclick="menu_display_update();">
+      <label for="tlc5940.disp.2" style="width: 100px">sight</label>
     </input>
     <p />
 
@@ -127,6 +142,29 @@ function init() {
       <div id="color" style="width:100%; height:20px; border: 1px solid black"></div>
       <span id="msg"></span><br />
       <canvas id="canvas" width="200" height="200" style="margin-top: 30px;"></canvas>
+    </div>
+
+    <div class="tlc5940.disp" id="tlc5940.disp.2">
+      <img id="sun" width=30% src="img/sun.png" />
+      <br />
+      
+      <img id="cloud" height=60px width=60% src="img/cloud.png" />
+      <br />
+      
+      <img id="mt" width=100% src="img/mt.png" />
+      <br />
+      
+      <span id="msg"></span>
+      
+      <div>
+        <div id="color_disp_0" class="color_disp">a</div>
+        <div id="color_disp_1" class="color_disp">b</div>
+        <div id="color_disp_2" class="color_disp">c</div>
+        <div id="color_disp_3" class="color_disp">d</div>
+        <div id="color_disp_4" class="color_disp">e</div>
+        <div style="clear: both"></div>
+      </div>
+
     </div>
 
     <br>
