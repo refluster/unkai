@@ -201,19 +201,20 @@ $(function(){
 
 		// re-calc cloud shadow
 		for (var i = 0; i < this.led.length; i++) {
+			const config = {
+				darkWidth: 0.5,
+				darkRatio: 0.2
+			};
 			var ratio;
-			if (i/this.led.length >= this.cloudX - this.cloudWidth/2*0.5 &&
-				i/this.led.length <= this.cloudX + this.cloudWidth/2*0.5) {
-				ratio = 0.2;
+			if (i/this.led.length >= this.cloudX - this.cloudWidth/2*config.darkWidth &&
+				i/this.led.length <= this.cloudX + this.cloudWidth/2*config.darkWidth) {
+				ratio = config.darkRatio;
 			} else if (i/this.led.length >= this.cloudX - this.cloudWidth/2 &&
 					   i/this.led.length <= this.cloudX + this.cloudWidth/2) {
-				var d0 = Math.abs(this.cloudX - this.cloudWidth/2*0.5 - i/this.led.length);
-				var d1 = Math.abs(this.cloudX - this.cloudWidth/2 - i/this.led.length);
-
-				ratio = (0.2*d1 + 1.0*d0)/(d0 + d1);
-				console.log('h ', {i: i, d0: d0, d1: d1, r: ratio});
-				console.log({i: i/this.led.length, w: this.cloudWidth/2*0.5});
-			} else {
+				var d0 = Math.abs(this.cloudX - i/this.led.length) - this.cloudWidth/2*config.darkWidth;
+				var d1 = this.cloudWidth/2 - Math.abs(this.cloudX - i/this.led.length);
+				ratio = (0.2*config.darkRatio + d0)/(d0 + d1);
+            } else {
 				ratio = 1.0;
 			}
 
