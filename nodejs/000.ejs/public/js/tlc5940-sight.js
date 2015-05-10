@@ -202,9 +202,17 @@ $(function(){
 		// re-calc cloud shadow
 		for (var i = 0; i < this.led.length; i++) {
 			var ratio;
-			if (i/this.led.length >= this.cloudX - this.cloudWidth/2 &&
-				i/this.led.length <= this.cloudX + this.cloudWidth/2) {
-				ratio = 0.5;
+			if (i/this.led.length >= this.cloudX - this.cloudWidth/2*0.5 &&
+				i/this.led.length <= this.cloudX + this.cloudWidth/2*0.5) {
+				ratio = 0.2;
+			} else if (i/this.led.length >= this.cloudX - this.cloudWidth/2 &&
+					   i/this.led.length <= this.cloudX + this.cloudWidth/2) {
+				var d0 = Math.abs(this.cloudX - this.cloudWidth/2*0.5 - i/this.led.length);
+				var d1 = Math.abs(this.cloudX - this.cloudWidth/2 - i/this.led.length);
+
+				ratio = (0.2*d1 + 1.0*d0)/(d0 + d1);
+				console.log('h ', {i: i, d0: d0, d1: d1, r: ratio});
+				console.log({i: i/this.led.length, w: this.cloudWidth/2*0.5});
 			} else {
 				ratio = 1.0;
 			}
