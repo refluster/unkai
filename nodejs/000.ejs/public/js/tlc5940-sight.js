@@ -213,7 +213,7 @@ $(function(){
 					   i/this.led.length <= this.cloudX + this.cloudWidth/2) {
 				var d0 = Math.abs(this.cloudX - i/this.led.length) - this.cloudWidth/2*config.darkWidth;
 				var d1 = this.cloudWidth/2 - Math.abs(this.cloudX - i/this.led.length);
-				ratio = (0.2*config.darkRatio + d0)/(d0 + d1);
+				ratio = (d1*config.darkRatio + d0)/(d0 + d1);
             } else {
 				ratio = 1.0;
 			}
