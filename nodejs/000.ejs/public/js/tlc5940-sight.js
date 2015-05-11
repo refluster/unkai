@@ -4,7 +4,7 @@ var log = function(text) {
 
 $(function(){
 	function disableEvent(e) { e.preventDefault();}
-	document.addEventListener('touchstart', disableEvent, false);
+//	document.addEventListener('touchstart', disableEvent, false);
 	document.addEventListener('touchmove', disableEvent, false);
 	$('img').on('dragstart', disableEvent);
 

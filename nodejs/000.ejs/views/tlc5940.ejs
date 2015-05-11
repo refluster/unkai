@@ -1,3 +1,6 @@
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="color.js" charset="EUC-JP"></script>
+<script type="text/javascript" src="js/tlc5940-sight.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script type="text/javascript">
 var socket = io.connect('http://<%= host %>');
@@ -13,24 +16,13 @@ socket.on('connect', function(msg) {
 });
 
 function menu_display_update() {
-  var id = document.querySelector('input[name="tlc5940.disp.sel"]:checked').value;
-  var contents = document.getElementsByClassName('tlc5940.disp');
-	console.log(contents);
-  for (var i = 0; i < contents.length; i++) {
-    if (contents[i].id == id) {
-      contents[i].style.display = "block";
-    } else {
-      contents[i].style.display = "none";
-    }
-  }
+  var id = $('input:radio[name="tlc5940_disp_sel"]:checked').val();
+  $('.tlc5940_disp').css('display', 'none');
+	console.log(id);
+  $('#' + id).css('display', 'block');
 
   brightness_update_to_slider();
   brightness_update_to_hue();
-}
-
-var menu_radios = document.getElementsByName("tlc5940.disp.sel");
-for (var i = 0; i < menu_radios.length; i++) {
-  var contents = document.getElementsByName('tlc5940.disp');
 }
 
 // send message
@@ -41,19 +33,19 @@ function tlc5940_update() {
 
 function brightness_update_from_slider() {
   for (var i = 0; i < <%= num_led%> ; i++) {
-    brightness[i] = document.getElementById("tlc5940-brightness-" + i).value;
+    brightness[i] = $("#tlc5940-brightness-" + i).val();
   }
   tlc5940_update();
 }
 
 function brightness_update_to_slider() {
   for (var i = 0; i < <%= num_led%> ; i++) {
-    document.getElementById("tlc5940-brightness-" + i).value = brightness[i];
+    $("#tlc5940-brightness-" + i).val(brightness[i]);
   }
 }
 
 function brightness_update_from_hue(b) {
-  var base = 3*document.querySelector('input[name="lednum"]:checked').value;
+  var base = 3*$('input:radio[name="lednum"]:checked').val();
   for (var i = 0; i < 3 ; i++) {
     brightness[base + i] = b[i];
   }
@@ -61,7 +53,7 @@ function brightness_update_from_hue(b) {
 }
 
 function brightness_update_to_hue() {
-  var base = 3*document.querySelector('input[name="lednum"]:checked').value;
+  var base = 3*$('input:radio[name="lednum"]:checked').val();
   var b = [];
   for (var i = 0; i < 3 ; i++) {
     b[i] = brightness[base + i];
@@ -72,6 +64,7 @@ function brightness_update_to_hue() {
 function init() {
   menu_display_update();
   init_color();
+  $('input:radio[name="tlc5940_disp_sel"]').change(menu_display_update);
 }
 </script>
 
@@ -82,14 +75,11 @@ function init() {
     <meta http-equiv="Cache-Control" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta content="text/html; charset=EUC-JP">
-	<script type="text/javascript" src="color.js" charset="EUC-JP"></script>
     <% if (is_mobile) { %>
     <meta name="viewport" content="width=320, user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
     <% } %>
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
-    <script type="text/javascript" src="js/jquery.min.js"></script>
-    <script type="text/javascript" src="js/tlc5940-sight.js"></script>
 
     <style>
       div.color_disp {
@@ -107,18 +97,18 @@ function init() {
     <h1><%= title %></h1>
     <br>
 
-    <input type="radio" name="tlc5940.disp.sel" value="tlc5940.disp.0" id="tlc5940.disp.0" onclick="menu_display_update();" checked>
-      <label for="tlc5940.disp.0" style="width: 100px">slider</label>
-    </input>
-    <input type="radio" name="tlc5940.disp.sel" value="tlc5940.disp.1" id="tlc5940.disp.1" onclick="menu_display_update();">
-      <label for="tlc5940.disp.1" style="width: 100px">color pad</label>
-	</input>
-    <input type="radio" name="tlc5940.disp.sel" value="tlc5940.disp.2" id="tlc5940.disp.2" onclick="menu_display_update();">
-      <label for="tlc5940.disp.2" style="width: 100px">sight</label>
-    </input>
+    <input type="radio" name="tlc5940_disp_sel" value="tlc5940_disp_0" id="tlc5940_radio_0" checked />
+    <label for="tlc5940_radio_0" style="width: 100px">slider</label>
+
+    <input type="radio" name="tlc5940_disp_sel" value="tlc5940_disp_1" id="tlc5940_radio_1" />
+    <label for="tlc5940_radio_1" style="width: 100px">color pad</label>
+
+    <input type="radio" name="tlc5940_disp_sel" value="tlc5940_disp_2" id="tlc5940_radio_2" />
+    <label for="tlc5940_radio_2" style="width: 100px">sight</label>
+
     <p />
 
-    <div class="tlc5940.disp" id="tlc5940.disp.0">
+    <div class="tlc5940_disp" id="tlc5940_disp_0">
       <% for (var i = 0; i < num_led; i++) { %>
         <input id="tlc5940-brightness-<%= i %>" type="range" min="0" max="4095" step="1"
           value="<%= init_val[i]%>" onchange="brightness_update_from_slider()" style="width: 200px"/>
@@ -129,7 +119,7 @@ function init() {
       <% } %>
     </div>
 
-    <div class="tlc5940.disp" id="tlc5940.disp.1">
+    <div class="tlc5940_disp" id="tlc5940_disp_1">
       <% for (var i = 0; i < num_led/3; i++) { %>
         <% if (i == 0) { %>
           <input type="radio" name="lednum" id="lednum<%= i %>" value="<%= i %>" checked>
@@ -141,10 +131,10 @@ function init() {
 	  <p />
       <div id="color" style="width:100%; height:20px; border: 1px solid black"></div>
       <span id="msg"></span><br />
-      <canvas id="canvas" width="200" height="200" style="margin-top: 30px;"></canvas>
+	  <canvas id="canvas" width="200" height="200" style="margin-top: 30px;"></canvas>
     </div>
 
-    <div class="tlc5940.disp" id="tlc5940.disp.2">
+    <div class="tlc5940_disp" id="tlc5940_disp_2">
       <img id="sun" width=30% src="img/sun.png" />
       <br />
       
