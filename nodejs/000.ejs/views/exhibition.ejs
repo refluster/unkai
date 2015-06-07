@@ -34,14 +34,63 @@ Star.prototype.setPosition = function(x, y) {
 
 ////////////////////////////////////////////////////////////
 Space = function() {
-	this.color = [
-		{rad: -Math.PI*  1, r:    0, g: 4095, b:    0},
-		{rad: -Math.PI*0.5, r:    0, g:    0, b:    0},
-		{rad:            0, r:    0, g:    0, b:    0},
-		{rad:  Math.PI*0.5, r: 4095, g:    0, b:    0},
-		{rad:  Math.PI*  1, r:    0, g:    0, b:    0},
+	this.colorTab = [
+		{rad: -Math.PI*1   , rgb: [
+			{r: 4095, g: 3261, b: 2784},
+			{r: 4095, g: 3391, b: 2784},
+			{r: 4095, g: 3261, b: 2633},
+			{r: 4095, g: 4095, b: 2546},
+			{r: 4095, g: 3521, b: 2568}]},
+		{rad: -Math.PI*0.75, rgb: [
+			{r:  834, g:  314, b:  791},
+			{r: 1007, g:  487, b:  379},
+			{r: 1809, g: 1246, b: 2004},
+			{r: 4095, g: 3261, b: 2676},
+			{r: 4095, g: 2871, b: 1939}]},
+		{rad: -Math.PI*0.5 , rgb: [
+			{r:  487, g:  141, b:  271},
+			{r:  119, g:  184, b:  206},
+			{r: 1268, g: 1181, b: 1289},
+			{r:    0, g:    0, b:  227},
+			{r:    0, g:   54, b:   97}]},
+		{rad: -Math.PI*0.25, rgb: [
+			{r:    0, g:   11, b:  401},
+			{r:    0, g:    0, b:  249},
+			{r:    0, g:    0, b:   54},
+			{r:    0, g:    0, b:    0},
+			{r:   11, g:   32, b:   54}]},
+		{rad:  0           , rgb: [
+			{r:    0, g:    0, b:    0},
+			{r:    0, g:    0, b:    0},
+			{r:    0, g:    0, b:    0},
+			{r:    0, g:    0, b:    0},
+			{r:    0, g:    0, b:    0}]},
+		{rad:  Math.PI*0.25, rgb: [
+			{r:    0, g:    0, b:   76},
+			{r:    0, g:    0, b:  119},
+			{r:    0, g:    0, b:   54},
+			{r:    0, g:    0, b:    0},
+			{r:  227, g:   54, b:    0}]},
+		{rad:  Math.PI*0.5 , rgb: [
+			{r:   76, g:  141, b:  466},
+			{r:    0, g:  141, b:  314},
+			{r: 1116, g:  856, b:  466},
+			{r: 1354, g:  769, b:   11},
+			{r: 1961, g:  812, b:  444}]},
+		{rad:  Math.PI*0.75, rgb: [
+			{r: 4095, g: 3261, b: 3369},
+			{r: 4095, g: 3391, b: 3694},
+			{r: 4095, g: 3261, b: 2654},
+			{r: 1268, g:  726, b:   11},
+			{r: 1311, g:  682, b:  444}]},
+		{rad:  Math.PI*  1,  rgb: [
+			{r: 4095, g: 3261, b: 2784},
+			{r: 4095, g: 3391, b: 2784},
+			{r: 4095, g: 3261, b: 2633},
+			{r: 4095, g: 4095, b: 2546},
+			{r: 4095, g: 3521, b: 2568}]},
 	];
-
+	
 	this.w = $("#page-space").width();
 	this.h = $("#page-space").height();
 	this.cx = this.w/2;
@@ -100,25 +149,21 @@ Space.prototype.earthRotate = function() {
 	var y = this.size/2 + ratio*this.size/2*Math.cos(this.earthRadian);
 	this.earth.setPosition(x, y);
 
-	for (var i = 0; i < this.color.length; i++) {
-		if (this.color[i].rad > this.earthRadian) {
-			var a = this.color[i - 1];
-			var b = this.color[i];
+	for (var i = 0; i < this.colorTab.length; i++) {
+		if (this.colorTab[i].rad > this.earthRadian) {
+			var a = this.colorTab[i - 1];
+			var b = this.colorTab[i];
 			var ratioA = (b.rad - this.earthRadian)/(b.rad - a.rad);
 			var ratioB = (this.earthRadian - a.rad)/(b.rad - a.rad);
 
-			var r = a.r*ratioA + b.r*ratioB;
-			var g = a.g*ratioA + b.g*ratioB;
-			var b = a.b*ratioA + b.b*ratioB;
-
 			for (var i = 0; i < 5; i++) {
-				brightness[3*i + 0] = Math.floor(r);
-				brightness[3*i + 1] = Math.floor(g);
-				brightness[3*i + 2] = Math.floor(b);
+				brightness[3*i + 0] = Math.floor(a.rgb[i].r*ratioA + b.rgb[i].r*ratioB);
+				brightness[3*i + 1] = Math.floor(a.rgb[i].g*ratioA + b.rgb[i].g*ratioB);
+				brightness[3*i + 2] = Math.floor(a.rgb[i].b*ratioA + b.rgb[i].b*ratioB);
 			}
 			
-			console.log(this.earthRadian);
-			console.log({r: r, g: g, b: b, i: i});
+//			console.log(this.earthRadian);
+			console.log(brightness);
 
 			break;
 		}
