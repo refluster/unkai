@@ -1,0 +1,214 @@
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript">
+var socket = io.connect('http://<%= host %>');
+var brightness = [];
+
+for (var i = 0; i < <%= num_led%> ; i++) {
+  brightness[i] = 0;
+}
+
+socket.on('connect', function(msg) {
+  console.log('connect');
+  tlc5940_update();
+});
+
+function tlc5940_update() {
+  socket.emit('tlc5940 update', {brightness: brightness});
+  console.log('tlc5940 update ' + brightness);
+}
+
+
+
+Star = function(elem) {
+	this.elem = elem;
+};
+Star.prototype.setSize = function(size) {
+	this.elem.css("height", size + "px");
+	this.elem.css("width", size + "px");
+	this.size = size;
+};
+Star.prototype.setPosition = function(x, y) {
+	this.elem.css("transform", "translate(" + (x - this.size/2) + "px, " + (y - this.size/2) + "px)");
+};
+
+////////////////////////////////////////////////////////////
+Space = function() {
+	this.color = [
+		{rad: -Math.PI*  1, r:    0, g: 4095, b:    0},
+		{rad: -Math.PI*0.5, r:    0, g:    0, b:    0},
+		{rad:            0, r:    0, g:    0, b:    0},
+		{rad:  Math.PI*0.5, r: 4095, g:    0, b:    0},
+		{rad:  Math.PI*  1, r:    0, g:    0, b:    0},
+	];
+
+	this.w = $("#page-space").width();
+	this.h = $("#page-space").height();
+	this.cx = this.w/2;
+	this.cy = this.h/2;
+	this.size = (this.w > this.h)? this.h: this.w;
+
+	this.earthRadian = 0;
+
+	this.earth = new Star($("#earth"));
+	this.brightstar = new Star($("#brightstar"));
+	this.darkstar = new Star($("#darkstar"));
+
+	$(document).bind('touchstart', this.inputStart.bind(this));
+	$(document).bind('touchmove', this.inputMove.bind(this));
+	$(document).bind('touchend', this.inputEnd.bind(this));
+};
+Space.prototype.inputStart = function(e) {
+	// from body coordinates
+    var x = e.originalEvent.touches[0].pageX;
+	var y = e.originalEvent.touches[0].pageY;
+	this.earthRadian = Math.atan2(x - this.cx, y - this.cy);
+	this.earthRotate();
+};
+Space.prototype.inputMove = function(e) {
+    var x = e.originalEvent.touches[0].pageX;
+	var y = e.originalEvent.touches[0].pageY;
+	this.earthRadian = Math.atan2(x - this.cx, y - this.cy);
+	this.earthRotate();
+};
+Space.prototype.inputEnd = function(e) {
+};
+Space.prototype.setSize = function() {
+	$("#space").css("height", this.size + 'px');
+	$("#space").css("width", this.size + 'px');
+	$("#space").css("transform", "translate(" +
+					((this.w - this.size)/2) + "px, " +
+					((this.h - this.size)/2) + "px)");
+
+	this.earth.setSize(this.size / 10);
+	this.brightstar.setSize(this.size / 16);
+	this.darkstar.setSize(this.size / 16);
+};
+Space.prototype.setPosition = function() {
+	this.earth.setPosition(this.size*0.2, this.size*0.7);
+	this.brightstar.setPosition(this.size/2, this.size/2 - this.size/2*0.7);
+	this.darkstar.setPosition(this.size/2, this.size/2 + this.size/2*0.7);
+};
+Space.prototype.display = function() {
+	this.setSize();
+	this.setPosition();
+};
+Space.prototype.earthRotate = function() {
+	const ratio = 0.6;
+	var x = this.size/2 + ratio*this.size/2*Math.sin(this.earthRadian);
+	var y = this.size/2 + ratio*this.size/2*Math.cos(this.earthRadian);
+	this.earth.setPosition(x, y);
+
+	for (var i = 0; i < this.color.length; i++) {
+		if (this.color[i].rad > this.earthRadian) {
+			var a = this.color[i - 1];
+			var b = this.color[i];
+			var ratioA = (b.rad - this.earthRadian)/(b.rad - a.rad);
+			var ratioB = (this.earthRadian - a.rad)/(b.rad - a.rad);
+
+			var r = a.r*ratioA + b.r*ratioB;
+			var g = a.g*ratioA + b.g*ratioB;
+			var b = a.b*ratioA + b.b*ratioB;
+
+			for (var i = 0; i < 5; i++) {
+				brightness[3*i + 0] = Math.floor(r);
+				brightness[3*i + 1] = Math.floor(g);
+				brightness[3*i + 2] = Math.floor(b);
+			}
+
+			console.log(this.earthRadian);
+			console.log({r: r, g: g, b: b, i: i});
+
+			break;
+		}
+	}
+
+	tlc5940_update();
+};
+
+////////////////////////////////////////////////////////////
+window.onload = function() {
+	var space = new Space();
+
+	space.display();
+//	setInterval(space.testRotate.bind(space), 100);
+//	space.testRotate();
+};
+</script>
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta content="text/html; charset=EUC-JP">
+    <% if (is_mobile) { %>
+    <meta name="viewport" content="width=320, user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
+    <% } %>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+
+    <style>
+body {
+	overflow: hidden;
+}
+
+.surface {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+
+.page {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	bottom: 0px;
+	right: 0px;
+	overflow: visible;
+//	background-color: #a00;
+	pointer-events: none;
+	border: 1px solid black;
+}
+
+.star {
+    background: radial-gradient(rgba(255, 255, 255, 0.9) 20%,
+								rgba(255, 255, 255, 0.6) 25%,
+								rgba(255, 255, 255, 0.3) 35%,
+								rgba(255, 255, 255, 0.0) 70%);
+	border: 1px solid yellow;
+}
+
+.dark-star {
+    background: radial-gradient(rgba(  0,   0,   0, 0.9) 19%,
+								rgba(255, 255, 255, 0.6) 20%,
+								rgba(255, 255, 255, 0.4) 25%,
+								rgba(255, 255, 255, 0.2) 35%,
+								rgba(255, 255, 255, 0.0) 70%);
+}
+
+#space {
+    background: radial-gradient(rgba(0, 0, 0, 1) 50%,
+								rgba(0, 0, 0, 0.3) 60%,
+								rgba(0, 0, 0, 0.1) 65%,
+								rgba(240, 240, 240, 0) 70%);
+	border: 1px solid black;
+}
+
+#page-space {
+//	pointer-events: none;
+}
+    </style>
+	
+  </head>
+  <body>
+    <div id="page-space" class="page" style="z-index: 1px">
+      <div id="space" class="surface">
+        <div id="brightstar" class="surface star"></div>
+        <div id="darkstar" class="surface dark-star"></div>
+        <div id="earth" class="surface star"></div>
+      </div>
+    </div>
+  </body>
+</html>

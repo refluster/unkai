@@ -30,6 +30,20 @@ exports.index = function(req, res){
 							num_led: num_led, init_val: tlc5940_brightness});
 };
 
+exports.index2 = function(req, res){
+	// get user-agent
+	var ua = JSON.stringify(req.headers['user-agent']);
+	var is_mobile = false;
+
+	if ((ua.indexOf('iPhone') > 0 && ua.indexOf('iPad') == -1) ||
+		ua.indexOf('iPod') > 0 ||
+		ua.indexOf('Android') > 0) {
+		is_mobile = true;
+	}
+	res.render('exhibition', { title: 'exhibition', host: req.headers.host, is_mobile: is_mobile,
+							   num_led: num_led, init_val: tlc5940_brightness});
+};
+
 exports.init_socket = function(io, client){
 	client.on('tlc5940 update', function(data) {
 		tlc5940_set_val(data.brightness);

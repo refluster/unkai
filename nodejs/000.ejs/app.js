@@ -91,6 +91,9 @@ function start() {
 	app.use(express.static(path.join(__dirname, 'public')));
 	for (var i = 0; i < pages.length; i++) {
 		app.get(pages[i].path, pages[i].index);
+		if (pages[i].path == '/tlc5940') {
+			app.get("/exhibition", pages[i].index2);
+		}
 	}
 
 	// start server
