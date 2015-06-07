@@ -95,7 +95,7 @@ Space = function() {
 	this.h = $("#page-space").height();
 	this.cx = this.w/2;
 	this.cy = this.h/2;
-	this.size = (this.w > this.h)? this.h: this.w;
+	this.size = 1.2 * ((this.w > this.h)? this.h: this.w);
 
 	this.earthRadian = 0;
 
@@ -135,7 +135,7 @@ Space.prototype.setSize = function() {
 	this.darkstar.setSize(this.size / 16);
 };
 Space.prototype.setPosition = function() {
-	this.earth.setPosition(this.size*0.2, this.size*0.7);
+	this.earthRotate();
 	this.brightstar.setPosition(this.size/2, this.size/2 - this.size/2*0.7);
 	this.darkstar.setPosition(this.size/2, this.size/2 + this.size/2*0.7);
 };
@@ -212,7 +212,6 @@ body {
 	right: 0px;
 	overflow: visible;
 	pointer-events: none;
-	border: 1px solid black;
 }
 
 .star {
@@ -220,7 +219,6 @@ body {
 								rgba(255, 255, 255, 0.6) 25%,
 								rgba(255, 255, 255, 0.3) 35%,
 								rgba(255, 255, 255, 0.0) 70%);
-	border: 1px solid yellow;
 }
 
 .dark-star {
@@ -236,11 +234,6 @@ body {
 								rgba(0, 0, 0, 0.3) 60%,
 								rgba(0, 0, 0, 0.1) 65%,
 								rgba(240, 240, 240, 0) 70%);
-	border: 1px solid black;
-}
-
-#page-space {
-//	pointer-events: none;
 }
     </style>
 	
