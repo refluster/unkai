@@ -2,7 +2,7 @@
 /**
  * Module dependencies.
  */
-const TEST_MODE = 0;
+const TEST_MODE = 1;
 
 var express = require('express');
 var http = require('http');
@@ -41,6 +41,7 @@ function start() {
 		date = require('./routes/date');
 		camera = require('./routes/camera');
 	}
+	tlc5940 = require('./routes/tlc5940');
 	logger = require('./routes/unkai-log');
 	update = require('./routes/update');
 
@@ -57,7 +58,8 @@ function start() {
 		pages.push(date);
 		pages.push(camera);
 	}
-	pages.push(logger);
+	pages.push(tlc5940);
+//	pages.push(logger);
 	pages.push(update);
 
 	// add test device for sample logger
@@ -90,7 +92,10 @@ function start() {
 	app.set('view engine', 'ejs');
 	app.use(express.static(path.join(__dirname, 'public')));
 	for (var i = 0; i < pages.length; i++) {
+//		console.log("get: " + i + " " + pages[i].path + " " + pages[i].index);
 		app.get(pages[i].path, pages[i].index);
+		console.log("-");
+
 		if (pages[i].path == '/tlc5940') {
 			app.get("/exhibition", pages[i].index2);
 		}

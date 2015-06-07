@@ -70,6 +70,7 @@ Space.prototype.inputMove = function(e) {
 	var y = e.originalEvent.touches[0].pageY;
 	this.earthRadian = Math.atan2(x - this.cx, y - this.cy);
 	this.earthRotate();
+	e.preventDefault();
 };
 Space.prototype.inputEnd = function(e) {
 };
@@ -115,7 +116,7 @@ Space.prototype.earthRotate = function() {
 				brightness[3*i + 1] = Math.floor(g);
 				brightness[3*i + 2] = Math.floor(b);
 			}
-
+			
 			console.log(this.earthRadian);
 			console.log({r: r, g: g, b: b, i: i});
 
@@ -131,8 +132,6 @@ window.onload = function() {
 	var space = new Space();
 
 	space.display();
-//	setInterval(space.testRotate.bind(space), 100);
-//	space.testRotate();
 };
 </script>
 
@@ -167,7 +166,6 @@ body {
 	bottom: 0px;
 	right: 0px;
 	overflow: visible;
-//	background-color: #a00;
 	pointer-events: none;
 	border: 1px solid black;
 }
