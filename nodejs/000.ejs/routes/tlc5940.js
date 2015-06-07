@@ -1,14 +1,14 @@
 // init tlc5940 driver daemon
 const num_led = 15; // # of led to control
 var spawn = require('child_process').spawn;
-//var tlc5940_drv = spawn("../../c/003.tlc5940/003.tlc5940",
-//						["-n", String(num_led)]);
+var tlc5940_drv = spawn("../../c/003.tlc5940/003.tlc5940",
+						["-n", String(num_led)]);
 var tlc5940_brightness = [];
 
 function tlc5940_set_val(brightness) {
 	// update cmd
 	var cmd = "1 " + brightness.join(" ") + "\n";
-//	tlc5940_drv.stdin.write(cmd);
+	tlc5940_drv.stdin.write(cmd);
 	tlc5940_brightness = brightness;
 }
 
@@ -50,9 +50,9 @@ exports.init_socket = function(io, client){
 		console.log("tlc5940 update " + data.brightness);
 	});
 
-//	tlc5940_drv.stdout.on('data', function(data) {
-//		console.log('stdout: ' + data);
-//	})
+	tlc5940_drv.stdout.on('data', function(data) {
+		console.log('stdout: ' + data);
+	})
 };
 
 exports.set = tlc5940_set_val;
@@ -61,7 +61,7 @@ exports.get = tlc5940_get_val;
 exports.path = '/tlc5940';
 
 exports.terminate = function() {
-//	tlc5940_drv.stdin.write("0\n");
+	tlc5940_drv.stdin.write("0\n");
 };
 
 function init() {
