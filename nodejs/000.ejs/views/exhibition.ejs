@@ -15,7 +15,7 @@ socket.on('connect', function(msg) {
 
 function tlc5940_update() {
   socket.emit('tlc5940 update', {brightness: brightness});
-  console.log('tlc5940 update ' + brightness);
+//  console.log('tlc5940 update ' + brightness);
 }
 
 
@@ -96,6 +96,9 @@ Space = function() {
 	this.cx = this.w/2;
 	this.cy = this.h/2;
 	this.size = 1.2 * ((this.w > this.h)? this.h: this.w);
+	this.touchStartX;
+	this.touchStartY;
+	this.touchStartRadian;
 
 	this.earthRadian = 0;
 
@@ -108,16 +111,28 @@ Space = function() {
 	$(document).bind('touchend', this.inputEnd.bind(this));
 };
 Space.prototype.inputStart = function(e) {
-	// from body coordinates
-    var x = e.originalEvent.touches[0].pageX;
-	var y = e.originalEvent.touches[0].pageY;
-	this.earthRadian = Math.atan2(x - this.cx, y - this.cy);
-	this.earthRotate();
+	this.touchStartX = e.originalEvent.touches[0].pageX;
+	this.touchStartY = e.originalEvent.touches[0].pageY;
+	this.touchStartRadian = this.earthRadian;
 };
 Space.prototype.inputMove = function(e) {
     var x = e.originalEvent.touches[0].pageX;
 	var y = e.originalEvent.touches[0].pageY;
-	this.earthRadian = Math.atan2(x - this.cx, y - this.cy);
+
+	var ax = (x - this.cx);
+	var ay = (y - this.cy);
+	var bx = (this.touchStartX - this.cx);
+	var by = (this.touchStartY - this.cy);
+	var rotX = ax*by - bx*ay;
+	var rotY = ax*bx + ay*by;
+
+	this.earthRadian = this.touchStartRadian + Math.atan2(rotX, rotY);
+
+	if (this.earthRadian < -Math.PI) {
+		this.earthRadian += 2*Math.PI;
+	} else if (this.earthRadian > Math.PI) {
+		this.earthRadian -= 2*Math.PI;
+	}
 	this.earthRotate();
 	e.preventDefault();
 };
@@ -163,7 +178,7 @@ Space.prototype.earthRotate = function() {
 			}
 			
 //			console.log(this.earthRadian);
-			console.log(brightness);
+//			console.log(brightness);
 
 			break;
 		}
