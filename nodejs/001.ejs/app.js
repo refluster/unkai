@@ -1,4 +1,4 @@
-var express = require('express');
+NNNNNNNvar express = require('express');
 var http = require('http');
 var path = require('path');
 
@@ -11,6 +11,15 @@ function stop() {
 
 	// close http server
 	server.close();
+}
+
+function isMobile(ua) {
+	if ((ua.indexOf('iPhone') > 0 && ua.indexOf('iPad') == -1) ||
+		ua.indexOf('iPod') > 0 ||
+		ua.indexOf('Android') > 0) {
+		return true;
+	}
+	return false;
 }
 
 function start() {
@@ -34,15 +43,12 @@ function start() {
 
 	// pages
 	app.get("/status", function(req, res) {
-		var ua = JSON.stringify(req.headers['user-agent']);
-		var is_mobile = false;
+		var mobile = false;
 		
-		if ((ua.indexOf('iPhone') > 0 && ua.indexOf('iPad') == -1) ||
-			ua.indexOf('iPod') > 0 ||
-			ua.indexOf('Android') > 0) {
-			is_mobile = true;
+		if (isMobile(JSON.stringify(req.headers['user-agent']))) {
+			mobile = true;
 		}
-		res.render('status', {host: req.headers.host, is_mobile: is_mobile});
+		res.render('status', {host: req.headers.host, is_mobile: mobile});
 	});
 }
 
