@@ -9,10 +9,12 @@
  });
  
  // receive message
- socket.on('humidity ret_value', function(data) {
+ socket.on('sensor/response', function(data) {
 	 update_time ++;
-	 console.log('receive msg');
+	 console.log('sensor/response');
 	 console.log(data);
+	 $("#illuminance").html(data.illuminance);
+	 $("#moisture").html(data.moisture);
 	 $("#humidity").html(data.humidity);
 	 $("#celsius").html(data.celsius);
 	 $("#fahrenheit").html(data.fahrenheit);
@@ -21,8 +23,7 @@
  
  // send message
  function send_request() {
-	 console.log('send msg');
-	 socket.emit('humidity get_value', {});
+	 socket.emit('sensor/get');
  }
 </script>
 
@@ -42,6 +43,8 @@
   <body>
     <h1>status</h1>
     <br>
+    illuminance: <span id="illuminance"></span><br>
+    moisture: <span id="moisture"></span><br>
     humidity: <span id="humidity"></span><br>
     celsius: <span id="celsius"></span><br>
     fahrenheit: <span id="fahrenheit"></span><br>

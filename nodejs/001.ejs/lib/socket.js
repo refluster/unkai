@@ -10,13 +10,11 @@ exports.init = function(drv, server) {
 		});
 		
 		// for humidity
-		client.on('humidity get_value', function(data) {
-			drv.getHumidity(function(val) {
-				client.emit('humidity ret_value', { humidity: val.humidity,
-													celsius: val.celsius,
-													fahrenheit: val.fahrenheit});
+		client.on('sensor/get', function(data) {
+			drv.getSensor(function(val) {
+				client.emit('sensor/response', val);
+				console.log('sensor');
 			});
-			console.log('hum get');
 		});
 	});
 };
