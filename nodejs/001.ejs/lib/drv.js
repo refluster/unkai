@@ -57,25 +57,42 @@ function dht11_get(callback) {
 
 // tlc5940 ////////////////////////////
 const num_led = 15; // # of led to control
-var tlc5940_drv;
+var tlc5940_process;
 if (! TEST_DRIVER) {
-	tlc5940_drv = spawn("../../c/003.tlc5940/003.tlc5940", ["-n", String(num_led)]);
+	tlc5940_process = spawn("../../c/003.tlc5940/003.tlc5940", ["-n", String(num_led)]);
 }
 var tlc5940_brightness = [];
 
 function tlc5940_set(brightness) {
-	// update cmd
+	var cmd = "1 " + brightness.join(" ") + "\n";
+	
 	if (TEST_DRIVER) {
 		console.log('tlc5940_set: ' + brightness);
 		return;
 	}
-	var cmd = "1 " + brightness.join(" ") + "\n";
-	tlc5940_drv.stdin.write(cmd);
+	
+	tlc5940_process.stdin.write(cmd);
 	tlc5940_brightness = brightness;
 }
 
-function tlc5940_get_val(callback) {
+function tlc5940_get(callback) {
 	callback(tlc5940_brightness);
+}
+
+// rtc ////////////////////////////
+function rtc_set(date) {
+	var cmd = "../../c/008.date/008.date -s " + data.value;
+	
+	if (TEST_DRIVER) {
+		console.log('rtc_set: ' + date);
+		return;
+	}
+	
+	exec(cmd, {timeout: 1000}, function(error, stdout, stderr) {
+		if (error !== null) {
+			console.log("rtc :\n" + error);
+		}
+	});
 }
 
 // primitive function ////////////////////////////
