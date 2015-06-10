@@ -1,0 +1,42 @@
+body {
+	overflow: hidden;
+}
+
+.surface {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+
+.page {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	bottom: 0px;
+	right: 0px;
+	overflow: visible;
+	pointer-events: none;
+}
+
+.star {
+    background: radial-gradient(rgba(255, 255, 255, 0.9) 20%,
+								rgba(255, 255, 255, 0.6) 25%,
+								rgba(255, 255, 255, 0.3) 35%,
+								rgba(255, 255, 255, 0.0) 70%);
+}
+
+.dark-star {
+    background: radial-gradient(rgba(  0,   0,   0, 0.9) 19%,
+								rgba(255, 255, 255, 0.6) 20%,
+								rgba(255, 255, 255, 0.4) 25%,
+								rgba(255, 255, 255, 0.2) 35%,
+								rgba(255, 255, 255, 0.0) 70%);
+}
+
+#space {
+    background: radial-gradient(rgba(0, 0, 0, 1) 50%,
+								rgba(0, 0, 0, 0.3) 60%,
+								rgba(0, 0, 0, 0.1) 65%,
+								rgba(240, 240, 240, 0) 70%);
+
+}
