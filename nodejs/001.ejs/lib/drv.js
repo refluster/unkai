@@ -114,12 +114,16 @@ exports.getSensor = function(callback) {
 			callback(obj);
 		});
 	});
-}
+};
 
 exports.setLed = function(brightness) {
 	tlc5940_set(brightness);
-}
+};
 
 exports.getLed = function(callback) {
 	tlc5940_get(callback);
-}
+};
+
+exports.setRtc = function(date) {
+	rtc_set(date);
+};
