@@ -1,7 +1,9 @@
 const TEST_DRIVER = 1;
 
 var exec = require('child_process').exec;
+var spawn = require('child_process').spawn;
 
+// mcp3204[illuminance, moisture] ////////////////////////////
 function mcp3204_get(callback) {
 	var illuminance, moisture;
 	var cmd = "../../c/007.mcp3204/007.mcp3204";
@@ -26,6 +28,7 @@ function mcp3204_get(callback) {
 	});
 }
 
+// dht11 ////////////////////////////
 function dht11_get(callback) {
 	var humidity, celsius, fahrenheit;
 
@@ -52,6 +55,30 @@ function dht11_get(callback) {
 	});
 }
 
+// tlc5940 ////////////////////////////
+const num_led = 15; // # of led to control
+var tlc5940_drv;
+if (! TEST_DRIVER) {
+	tlc5940_drv = spawn("../../c/003.tlc5940/003.tlc5940", ["-n", String(num_led)]);
+}
+var tlc5940_brightness = [];
+
+function tlc5940_set(brightness) {
+	// update cmd
+	if (TEST_DRIVER) {
+		console.log('tlc5940_set: ' + brightness);
+		return;
+	}
+	var cmd = "1 " + brightness.join(" ") + "\n";
+	tlc5940_drv.stdin.write(cmd);
+	tlc5940_brightness = brightness;
+}
+
+function tlc5940_get_val(callback) {
+	callback(tlc5940_brightness);
+}
+
+// primitive function ////////////////////////////
 function extend(target) {
 	var sources = [].slice.call(arguments, 1);
 	sources.forEach(function (source) {
@@ -62,6 +89,7 @@ function extend(target) {
 	return target;
 }
 
+// exports ////////////////////////////
 exports.getSensor = function(callback) {
 	mcp3204_get(function(mcp3204_val) {
 		dht11_get(function(dht11_val) {
@@ -71,3 +99,10 @@ exports.getSensor = function(callback) {
 	});
 }
 
+exports.setLed = function(brightness) {
+	tlc5940_set(brightness);
+}
+
+exports.getLed = function(callback) {
+	tlc5940_get(callback);
+}

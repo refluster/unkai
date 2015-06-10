@@ -9,12 +9,18 @@ exports.init = function(drv, server) {
 			console.log("disconnect");
 		});
 		
-		// for humidity
+		// sensor
 		client.on('sensor/get', function(data) {
 			drv.getSensor(function(val) {
 				client.emit('sensor/response', val);
 				console.log('sensor');
 			});
+		});
+
+		// led
+		client.on('led/set', function(data) {
+			drv.setLed(data.brightness);
+			console.log("tlc5940 update " + data.brightness);
 		});
 	});
 };
