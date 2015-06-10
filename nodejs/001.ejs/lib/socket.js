@@ -16,11 +16,17 @@ exports.init = function(drv, server) {
 				console.log('sensor');
 			});
 		});
-
+		
 		// led
 		client.on('led/set', function(data) {
 			drv.setLed(data.brightness);
-			console.log("tlc5940 update " + data.brightness);
+			console.log("led/set " + data.brightness);
+		});
+		
+		// rtc
+		client.on('rtc/set', function(data) {
+			drv.setRtc(data.date);
+			console.log("rtc/set " + data.date);
 		});
 	});
 };

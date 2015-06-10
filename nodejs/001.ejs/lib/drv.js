@@ -1,4 +1,4 @@
-const TEST_DRIVER = 1;
+const TEST_DRIVER = 0;
 
 var exec = require('child_process').exec;
 var spawn = require('child_process').spawn;
