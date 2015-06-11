@@ -100,9 +100,9 @@ Space = function() {
 	this.brightstar = new Star($("#brightstar"));
 	this.darkstar = new Star($("#darkstar"));
 
-	$(document).bind('touchstart', this.inputStart.bind(this));
-	$(document).bind('touchmove', this.inputMove.bind(this));
-	$(document).bind('touchend', this.inputEnd.bind(this));
+	$("#space").bind('touchstart', this.inputStart.bind(this));
+	$("#space").bind('touchmove', this.inputMove.bind(this));
+	$("#space").bind('touchend', this.inputEnd.bind(this));
 };
 Space.prototype.inputStart = function(e) {
 	this.touchStartX = e.originalEvent.touches[0].pageX;
@@ -186,4 +186,8 @@ window.onload = function() {
 	var space = new Space();
 
 	space.display();
+
+	$("#page-back").bind("touchend", function(e) {
+		console.log("touchend");
+	});
 };
