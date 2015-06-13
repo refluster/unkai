@@ -27,7 +27,7 @@ Star.prototype.setPosition = function(x, y) {
 };
 
 ////////////////////////////////////////////////////////////
-Space = function() {
+Space = function(pageTransition) {
 	this.colorTab = [
 		{rad: -Math.PI*1   , rgb: [
 			{r: 4095, g: 3261, b: 2784},
@@ -100,12 +100,14 @@ Space = function() {
 	this.brightstar = new Star($("#brightstar"));
 	this.darkstar = new Star($("#darkstar"));
 
+	this.pageTransition = pageTransition;
+	
 	$("#space").bind('touchstart', this.inputStart.bind(this));
 	$("#space").bind('touchmove', this.inputMove.bind(this));
 	$("#space").bind('touchend', this.inputEnd.bind(this));
 	$("#page-to-index").bind("touchend", function(e) {
-		console.log("touchend");
-	});
+		this.pageTransition("#page-index");
+	}.bind(this));
 };
 Space.prototype.inputStart = function(e) {
 	this.touchStartX = e.originalEvent.touches[0].pageX;
@@ -183,4 +185,7 @@ Space.prototype.show = function() {
 	$('#page-space').css('display', 'block');
 	this.setSize();
 	this.setPosition();
+};
+Space.prototype.hidden = function() {
+	$('#page-space').css('display', 'none');
 };
