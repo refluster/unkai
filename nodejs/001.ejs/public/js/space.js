@@ -103,6 +103,9 @@ Space = function() {
 	$("#space").bind('touchstart', this.inputStart.bind(this));
 	$("#space").bind('touchmove', this.inputMove.bind(this));
 	$("#space").bind('touchend', this.inputEnd.bind(this));
+	$("#page-to-index").bind("touchend", function(e) {
+		console.log("touchend");
+	});
 };
 Space.prototype.inputStart = function(e) {
 	this.touchStartX = e.originalEvent.touches[0].pageX;
@@ -148,10 +151,6 @@ Space.prototype.setPosition = function() {
 	this.brightstar.setPosition(this.size/2, this.size/2 - this.size/2*0.7);
 	this.darkstar.setPosition(this.size/2, this.size/2 + this.size/2*0.7);
 };
-Space.prototype.display = function() {
-	this.setSize();
-	this.setPosition();
-};
 Space.prototype.earthRotate = function() {
 	const ratio = 0.6;
 	var x = this.size/2 + ratio*this.size/2*Math.sin(this.earthRadian);
@@ -180,14 +179,8 @@ Space.prototype.earthRotate = function() {
 
 	tlc5940_update();
 };
-
-////////////////////////////////////////////////////////////
-window.onload = function() {
-	var space = new Space();
-
-	space.display();
-
-	$("#page-back").bind("touchend", function(e) {
-		console.log("touchend");
-	});
+Space.prototype.show = function() {
+	$('#page-space').css('display', 'block');
+	this.setSize();
+	this.setPosition();
 };
