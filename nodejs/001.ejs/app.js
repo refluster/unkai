@@ -51,13 +51,13 @@ function start() {
 		res.render('status', {host: req.headers.host, is_mobile: mobile});
 	});
 
-	app.get("/space", function(req, res) {
+	app.get("/", function(req, res) {
 		var mobile = false;
 		
 		if (isMobile(JSON.stringify(req.headers['user-agent']))) {
 			mobile = true;
 		}
-		res.render('space', {host: req.headers.host, is_mobile: mobile});
+		res.render('index', {host: req.headers.host, is_mobile: mobile});
 	});
 }
 
