@@ -105,7 +105,7 @@ Space = function(pageTransition) {
 	$("#space").bind('touchstart', this.inputStart.bind(this));
 	$("#space").bind('touchmove', this.inputMove.bind(this));
 	$("#space").bind('touchend', this.inputEnd.bind(this));
-	$("#page-to-index").bind("touchend", function(e) {
+	$(".page-to-index").bind("touchend", function(e) {
 		this.pageTransition("#page-index");
 	}.bind(this));
 };

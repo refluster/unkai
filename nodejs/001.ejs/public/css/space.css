@@ -33,7 +33,7 @@ body {
 								rgba(255, 255, 255, 0.0) 70%);
 }
 
-.page-transition {
+.page-to-index {
 	position: absolute;	
 	top: 0px;
 	left: 0px;
@@ -45,10 +45,41 @@ body {
 	text-align: center;
 }
 
+.status-icon {
+    -webkit-border-radius: 100px;
+    -moz-border-radius: 100px;
+    border-radius: 100px;
+    background-color: #999;
+	height: 100px;
+	width: 100px;
+	text-align: center;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
+
+.status-value {
+	position: absolute;
+	top: 0px;
+	left: 150px;
+}
+
+.status-item {
+	position: relative;
+	line-height: 100px;
+}
+
 #space {
     background: radial-gradient(rgba(0, 0, 0, 1) 50%,
 								rgba(0, 0, 0, 0.3) 60%,
 								rgba(0, 0, 0, 0.1) 65%,
 								rgba(240, 240, 240, 0) 70%);
+}
+
+#status-contents {
+	position: relative;
+	top: 200px;
+	left: 100px;
+	line-height: 50px;
 }
 
