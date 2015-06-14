@@ -27,7 +27,7 @@ Star.prototype.setPosition = function(x, y) {
 };
 
 ////////////////////////////////////////////////////////////
-Space = function(pageTransition) {
+Sky = function(pageTransition) {
 	this.colorTab = [
 		{rad: -Math.PI*1   , rgb: [
 			{r: 4095, g: 3261, b: 2784},
@@ -85,8 +85,8 @@ Space = function(pageTransition) {
 			{r: 4095, g: 3521, b: 2568}]},
 	];
 	
-	this.w = $("#page-space").width();
-	this.h = $("#page-space").height();
+	this.w = $("#page-sky").width();
+	this.h = $("#page-sky").height();
 	this.cx = this.w/2;
 	this.cy = this.h/2;
 	this.size = 1.2 * ((this.w > this.h)? this.h: this.w);
@@ -102,19 +102,19 @@ Space = function(pageTransition) {
 
 	this.pageTransition = pageTransition;
 	
-	$("#space").bind('touchstart', this.inputStart.bind(this));
-	$("#space").bind('touchmove', this.inputMove.bind(this));
-	$("#space").bind('touchend', this.inputEnd.bind(this));
+	$("#sky").bind('touchstart', this.inputStart.bind(this));
+	$("#sky").bind('touchmove', this.inputMove.bind(this));
+	$("#sky").bind('touchend', this.inputEnd.bind(this));
 	$(".page-to-index").bind("touchend", function(e) {
 		this.pageTransition("#page-index");
 	}.bind(this));
 };
-Space.prototype.inputStart = function(e) {
+Sky.prototype.inputStart = function(e) {
 	this.touchStartX = e.originalEvent.touches[0].pageX;
 	this.touchStartY = e.originalEvent.touches[0].pageY;
 	this.touchStartRadian = this.earthRadian;
 };
-Space.prototype.inputMove = function(e) {
+Sky.prototype.inputMove = function(e) {
     var x = e.originalEvent.touches[0].pageX;
 	var y = e.originalEvent.touches[0].pageY;
 
@@ -135,12 +135,12 @@ Space.prototype.inputMove = function(e) {
 	this.earthRotate();
 	e.preventDefault();
 };
-Space.prototype.inputEnd = function(e) {
+Sky.prototype.inputEnd = function(e) {
 };
-Space.prototype.setSize = function() {
-	$("#space").css("height", this.size + 'px');
-	$("#space").css("width", this.size + 'px');
-	$("#space").css("transform", "translate(" +
+Sky.prototype.setSize = function() {
+	$("#sky").css("height", this.size + 'px');
+	$("#sky").css("width", this.size + 'px');
+	$("#sky").css("transform", "translate(" +
 					((this.w - this.size)/2) + "px, " +
 					((this.h - this.size)/2) + "px)");
 
@@ -148,12 +148,12 @@ Space.prototype.setSize = function() {
 	this.brightstar.setSize(this.size / 16);
 	this.darkstar.setSize(this.size / 16);
 };
-Space.prototype.setPosition = function() {
+Sky.prototype.setPosition = function() {
 	this.earthRotate();
 	this.brightstar.setPosition(this.size/2, this.size/2 - this.size/2*0.7);
 	this.darkstar.setPosition(this.size/2, this.size/2 + this.size/2*0.7);
 };
-Space.prototype.earthRotate = function() {
+Sky.prototype.earthRotate = function() {
 	const ratio = 0.6;
 	var x = this.size/2 + ratio*this.size/2*Math.sin(this.earthRadian);
 	var y = this.size/2 + ratio*this.size/2*Math.cos(this.earthRadian);
@@ -181,11 +181,11 @@ Space.prototype.earthRotate = function() {
 
 	tlc5940_update();
 };
-Space.prototype.show = function() {
-	$('#page-space').css('display', 'block');
+Sky.prototype.show = function() {
+	$('#page-sky').css('display', 'block');
 	this.setSize();
 	this.setPosition();
 };
-Space.prototype.hidden = function() {
-	$('#page-space').css('display', 'none');
+Sky.prototype.hidden = function() {
+	$('#page-sky').css('display', 'none');
 };
