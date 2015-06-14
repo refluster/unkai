@@ -18,8 +18,10 @@ Star = function(elem) {
 	this.elem = elem;
 };
 Star.prototype.setSize = function(size) {
-	this.elem.css("height", size + "px");
-	this.elem.css("width", size + "px");
+	this.elem
+		.css("height", size + "px")
+		.css("width", size + "px")
+		.css("position", "absolute");
 	this.size = size;
 };
 Star.prototype.setPosition = function(x, y) {
@@ -85,8 +87,17 @@ Sky = function(pageTransition) {
 			{r: 4095, g: 3521, b: 2568}]},
 	];
 	
-	this.w = $("#page-sky").width();
-	this.h = $("#page-sky").height();
+	this.$page = $("#page-sky");
+	this.$sky = $("#sky-space");
+	this.$toIndex = $(".page-to-index");
+
+	this.$sky.css('background', 'radial-gradient(rgba(0, 0, 0, 1) 50%,' +
+				  'rgba(0, 0, 0, 0.3) 60%,' +
+				  'rgba(0, 0, 0, 0.1) 65%,' +
+				  'rgba(240, 240, 240, 0) 70%)');
+
+	this.w = this.$page.width();
+	this.h = this.$page.height();
 	this.cx = this.w/2;
 	this.cy = this.h/2;
 	this.size = 1.2 * ((this.w > this.h)? this.h: this.w);
@@ -102,10 +113,10 @@ Sky = function(pageTransition) {
 
 	this.pageTransition = pageTransition;
 	
-	$("#sky").bind('touchstart', this.inputStart.bind(this));
-	$("#sky").bind('touchmove', this.inputMove.bind(this));
-	$("#sky").bind('touchend', this.inputEnd.bind(this));
-	$(".page-to-index").bind("touchend", function(e) {
+	this.$sky.bind('touchstart', this.inputStart.bind(this));
+	this.$sky.bind('touchmove', this.inputMove.bind(this));
+	this.$sky.bind('touchend', this.inputEnd.bind(this));
+	this.$toIndex.bind("touchend", function(e) {
 		this.pageTransition("#page-index");
 	}.bind(this));
 };
@@ -138,11 +149,11 @@ Sky.prototype.inputMove = function(e) {
 Sky.prototype.inputEnd = function(e) {
 };
 Sky.prototype.setSize = function() {
-	$("#sky").css("height", this.size + 'px');
-	$("#sky").css("width", this.size + 'px');
-	$("#sky").css("transform", "translate(" +
-					((this.w - this.size)/2) + "px, " +
-					((this.h - this.size)/2) + "px)");
+	this.$sky.css("height", this.size + 'px');
+	this.$sky.css("width", this.size + 'px');
+	this.$sky.css("transform", "translate(" +
+				  ((this.w - this.size)/2) + "px, " +
+				  ((this.h - this.size)/2) + "px)");
 
 	this.earth.setSize(this.size / 10);
 	this.brightstar.setSize(this.size / 16);
@@ -172,9 +183,6 @@ Sky.prototype.earthRotate = function() {
 				brightness[3*i + 2] = Math.floor(a.rgb[i].b*ratioA + b.rgb[i].b*ratioB);
 			}
 			
-			//			console.log(this.earthRadian);
-			//			console.log(brightness);
-
 			break;
 		}
 	}
@@ -182,10 +190,10 @@ Sky.prototype.earthRotate = function() {
 	tlc5940_update();
 };
 Sky.prototype.show = function() {
-	$('#page-sky').css('display', 'block');
+	this.$page.css('display', 'block');
 	this.setSize();
 	this.setPosition();
 };
 Sky.prototype.hidden = function() {
-	$('#page-sky').css('display', 'none');
+	this.$page.css('display', 'none');
 };

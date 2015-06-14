@@ -31,7 +31,7 @@ var Index = function(pageTransition) {
 		.css('text-align', 'center')
 		.css('position', 'absolute')
 		.css('top', '0px')
-		.css('left', '100px')
+		.css('left', '100px');
 	this.$toStatus
 		.css('-webkit-border-radius', '100px')
 		.css('-moz-border-radius', '100px')
@@ -43,7 +43,7 @@ var Index = function(pageTransition) {
 		.css('text-align', 'center')
 		.css('position', 'absolute')
 		.css('top', '0px')
-		.css('left', '400px')
+		.css('left', '400px');
 };
 Index.prototype.show = function() {
 	this.$page.css('display', 'block');
