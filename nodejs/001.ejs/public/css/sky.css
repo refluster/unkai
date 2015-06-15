@@ -1,3 +1,8 @@
+* {
+	margin: 0px;
+	padding: 0px;
+}
+
 body {
 	overflow: hidden;
 	font-size: 32px;
@@ -19,7 +24,7 @@ div {
 	left: 0px;
 	bottom: 0px;
 	right: 0px;
-	overflow: visible;
+	overflow: hidden;
 	display: none;
 }
 
