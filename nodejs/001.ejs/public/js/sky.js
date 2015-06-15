@@ -151,9 +151,13 @@ Sky.prototype.inputEnd = function(e) {
 Sky.prototype.setSize = function() {
 	this.$sky.css("height", this.size + 'px');
 	this.$sky.css("width", this.size + 'px');
+/*
 	this.$sky.css("transform", "translate(" +
 				  ((this.w - this.size)/2) + "px, " +
 				  ((this.h - this.size)/2) + "px)");
+*/
+	this.$sky.css("top", (this.cy - this.size/2) + "px");
+	this.$sky.css("left", (this.cx - this.size/2) + "px");
 
 	this.earth.setSize(this.size / 10);
 	this.brightstar.setSize(this.size / 16);
