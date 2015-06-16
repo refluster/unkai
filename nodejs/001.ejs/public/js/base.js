@@ -23,9 +23,16 @@ Pager.prototype.pageTransition = function(to) {
 Pager.prototype.show = function() {
 	this.currentPage.show();
 };
+Pager.prototype.resize = function() {
+	this.currentPage.resize();
+};
 
-window.onload = function() {
+$(function() {
 	var pager = new Pager();
 	pager.show();
-};
+
+	$(window).resize(function() {
+		pager.resize();
+	});
+});
 
