@@ -20,7 +20,8 @@ int main(int argc, char **argv) {
 	if (onetime_mode) {
 		dht11_read_val();
 	} else {
-		while(1) {
+		int i;
+		for (i = 0; i < RETRY_MAX; i++) {
 			dht11_read_val();
 			delay(1000);
 		}
