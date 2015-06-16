@@ -95,6 +95,24 @@ function rtc_set(date) {
 	});
 }
 
+// mistgen ////////////////////////////
+var mistgen_process;
+if (! TEST_DRIVER) {
+	mistgen_process = spawn("../../c/006.mistgen/006.mistgen");
+}
+var mistgen_percent = 0;
+
+function mistgen_set(ratio) {
+	if (TEST_DRIVER) {
+		console.log('mistgen_set: ' + ratio);
+		return;
+	}
+
+	var cmd = "1 " + ratio + "\n";
+	mistgen_process.stdin.write(cmd);
+	mistgen_percent = ratio;
+}
+
 // primitive function ////////////////////////////
 function extend(target) {
 	var sources = [].slice.call(arguments, 1);
@@ -126,4 +144,8 @@ exports.getLed = function(callback) {
 
 exports.setRtc = function(date) {
 	rtc_set(date);
+};
+
+exports.setMistgen = function(ratio) {
+	mistgen_set(ratio);
 };

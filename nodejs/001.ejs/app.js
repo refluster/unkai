@@ -37,6 +37,10 @@ function start() {
 	// driver
 	driver = require('./lib/drv');
 
+	// conditioner
+	conditioner = require('./lib/conditioner');
+	conditioner.init(driver);
+
 	// socket io
 	socket = require('./lib/socket');
 	socket.init(driver, server);
