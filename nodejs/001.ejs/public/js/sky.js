@@ -96,11 +96,6 @@ Sky = function(pageTransition) {
 				  'rgba(0, 0, 0, 0.1) 65%,' +
 				  'rgba(240, 240, 240, 0) 70%)');
 
-	this.w = this.$page.width();
-	this.h = this.$page.height();
-	this.cx = this.w/2;
-	this.cy = this.h/2;
-	this.size = 1.2 * ((this.w > this.h)? this.h: this.w);
 	this.touchStartX;
 	this.touchStartY;
 	this.touchStartRadian;
@@ -148,25 +143,31 @@ Sky.prototype.inputMove = function(e) {
 };
 Sky.prototype.inputEnd = function(e) {
 };
-Sky.prototype.setSize = function() {
-	this.$sky.css("height", this.size + 'px');
-	this.$sky.css("width", this.size + 'px');
-	this.$sky.css("top", (this.cy - this.size/2) + "px");
-	this.$sky.css("left", (this.cx - this.size/2) + "px");
+Sky.prototype.resize = function() {
+	this.w = this.$page.width();
+	this.h = this.$page.height();
+	this.cx = this.w/2;
+	this.cy = this.h/2;
+	var baseSize = 1.2 * ((this.w > this.h)? this.h: this.w);
 
-	this.earth.setSize(this.size / 10);
-	this.brightstar.setSize(this.size / 16);
-	this.darkstar.setSize(this.size / 16);
-};
-Sky.prototype.setPosition = function() {
+	this.$sky.css("height", baseSize + 'px');
+	this.$sky.css("width", baseSize + 'px');
+	this.$sky.css("top", (this.cy - baseSize/2) + "px");
+	this.$sky.css("left", (this.cx - baseSize/2) + "px");
+
+	this.earth.setSize(baseSize / 10);
+	this.brightstar.setSize(baseSize / 16);
+	this.darkstar.setSize(baseSize / 16);
+
 	this.earthRotate();
-	this.brightstar.setPosition(this.size/2, this.size/2 - this.size/2*0.7);
-	this.darkstar.setPosition(this.size/2, this.size/2 + this.size/2*0.7);
+	this.brightstar.setPosition(baseSize/2, baseSize/2 - baseSize/2*0.7);
+	this.darkstar.setPosition(baseSize/2, baseSize/2 + baseSize/2*0.7);
 };
 Sky.prototype.earthRotate = function() {
 	const ratio = 0.6;
-	var x = this.size/2 + ratio*this.size/2*Math.sin(this.earthRadian);
-	var y = this.size/2 + ratio*this.size/2*Math.cos(this.earthRadian);
+	var baseSize = 1.2 * ((this.w > this.h)? this.h: this.w);
+	var x = baseSize/2 + ratio*baseSize/2*Math.sin(this.earthRadian);
+	var y = baseSize/2 + ratio*baseSize/2*Math.cos(this.earthRadian);
 	this.earth.setPosition(x, y);
 
 	for (var i = 0; i < this.colorTab.length; i++) {
@@ -190,8 +191,8 @@ Sky.prototype.earthRotate = function() {
 };
 Sky.prototype.show = function() {
 	this.$page.css('display', 'block');
-	this.setSize();
-	this.setPosition();
+	this.resize();
+//	this.setPosition();
 };
 Sky.prototype.hidden = function() {
 	this.$page.css('display', 'none');
