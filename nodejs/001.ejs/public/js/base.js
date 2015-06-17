@@ -1,3 +1,19 @@
+jQuery.fn.appear = function(duration) {
+	this
+		.css('transition-property', 'transform opacity')
+		.css('transform', 'translateX(0px)')
+		.css('transform', 'translateY(0px)')
+		.css('transition-duration', duration + 's')
+		.css('opacity', '100')
+};
+
+jQuery.fn.hideTranslation = function(x, y) {
+	this
+		.css('transform', 'translateX(' + x +'px)')
+		.css('transform', 'translateY(' + y +'px)')
+		.css('opacity', '0');
+}
+
 var Pager = function() {
 	this.index = new Index(this.pageTransition.bind(this));
 	this.sky = new Sky(this.pageTransition.bind(this));
