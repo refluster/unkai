@@ -7,10 +7,10 @@ var Index = function(pageTransition) {
 	this.$toSky = $("#page-to-sky");
 	this.$toStatus = $("#page-to-status");
 
-	this.$toSky.bind("touchend", function(e) {
+	this.$toSky.click(function(e) {
 		this.pageTransition("#page-sky");
 	}.bind(this));
-	this.$toStatus.bind("touchend", function(e) {
+	this.$toStatus.click(function(e) {
 		this.pageTransition("#page-status");
 	}.bind(this));
 };
