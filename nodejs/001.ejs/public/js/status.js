@@ -40,49 +40,46 @@ Status.prototype.resize = function() {
 	this.w = this.$page.width();
 	this.h = this.$page.height();
 
-	var iconRadius = (this.w > this.h? this.h: this.w) * 0.18;
-	var illuminancePosV = this.h * 0.5;
-	var moisturePosV = this.h * 0.7;
-	var iconPosH = this.w/2 - this.h * 0.2;
-	var valuePosH = this.w/2 + this.h * 0.1;
-	var fontSize = (this.w > this.h? this.h: this.w) * 0.05;
+	var shortSide = (this.w > this.h? this.h: this.w);
+	var iconSize = shortSide * 0.18;
+	var illuminancePosV = this.h/2 - shortSide * 0.1;
+	var moisturePosV = this.h/2 + shortSide * 0.2;
+	var iconPosH = this.w/2 - shortSide * 0.1;
+	var valuePosH = this.w/2 + shortSide * 0.15;
+	var fontSize = shortSide * 0.05;
 
 	this.$illuminanceIcon
 		.css('position', 'absolute')
 		.css('font-size', fontSize + "px")
-		.css('-webkit-border-radius', iconRadius + 'px')
-		.css('-moz-border-radius', iconRadius + 'px')
-		.css('border-radius', iconRadius + 'px')
-		.css('background-color', '#999')
-		.css('height', iconRadius + 'px')
-		.css('width', iconRadius + 'px')
-		.css('line-height', iconRadius + 'px')
-		.css('top', (illuminancePosV - iconRadius) + 'px')
-		.css('left', (iconPosH) + 'px');
+		.css('background-image', 'url(/img/icon/illuminance.png)')
+		.css('background-size', iconSize + 'px')
+		.css('height', iconSize + 'px')
+		.css('width', iconSize + 'px')
+		.css('line-height', iconSize + 'px')
+		.css('top', (illuminancePosV - iconSize/2) + 'px')
+		.css('left', (iconPosH - iconSize/2) + 'px');
 	this.$moistureIcon
 		.css('position', 'absolute')
 		.css('font-size', fontSize + "px")
-		.css('-webkit-border-radius', iconRadius + 'px')
-		.css('-moz-border-radius', iconRadius + 'px')
-		.css('border-radius', iconRadius + 'px')
-		.css('background-color', '#999')
-		.css('height', iconRadius + 'px')
-		.css('width', iconRadius + 'px')
-		.css('line-height', iconRadius + 'px')
-		.css('top', (moisturePosV - iconRadius) + 'px')
-		.css('left', (iconPosH) + 'px');
+		.css('background-image', 'url(/img/icon/moisture.png)')
+		.css('background-size', iconSize + 'px')
+		.css('height', iconSize + 'px')
+		.css('width', iconSize + 'px')
+		.css('line-height', iconSize + 'px')
+		.css('top', (moisturePosV - iconSize/2) + 'px')
+		.css('left', (iconPosH - iconSize/2) + 'px');
 	this.$illuminanceValue
 		.css('position', 'absolute')
 		.css('font-size', fontSize + "px")
-		.css('line-height', iconRadius + 'px')
-		.css('height', iconRadius + 'px')
-		.css('top', (illuminancePosV - iconRadius) + 'px')
-		.css('left', valuePosH + 'px');
+		.css('line-height', iconSize + 'px')
+		.css('height', iconSize + 'px')
+		.css('top', (illuminancePosV - iconSize/2) + 'px')
+		.css('left', (valuePosH - iconSize/2) + 'px');
 	this.$moistureValue
 		.css('position', 'absolute')
 		.css('font-size', fontSize + "px")
-		.css('line-height', iconRadius + 'px')
-		.css('height', iconRadius + 'px')
-		.css('top', (moisturePosV - iconRadius) + 'px')
-		.css('left', valuePosH + 'px');
+		.css('line-height', iconSize + 'px')
+		.css('height', iconSize + 'px')
+		.css('top', (moisturePosV - iconSize/2) + 'px')
+		.css('left', (valuePosH - iconSize/2) + 'px');
 };

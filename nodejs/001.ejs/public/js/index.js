@@ -25,7 +25,9 @@ Index.prototype.resize = function() {
 	this.w = this.$page.width();
 	this.h = this.$page.height();
 
-	var buttonRadius = (this.w > this.h? this.h: this.w) * 0.18;
+	var shortSide = (this.w > this.h? this.h: this.w);
+	var buttonRadius = shortSide * 0.18;
+	var buttonSideMarigin = this.w/2 - shortSide*0.18;
 	this.$doc
 		.css('top', (this.h * 0.15) + 'px')
 		.css('font-size', (this.h * 0.04) + 'px')
@@ -34,27 +36,23 @@ Index.prototype.resize = function() {
 		.css('font-size', this.h * 0.04 + 'px')
 		.css('top', this.h * 0.47 + 'px');
 	this.$toSky
-		.css('-webkit-border-radius', buttonRadius + 'px')
-		.css('-moz-border-radius', buttonRadius + 'px')
-		.css('border-radius', buttonRadius + 'px')
-		.css('background-color', '#bbb')
+		.css('background-image', 'url(/img/icon/sky02.png)')
+		.css('background-size', buttonRadius + 'px')
 		.css('line-height', buttonRadius + 'px')
 		.css('height', buttonRadius + 'px')
 		.css('width', buttonRadius + 'px')
 		.css('text-align', 'center')
 		.css('position', 'absolute')
 		.css('top', '0px')
-		.css('left', (this.w/2 - this.h*0.08 - buttonRadius) + 'px');
+		.css('left', (buttonSideMarigin - buttonRadius/2) + 'px');
 	this.$toStatus
-		.css('-webkit-border-radius', buttonRadius + 'px')
-		.css('-moz-border-radius', buttonRadius + 'px')
-		.css('border-radius', buttonRadius + 'px')
-		.css('background-color', '#bbb')
+		.css('background-image', 'url(/img/icon/status02.png)')
+		.css('background-size', buttonRadius + 'px')
 		.css('line-height', buttonRadius + 'px')
 		.css('height', buttonRadius + 'px')
 		.css('width', buttonRadius + 'px')
 		.css('text-align', 'center')
 		.css('position', 'absolute')
 		.css('top', '0px')
-		.css('right', (this.w/2 - this.h*0.08 - buttonRadius) + 'px');
+		.css('right', (buttonSideMarigin - buttonRadius/2) + 'px');
 };
