@@ -13,10 +13,32 @@ var Index = function(pageTransition) {
 	this.$toStatus.click(function(e) {
 		this.pageTransition("#page-status");
 	}.bind(this));
+
+	this.$toSky.bind('touchstart', function(e) {
+		this.pageTransition("#page-sky");
+	}.bind(this));
+	this.$toStatus.bind('touchstart', function(e) {
+		this.pageTransition("#page-status");
+	}.bind(this));
+
 };
 Index.prototype.show = function() {
 	this.resize();
 	this.$page.css('display', 'block');
+
+	this.$doc.hideTranslation(0, 80);
+	this.$toSky.hideTranslation(0, 80);
+	this.$toStatus.hideTranslation(0, 80);
+
+	setTimeout(function() {
+		this.$doc.appear(.4);
+	}.bind(this), 100);
+	setTimeout(function() {
+		this.$toSky.appear(.4);
+	}.bind(this), 300);
+	setTimeout(function() {
+		this.$toStatus.appear(.4);
+	}.bind(this), 500);
 };
 Index.prototype.hidden = function() {
 	this.$page.css('display', 'none');
