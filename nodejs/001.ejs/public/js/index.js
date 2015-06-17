@@ -26,8 +26,8 @@ Index.prototype.resize = function() {
 	this.h = this.$page.height();
 
 	var shortSide = (this.w > this.h? this.h: this.w);
-	var buttonRadius = shortSide * 0.18;
-	var buttonSideMarigin = this.w/2 - shortSide*0.18;
+	var buttonRadius = Math.floor(shortSide * 0.18);
+	var buttonSideMarigin = Math.floor(this.w/2 - shortSide*0.18);
 	this.$doc
 		.css('top', (this.h * 0.15) + 'px')
 		.css('font-size', (this.h * 0.04) + 'px')

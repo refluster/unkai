@@ -18,6 +18,7 @@ Star = function(elem) {
 	this.elem = elem;
 };
 Star.prototype.setSize = function(size) {
+	size = Math.floor(size);
 	this.elem
 		.css("height", size + "px")
 		.css("width", size + "px")
@@ -25,6 +26,8 @@ Star.prototype.setSize = function(size) {
 	this.size = size;
 };
 Star.prototype.setPosition = function(x, y) {
+	x = Math.floor(x);
+	y = Math.floor(y);
 	this.elem.css("transform", "translate(" + (x - this.size/2) + "px, " + (y - this.size/2) + "px)");
 };
 
@@ -148,7 +151,7 @@ Sky.prototype.resize = function() {
 	this.h = this.$page.height();
 	this.cx = this.w/2;
 	this.cy = this.h/2;
-	var baseSize = 1.2 * ((this.w > this.h)? this.h: this.w);
+	var baseSize = Math.floor(1.2 * ((this.w > this.h)? this.h: this.w));
 
 	this.$sky.css("height", baseSize + 'px');
 	this.$sky.css("width", baseSize + 'px');

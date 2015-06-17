@@ -41,12 +41,12 @@ Status.prototype.resize = function() {
 	this.h = this.$page.height();
 
 	var shortSide = (this.w > this.h? this.h: this.w);
-	var iconSize = shortSide * 0.18;
-	var illuminancePosV = this.h/2 - shortSide * 0.1;
-	var moisturePosV = this.h/2 + shortSide * 0.2;
-	var iconPosH = this.w/2 - shortSide * 0.1;
-	var valuePosH = this.w/2 + shortSide * 0.15;
-	var fontSize = shortSide * 0.05;
+	var iconSize = Math.floor(shortSide * 0.18);
+	var illuminancePosV = Math.floor(this.h/2 - shortSide * 0.1);
+	var moisturePosV = Math.floor(this.h/2 + shortSide * 0.2);
+	var iconPosH = Math.floor(this.w/2 - shortSide * 0.1);
+	var valuePosH = Math.floor(this.w/2 + shortSide * 0.15);
+	var fontSize = Math.floor(shortSide * 0.05);
 
 	this.$illuminanceIcon
 		.css('position', 'absolute')
