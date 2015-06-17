@@ -43,6 +43,7 @@ Index.prototype.resize = function() {
 		.css('width', buttonRadius + 'px')
 		.css('text-align', 'center')
 		.css('position', 'absolute')
+		.css('color', '#fff')
 		.css('top', '0px')
 		.css('left', (buttonSideMarigin - buttonRadius/2) + 'px');
 	this.$toStatus
@@ -53,6 +54,7 @@ Index.prototype.resize = function() {
 		.css('width', buttonRadius + 'px')
 		.css('text-align', 'center')
 		.css('position', 'absolute')
+		.css('color', '#fff')
 		.css('top', '0px')
 		.css('right', (buttonSideMarigin - buttonRadius/2) + 'px');
 };
