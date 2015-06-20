@@ -40,6 +40,7 @@ function start() {
 	// conditioner
 	conditioner = require('./lib/conditioner');
 	conditioner.init(driver);
+	conditioner.start();
 
 	// socket io
 	socket = require('./lib/socket');

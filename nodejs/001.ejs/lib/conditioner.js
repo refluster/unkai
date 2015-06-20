@@ -19,5 +19,12 @@ function updateCondition() {
 
 exports.init = function(_driver) {
 	driver = _driver;
-	timer = setInterval(updateCondition, UPDATE_INTERVAL);
 };
+
+exports.start = function() {
+	timer = setInterval(updateCondition, UPDATE_INTERVAL);
+}
+
+exports.end = function() {
+	clearInterval(timer);
+}
