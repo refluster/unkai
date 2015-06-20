@@ -41,45 +41,54 @@ Status.prototype.resize = function() {
 	this.h = this.$page.height();
 
 	var shortSide = (this.w > this.h? this.h: this.w);
-	var iconSize = Math.floor(shortSide * 0.18);
-	var illuminancePosV = Math.floor(this.h/2 - shortSide * 0.1);
-	var moisturePosV = Math.floor(this.h/2 + shortSide * 0.2);
-	var iconPosH = Math.floor(this.w/2 - shortSide * 0.1);
-	var valuePosH = Math.floor(this.w/2 + shortSide * 0.15);
-	var fontSize = Math.floor(shortSide * 0.05);
+	var iconSize = Math.floor(shortSide * 0.15);
+	var valueWidth = shortSide * 0.18 * 2;
+	var illuminancePosH = Math.floor(this.w/2 - shortSide * 0.18);
+	var moisturePosH = Math.floor(this.w/2 + shortSide * 0.18);
+	var iconPosV = Math.floor(this.h/2 - shortSide * 0.1);
+	var valuePosV = Math.floor(this.h/2 + shortSide * 0.15);
+	var fontSize = Math.floor(shortSide * 0.08);
 
 	this.$illuminanceIcon
 		.css('position', 'absolute')
+		.css('font-family', "sans-serif")
 		.css('font-size', fontSize + "px")
 		.css('background-image', 'url(/img/icon/illuminance.png)')
 		.css('background-size', iconSize + 'px')
 		.css('height', iconSize + 'px')
 		.css('width', iconSize + 'px')
 		.css('line-height', iconSize + 'px')
-		.css('top', (illuminancePosV - iconSize/2) + 'px')
-		.css('left', (iconPosH - iconSize/2) + 'px');
+		.css('top', (iconPosV - iconSize/2) + 'px')
+		.css('left', (illuminancePosH - iconSize/2) + 'px');
 	this.$moistureIcon
 		.css('position', 'absolute')
+		.css('font-family', "sans-serif")
 		.css('font-size', fontSize + "px")
 		.css('background-image', 'url(/img/icon/moisture.png)')
 		.css('background-size', iconSize + 'px')
 		.css('height', iconSize + 'px')
 		.css('width', iconSize + 'px')
 		.css('line-height', iconSize + 'px')
-		.css('top', (moisturePosV - iconSize/2) + 'px')
-		.css('left', (iconPosH - iconSize/2) + 'px');
+		.css('top', (iconPosV - iconSize/2) + 'px')
+		.css('left', (moisturePosH - iconSize/2) + 'px');
 	this.$illuminanceValue
 		.css('position', 'absolute')
+		.css('font-family', "sans-serif")
 		.css('font-size', fontSize + "px")
 		.css('line-height', iconSize + 'px')
 		.css('height', iconSize + 'px')
-		.css('top', (illuminancePosV - iconSize/2) + 'px')
-		.css('left', (valuePosH - iconSize/2) + 'px');
+		.css('width', valueWidth + 'px')
+		.css('text-align', "center")
+		.css('top', (valuePosV - iconSize/2) + 'px')
+		.css('left', (illuminancePosH - valueWidth/2) + 'px');
 	this.$moistureValue
 		.css('position', 'absolute')
+		.css('font-family', "sans-serif")
 		.css('font-size', fontSize + "px")
 		.css('line-height', iconSize + 'px')
 		.css('height', iconSize + 'px')
-		.css('top', (moisturePosV - iconSize/2) + 'px')
-		.css('left', (valuePosH - iconSize/2) + 'px');
+		.css('width', valueWidth + 'px')
+		.css('text-align', "center")
+		.css('top', (valuePosV - iconSize/2) + 'px')
+		.css('left', (moisturePosH - valueWidth/2) + 'px');
 };
