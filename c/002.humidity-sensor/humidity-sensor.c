@@ -54,11 +54,15 @@ static int dht11_read_val_test(float *humidity, float *temperature, float *fahre
 
 void dht11_read_val() {
 	float humidity, temperature, fahrenheit;
+	int i;
 	
-	while (dht11_read_val_test(&humidity, &temperature, &fahrenheit) != 0);
-
-	printf("humidity:%.1f celsius:%.1f fahrenheit:%.1f\n",
-		   humidity, temperature, fahrenheit);
+	for (i = 0; i < RETRY_MAX; i++) {
+		if (dht11_read_val_test(&humidity, &temperature, &fahrenheit) == 0) {
+			printf("humidity:%.1f celsius:%.1f fahrenheit:%.1f\n",
+				   humidity, temperature, fahrenheit);
+			break;
+		}
+	}
 }
 
 int dht11_init() {
