@@ -1,6 +1,7 @@
 const UPDATE_INTERVAL = 3000; // msec order
 var timer;
 var driver;
+var processing = false;
 
 function updateCondition() {
 	const MIST_GEN_LOWER_MOISTURE = 220;
@@ -22,9 +23,16 @@ exports.init = function(_driver) {
 };
 
 exports.start = function() {
+	if (processing) {
+		clearTimeout(timer);
+	}
 	timer = setInterval(updateCondition, UPDATE_INTERVAL);
+	processing = true;
 }
 
-exports.end = function() {
-	clearInterval(timer);
+exports.stop = function() {
+	if (processing) {
+		clearInterval(timer);
+	}
+	processing = false;
 }

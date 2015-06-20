@@ -1,6 +1,8 @@
-exports.init = function(drv, server) {
+exports.init = function(driver, server, conditioner) {
+	const SLEEP_CONDITIONER_INTERVAL = 10000;
 	var io = require('socket.io').listen(server);
-	
+	var timer;
+
 	io.sockets.on('connection', function(client) {
 		console.log("connection");
 		
@@ -11,7 +13,7 @@ exports.init = function(drv, server) {
 		
 		// sensor
 		client.on('sensor/get', function(data) {
-			drv.getSensor(function(val) {
+			driver.getSensor(function(val) {
 				client.emit('sensor/response', val);
 				console.log('sensor');
 			});
@@ -19,13 +21,19 @@ exports.init = function(drv, server) {
 		
 		// led
 		client.on('led/set', function(data) {
-			drv.setLed(data.brightness);
+			driver.setLed(data.brightness);
 			console.log("led/set " + data.brightness);
+			conditioner.stop();
+			driver.setMistgen(100);
+			clearInterval(timer);
+			timer = setTimeout(function() {
+				conditioner.start();
+			}, SLEEP_CONDITIONER_INTERVAL);
 		});
 		
 		// rtc
 		client.on('rtc/set', function(data) {
-			drv.setRtc(data.date);
+			driver.setRtc(data.date);
 			console.log("rtc/set " + data.date);
 		});
 	});

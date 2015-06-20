@@ -44,7 +44,7 @@ function start() {
 
 	// socket io
 	socket = require('./lib/socket');
-	socket.init(driver, server);
+	socket.init(driver, server, conditioner);
 
 	// pages
 	app.get("/status", function(req, res) {
