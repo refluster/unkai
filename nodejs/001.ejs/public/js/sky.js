@@ -103,7 +103,7 @@ Sky = function(pageTransition) {
 	this.touchStartY;
 	this.touchStartRadian;
 
-	this.earthRadian = 0;
+	this.earthRadian = -Math.PI/6;
 
 	this.earth = new Star($("#earth"));
 	this.brightstar = new Star($("#brightstar"));
