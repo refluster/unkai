@@ -1,19 +1,21 @@
-var express = require('express');
-var http = require('http');
-var path = require('path');
+var App = function() {
+	this.express = require('express');
+	this.http = require('http');
+	this.path = require('path');
+	
+	this.app = this.express();
+	this.server;
+};
 
-var app = express();
-var server;
-
-function stop() {
+App.prototype.stop = function() {
 	// terminate background processes
 	//   T.B.D.
 
-	// close http server
-	server.close();
+    // close http server
+    this.server.close();
 }
 
-function isMobile(ua) {
+App.prototype.isMobile = function(ua) {
 	if ((ua.indexOf('iPhone') > 0 && ua.indexOf('iPad') == -1) ||
 		ua.indexOf('iPod') > 0 ||
 		ua.indexOf('Android') > 0) {
@@ -22,48 +24,49 @@ function isMobile(ua) {
 	return false;
 }
 
-function start() {
+App.prototype.start = function() {
 	// server settings
-	app.set('port', process.env.PORT || 3000);
-	app.set('view engine', 'ejs');
-	app.use(express.static(path.join(__dirname, 'public')));
+	this.app.set('port', process.env.PORT || 3000);
+	this.app.set('view engine', 'ejs');
+	this.app.use(this.express.static(this.path.join(__dirname, 'public')));
 
 	// start server
-	server = http.createServer(app);
-	server.listen(app.get('port'), function() {
-		console.log('Express server listening on port ' + app.get('port'));
-	});
+	this.server = this.http.createServer(this.app);
+	this.server.listen(this.app.get('port'), function() {
+		console.log('Express server listening on port ' + this.app.get('port'));
+	}.bind(this));
 
 	// driver
-	driver = require('./lib/drv');
+	this.driver = require('./lib/drv');
 
 	// conditioner
-	conditioner = require('./lib/conditioner');
-	conditioner.init(driver);
-	conditioner.start();
+	this.conditioner = require('./lib/conditioner');
+	this.conditioner.init(this.driver);
+	this.conditioner.start();
 
 	// socket io
-	socket = require('./lib/socket');
-	socket.init(driver, server, conditioner);
+	this.socket = require('./lib/socket');
+	this.socket.init(this.driver, this.server, this.conditioner);
 
 	// pages
-	app.get("/status", function(req, res) {
+	this.app.get("/status", function(req, res) {
 		var mobile = false;
 		
-		if (isMobile(JSON.stringify(req.headers['user-agent']))) {
+		if (this.isMobile(JSON.stringify(req.headers['user-agent']))) {
 			mobile = true;
 		}
 		res.render('status', {host: req.headers.host, is_mobile: mobile});
-	});
+	}.bind(this));
 
-	app.get("/", function(req, res) {
+	this.app.get("/", function(req, res) {
 		var mobile = false;
 		
-		if (isMobile(JSON.stringify(req.headers['user-agent']))) {
+		if (this.isMobile(JSON.stringify(req.headers['user-agent']))) {
 			mobile = true;
 		}
 		res.render('index', {host: req.headers.host, is_mobile: mobile});
-	});
+	}.bind(this));
 }
 
-start();
+app = new App();
+app.start();
