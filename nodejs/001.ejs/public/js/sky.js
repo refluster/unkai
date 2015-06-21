@@ -151,8 +151,17 @@ Sky.prototype.resize = function() {
 	this.h = this.$page.height();
 	this.cx = this.w/2;
 	this.cy = this.h/2;
-	var baseSize = Math.floor(1.2 * ((this.w > this.h)? this.h: this.w));
 
+	var shortSide = (this.w > this.h)? this.h: this.w;
+	var baseSize = Math.floor(1.2 * shortSide);
+	var pageBackIconSide = Math.floor(shortSide * 0.08);
+
+	this.$toIndex
+		.css('background-image', 'url(/img/page-back.png)')
+		.css('background-size', pageBackIconSide + 'px')
+		.css('opacity', '0.5')
+		.css('height', pageBackIconSide + 'px')
+		.css('width', pageBackIconSide + 'px');
 	this.$sky.css("height", baseSize + 'px');
 	this.$sky.css("width", baseSize + 'px');
 	this.$sky.css("top", (this.cy - baseSize/2) + "px");

@@ -41,6 +41,7 @@ Status.prototype.resize = function() {
 	this.h = this.$page.height();
 
 	var shortSide = (this.w > this.h? this.h: this.w);
+	var pageBackIconSide = Math.floor(shortSide * 0.08);
 	var iconSize = Math.floor(shortSide * 0.15);
 	var valueWidth = shortSide * 0.18 * 2;
 	var illuminancePosH = Math.floor(this.w/2 - shortSide * 0.18);
@@ -49,6 +50,12 @@ Status.prototype.resize = function() {
 	var valuePosV = Math.floor(this.h/2 + shortSide * 0.15);
 	var fontSize = Math.floor(shortSide * 0.08);
 
+	this.$toIndex
+		.css('background-image', 'url(/img/page-back.png)')
+		.css('background-size', pageBackIconSide + 'px')
+		.css('opacity', '0.5')
+		.css('height', pageBackIconSide + 'px')
+		.css('width', pageBackIconSide + 'px');
 	this.$illuminanceIcon
 		.css('position', 'absolute')
 		.css('font-family', "sans-serif")
