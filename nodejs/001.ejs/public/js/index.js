@@ -60,6 +60,8 @@ Index.prototype.resize = function() {
 	this.$toSky
 		.css('background-image', 'url(/img/icon/sky02.png)')
 		.css('background-size', buttonRadius + 'px')
+		.css('border-radius', buttonRadius + 'px')
+		.css('box-shadow', '0px 8px 16px rgba(0,0,0,0.4)')
 		.css('line-height', buttonRadius + 'px')
 		.css('height', buttonRadius + 'px')
 		.css('width', buttonRadius + 'px')
@@ -71,6 +73,8 @@ Index.prototype.resize = function() {
 	this.$toStatus
 		.css('background-image', 'url(/img/icon/status02.png)')
 		.css('background-size', buttonRadius + 'px')
+		.css('border-radius', buttonRadius + 'px')
+		.css('box-shadow', '0px 8px 16px rgba(0,0,0,0.4)')
 		.css('line-height', buttonRadius + 'px')
 		.css('height', buttonRadius + 'px')
 		.css('width', buttonRadius + 'px')
