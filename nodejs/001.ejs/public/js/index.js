@@ -6,11 +6,6 @@ var Index = function(pageTransition) {
 	this.$link = $("#index-link");
 	this.$toSky = $("#page-to-sky");
 	this.$toStatus = $("#page-to-status");
-	this.$reset = $("#reset");
-
-	socket.on('system/reset/complete', function(data) {
-		this.$reset.css('background-color', '');
-	}.bind(this));
 
 	this.$toSky.click(function(e) {
 		this.pageTransition("#page-sky");
@@ -24,10 +19,6 @@ var Index = function(pageTransition) {
 	}.bind(this));
 	this.$toStatus.bind('touchstart', function(e) {
 		this.pageTransition("#page-status");
-	}.bind(this));
-	this.$reset.bind('touchstart', function(e) {
-		socket.emit('system/reset');
-		this.$reset.css('background-color', 'red');
 	}.bind(this));
 };
 Index.prototype.show = function() {
@@ -91,14 +82,4 @@ Index.prototype.resize = function() {
 		.css('color', '#fff')
 		.css('top', '0px')
 		.css('right', (buttonSideMarigin - buttonRadius/2) + 'px');
-	this.$reset
-		.css('border-radius', (buttonRadius/2) + 'px')
-		.css('box-shadow', '0px 4px 8px rgba(0,0,0,0.4)')
-		.css('line-height', (buttonRadius/2) + 'px')
-		.css('height', (buttonRadius/2) + 'px')
-		.css('width', (buttonRadius/2) + 'px')
-		.css('text-align', 'center')
-		.css('position', 'absolute')
-		.css('top', (this.h/2 + shortSide*0.4) + 'px')
-		.css('right', (this.w/2 - buttonRadius/4) + 'px');
 };

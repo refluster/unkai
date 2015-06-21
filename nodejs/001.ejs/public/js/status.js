@@ -12,14 +12,23 @@ var Status = function(pageTransition) {
 	this.$moistureValue = $("#status-moisture-val");
 	this.$toIndex = $(".page-to-index");
 	this.$page = $('#page-status');
+	this.$reset = $("#reset");
 	
 	this.$toIndex.bind("touchend", function(e) {
 		this.pageTransition("#page-index");
+	}.bind(this));
+	this.$reset.bind('touchstart', function(e) {
+		socket.emit('system/reset');
+		this.$reset.css('background-color', 'red');
 	}.bind(this));
 
 	this.update_time = 0;
 
 	// receive message
+	socket.on('system/reset/complete', function(data) {
+		this.$reset.css('background-color', '');
+	}.bind(this));
+
 	socket.on('sensor/response', function(data) {
 		console.log('sensor/response');
 		this.update_time ++;
@@ -98,4 +107,16 @@ Status.prototype.resize = function() {
 		.css('text-align', "center")
 		.css('top', (valuePosV - iconSize/2) + 'px')
 		.css('left', (moisturePosH - valueWidth/2) + 'px');
+	this.$reset
+		.css('border-radius', (iconSize/2) + 'px')
+		.css('box-shadow', '0px 4px 8px rgba(0,0,0,0.4)')
+		.css('line-height', (iconSize/2) + 'px')
+		.css('height', (iconSize/2) + 'px')
+		.css('width', (iconSize/2) + 'px')
+		.css('font-size', (shortSide * 0.03) + 'px')
+		.css('text-align', 'center')
+		.css('position', 'absolute')
+	//		.css('top', (this.h/2 + shortSide*0.4) + 'px')
+		.css('top', 0 + 'px')
+		.css('right', 0 + 'px');
 };
