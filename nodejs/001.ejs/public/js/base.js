@@ -1,6 +1,5 @@
 jQuery.fn.appear = function(duration) {
-	this
-		.css('transition-property', 'transform opacity')
+	this.css('transition-property', 'transform opacity')
 		.css('transform', 'translateX(0px)')
 		.css('transform', 'translateY(0px)')
 		.css('transition-duration', duration + 's')
@@ -8,8 +7,7 @@ jQuery.fn.appear = function(duration) {
 };
 
 jQuery.fn.hideTranslation = function(x, y) {
-	this
-		.css('transform', 'translateX(' + x +'px)')
+	this.css('transform', 'translateX(' + x +'px)')
 		.css('transform', 'translateY(' + y +'px)')
 		.css('opacity', '0');
 }

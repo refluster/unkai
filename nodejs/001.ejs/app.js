@@ -38,6 +38,7 @@ App.prototype.start = function() {
 
 	// driver
 	this.driver = require('./lib/drv');
+	this.driver.start();
 
 	// conditioner
 	this.conditioner = require('./lib/conditioner');
