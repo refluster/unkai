@@ -10,6 +10,7 @@
     <title>schememono / unkai</title>
     <link rel='stylesheet' href='css/sky.css' />
     <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/d3.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
     	socket = io.connect('http://<%= host %>');
@@ -18,6 +19,7 @@
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/sky.js"></script>
     <script type="text/javascript" src="js/status.js"></script>
+    <script type="text/javascript" src="js/status-history.js"></script>
   </head>
   <body>
     <div id="page-index" class="page">
@@ -42,6 +44,10 @@
       <div id="status-moisture-val"></div>
       <div id="reset">reset</div>
       <div class="page-to-index"></div>
+    </div>
+    <div id="page-status-history" class="page">
+      <div id="status-history-chart"></div>
+      <div id="page-status-history-to-status"></div>
     </div>
   </body>
 </html>

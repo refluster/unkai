@@ -16,6 +16,7 @@ var Pager = function() {
 	this.index = new Index(this.pageTransition.bind(this));
 	this.sky = new Sky(this.pageTransition.bind(this));
 	this.status = new Status(this.pageTransition.bind(this));
+	this.statusHistory = new StatusHistory(this.pageTransition.bind(this));
 	this.currentPage = this.id2obj("#page-index");
 };
 Pager.prototype.id2obj = function(id) {
@@ -26,6 +27,9 @@ Pager.prototype.id2obj = function(id) {
 		return this.sky;
 	case "#page-status":
 		return this.status;
+	case "#page-status-history":
+		return this.statusHistory;
+	default:
 	}
 };
 Pager.prototype.pageTransition = function(to) {

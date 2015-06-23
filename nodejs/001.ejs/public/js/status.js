@@ -21,6 +21,9 @@ var Status = function(pageTransition) {
 		socket.emit('system/reset');
 		this.$reset.css('background-color', 'red');
 	}.bind(this));
+	this.$illuminanceIcon.bind('touchstart', function(e) {
+		this.pageTransition("#page-status-history");
+	}.bind(this));
 
 	this.update_time = 0;
 
