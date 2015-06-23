@@ -45,6 +45,11 @@ App.prototype.start = function() {
 	this.conditioner.init(this.driver);
 	this.conditioner.start();
 
+	// logger
+	this.logger = require('./lib/logger');
+	this.logger.init(this.driver);
+	this.logger.start();
+
 	// socket io
 	this.socket = require('./lib/socket');
 	this.socket.init(this.driver, this.server, this.conditioner);
