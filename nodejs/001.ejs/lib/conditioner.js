@@ -4,7 +4,7 @@ var driver;
 var processing = false;
 
 function updateCondition() {
-	const MIST_GEN_LOWER_MOISTURE = 220;
+	const MIST_GEN_LOWER_MOISTURE = 120;
 	const MIN_MOISTURE = 0;
 
 	driver.getSensor(function(data) {
