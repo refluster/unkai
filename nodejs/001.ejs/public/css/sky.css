@@ -73,3 +73,6 @@ div {
   stroke-width: 1.5px;
 }
 
+.axis g {
+  font: 15px sans-serif;
+}

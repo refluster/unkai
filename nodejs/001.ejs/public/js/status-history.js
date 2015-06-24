@@ -10,9 +10,14 @@ var StatusHistory = function(pageTransition) {
 };
 
 StatusHistory.prototype.show = function() {
+	var w = this.$page.width();
+	var h = this.$page.height();
+
+	var shortSide = (w > h? h: w);
+
 	var margin = {top: 20, right: 20, bottom: 30, left: 50},
-		width = 960 - margin.left - margin.right,
-		height = 500 - margin.top - margin.bottom;
+		width = shortSide - margin.left - margin.right,
+		height = shortSide*9/16 - margin.top - margin.bottom;
 
 	var parseDate = d3.time.format("%Y/%m/%d %H:%M:%S").parse;
 
@@ -42,7 +47,6 @@ StatusHistory.prototype.show = function() {
 	var svg = svgFrame.append("g")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
 	this.$svg = $("#status-history-svg");
 	
 	d3.tsv("data/sensor.tsv", function(error, data) {
@@ -63,12 +67,6 @@ StatusHistory.prototype.show = function() {
 		svg.append("g")
 			.attr("class", "y axis")
 			.call(yAxis)
-			.append("text")
-			.attr("transform", "rotate(-90)")
-			.attr("y", 6)
-			.attr("dy", ".71em")
-			.style("text-anchor", "end")
-			.text("illuminance");
 
 		svg.append("path")
 			.datum(data)
@@ -101,10 +99,9 @@ StatusHistory.prototype.resize = function() {
 		.css('left', '0px')
 		.css('width', pageBackIconSide + 'px')
 		.css('height', pageBackIconSide + 'px');
+
 	this.$svg
 		.css('position', 'absolute')
-		.css('top', vMargin + 'px')
-		.css('bottom', vMargin + 'px')
-		.css('left', hMargin + 'px')
-		.css('right', hMargin + 'px');
+//		.css('top', (this.h - this.$svg.height())/2 + 'px')
+//		.css('left', (this.w - this.$svg.width())/2 + 'px')
 };
