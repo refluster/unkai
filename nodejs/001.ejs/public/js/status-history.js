@@ -1,15 +1,7 @@
-var StatusHistory = function(pageTransition) {
-	this.pageTransition = pageTransition;
-
-	this.$page = $("#page-status-history");
-	this.$toStatus = $("#page-status-history-to-status");
-
-	this.$toStatus.bind("touchend", function(e) {
-		this.pageTransition("#page-status");
-	}.bind(this));
+var Graph = function() {
 };
 
-StatusHistory.prototype.show = function() {
+Graph.prototype.appendTo = function(selector) {
 	var parseDate = d3.time.format("%Y/%m/%d %H:%M:%S").parse;
 
 	var margin = {top: 20, right: 20, bottom: 30, left: 40},
@@ -45,7 +37,7 @@ StatusHistory.prototype.show = function() {
 		.scaleExtent([1, 10])
 		.on("zoom", zoomed);
 
-	var svg = d3.select("#status-history-chart").append("svg")
+	var svg = d3.select(selector).append("svg")
 		.attr("width", width + margin.left + margin.right)
 		.attr("height", height + margin.top + margin.bottom)
 		.append("g")
@@ -85,6 +77,23 @@ StatusHistory.prototype.show = function() {
 			.attr("d", line);
 	});
 
+};
+
+
+var StatusHistory = function(pageTransition) {
+	this.pageTransition = pageTransition;
+
+	this.$page = $("#page-status-history");
+	this.$toStatus = $("#page-status-history-to-status");
+
+	this.$toStatus.bind("touchend", function(e) {
+		this.pageTransition("#page-status");
+	}.bind(this));
+};
+
+StatusHistory.prototype.show = function() {
+	this.graph = new Graph();
+	this.graph.appendTo("#status-history-chart");
 	this.$page.css('display', 'block');
 };
 
