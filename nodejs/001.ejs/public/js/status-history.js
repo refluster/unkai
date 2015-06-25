@@ -17,7 +17,6 @@ StatusHistory.prototype.show = function() {
 		height = 500 - margin.top - margin.bottom;
 
 	var x = d3.time.scale()
-	//    .domain([-width / 2, width / 2])
 		.domain([parseDate("2015/06/23 14:22:05"), parseDate("2015/06/25 10:26:35")])
 		.range([0, width]);
 
@@ -35,6 +34,10 @@ StatusHistory.prototype.show = function() {
 		.orient("left")
 		.ticks(5)
 		.tickSize(-width);
+
+	var line = d3.svg.line()
+		.x(function(d) { return x(d.date); })
+		.y(function(d) { return y(d.illuminance); });
 
 	var zoom = d3.behavior.zoom()
 		.x(x)
@@ -62,29 +65,11 @@ StatusHistory.prototype.show = function() {
 		.attr("class", "y axis")
 		.call(yAxis);
 
-	d3.select("button").on("click", reset);
-
 	function zoomed() {
 		svg.select(".x.axis").call(xAxis);
 		svg.select(".y.axis").call(yAxis);
 		svg.select("path.line").attr('d', line);
 	}
-
-	function reset() {
-		d3.transition().duration(750).tween("zoom", function() {
-			var ix = d3.interpolate(x.domain(), [-width / 2, width / 2]),
-				iy = d3.interpolate(y.domain(), [-height / 2, height / 2]);
-			return function(t) {
-				zoom.x(x.domain(ix(t))).y(y.domain(iy(t)));
-				zoomed();
-			};
-		});
-	}
-
-	//////////////////////////////
-	var line = d3.svg.line()
-		.x(function(d) { return x(d.date); })
-		.y(function(d) { return y(d.illuminance); });
 
 	d3.tsv("data/sensor.tsv", function(error, data) {
 		if (error) throw error;
@@ -112,8 +97,6 @@ StatusHistory.prototype.resize = function() {
 	this.h = this.$page.height();
 	var shortSide = (this.w > this.h? this.h: this.w);
 	var pageBackIconSide = Math.floor(shortSide * 0.08);
-	var vMargin = this.h * 0.1;
-	var hMargin = this.w * 0.1;
 
 	this.$toStatus
 		.css('display', 'block')
@@ -124,9 +107,4 @@ StatusHistory.prototype.resize = function() {
 		.css('left', '0px')
 		.css('width', pageBackIconSide + 'px')
 		.css('height', pageBackIconSide + 'px');
-
-	this.$svg
-		.css('position', 'absolute')
-//		.css('top', (this.h - this.$svg.height())/2 + 'px')
-//		.css('left', (this.w - this.$svg.width())/2 + 'px')
 };
