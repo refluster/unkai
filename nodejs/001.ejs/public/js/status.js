@@ -22,7 +22,10 @@ var Status = function(pageTransition) {
 		this.$reset.css('background-color', 'red');
 	}.bind(this));
 	this.$illuminanceIcon.bind('touchstart', function(e) {
-		this.pageTransition("#page-status-history");
+		this.pageTransition("#page-status-history", {item: 'illuminance'});
+	}.bind(this));
+	this.$moistureIcon.bind('touchstart', function(e) {
+		this.pageTransition("#page-status-history", {item: 'moisture'});
 	}.bind(this));
 
 	this.update_time = 0;

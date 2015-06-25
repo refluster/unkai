@@ -32,11 +32,11 @@ Pager.prototype.id2obj = function(id) {
 	default:
 	}
 };
-Pager.prototype.pageTransition = function(to) {
+Pager.prototype.pageTransition = function(to, arg) {
 	this.currentPage.hidden();
 
 	this.currentPage = this.id2obj(to);
-	this.currentPage.show();
+	this.currentPage.show(arg);
 };
 Pager.prototype.show = function() {
 	this.currentPage.show();

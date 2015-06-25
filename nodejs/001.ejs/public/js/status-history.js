@@ -1,4 +1,5 @@
-var Graph = function() {
+var Graph = function(item) {
+	this.item = item;
 };
 
 Graph.prototype.appendTo = function(selector) {
@@ -29,7 +30,7 @@ Graph.prototype.appendTo = function(selector) {
 
 	var line = d3.svg.line()
 		.x(function(d) { return x(d.date); })
-		.y(function(d) { return y(d.illuminance); });
+		.y(function(d) { return y(d[this.item]); }.bind(this));
 
 	var zoom = d3.behavior.zoom()
 		.x(x)
@@ -91,8 +92,8 @@ var StatusHistory = function(pageTransition) {
 	}.bind(this));
 };
 
-StatusHistory.prototype.show = function() {
-	this.graph = new Graph();
+StatusHistory.prototype.show = function(arg) {
+	this.graph = new Graph(arg.item);
 	this.graph.appendTo("#status-history-chart");
 	this.$page.css('display', 'block');
 };
