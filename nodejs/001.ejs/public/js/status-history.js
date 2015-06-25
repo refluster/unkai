@@ -10,11 +10,9 @@ Graph.prototype.appendTo = function(selector) {
 		height = 500 - margin.top - margin.bottom;
 
 	var x = d3.time.scale()
-		.domain([parseDate("2015/06/23 14:22:05"), parseDate("2015/06/25 10:26:35")])
 		.range([0, width]);
 
 	var y = d3.scale.linear()
-		.domain([-height / 2, height / 2])
 		.range([height, 0]);
 
 	var xAxis = d3.svg.axis()
@@ -32,37 +30,10 @@ Graph.prototype.appendTo = function(selector) {
 		.x(function(d) { return x(d.date); })
 		.y(function(d) { return y(d[this.item]); }.bind(this));
 
-	var zoom = d3.behavior.zoom()
-		.x(x)
-		.y(y)
-		.scaleExtent([1, 10])
-		.on("zoom", zoomed);
-
 	var svg = d3.select(selector).append("svg")
 		.attr("width", width + margin.left + margin.right)
 		.attr("height", height + margin.top + margin.bottom)
 		.append("g")
-		.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-		.call(zoom);
-
-	svg.append("rect")
-		.attr("width", width)
-		.attr("height", height);
-
-	svg.append("g")
-		.attr("class", "x axis")
-		.attr("transform", "translate(0," + height + ")")
-		.call(xAxis);
-
-	svg.append("g")
-		.attr("class", "y axis")
-		.call(yAxis);
-
-	function zoomed() {
-		svg.select(".x.axis").call(xAxis);
-		svg.select(".y.axis").call(yAxis);
-		svg.select("path.line").attr('d', line);
-	}
 
 	d3.tsv("data/sensor.tsv", function(error, data) {
 		if (error) throw error;
@@ -71,8 +42,40 @@ Graph.prototype.appendTo = function(selector) {
 			d.date = parseDate(d.date);
 		});
 
-		svg
-			.append("path")
+		x.domain(d3.extent(data, function(d) { return d.date; }));
+		y.domain(d3.extent(data, function(d) { return d.illuminance; }));
+
+		var zoom = d3.behavior.zoom()
+			.x(x)
+			.y(y)
+			.scaleExtent([1, 10])
+			.on("zoom", zoomed);
+
+		svg.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+			.call(zoom);
+
+		console.log(svg);
+
+		svg.append("rect")
+			.attr("width", width)
+			.attr("height", height);
+
+		svg.append("g")
+			.attr("class", "x axis")
+			.attr("transform", "translate(0," + height + ")")
+			.call(xAxis);
+
+		svg.append("g")
+			.attr("class", "y axis")
+			.call(yAxis);
+
+		function zoomed() {
+			svg.select(".x.axis").call(xAxis);
+			svg.select(".y.axis").call(yAxis);
+			svg.select("path.line").attr('d', line);
+		}
+
+		svg.append("path")
 			.datum(data)
 			.attr("class", "line")
 			.attr("d", line);
