@@ -86,6 +86,7 @@ var StatusHistory = function(pageTransition) {
 
 	this.$page = $("#page-status-history");
 	this.$toStatus = $("#page-status-history-to-status");
+	this.$graph = $("#status-history-chart");
 
 	this.$toStatus.bind("touchend", function(e) {
 		this.pageTransition("#page-status");
@@ -93,13 +94,16 @@ var StatusHistory = function(pageTransition) {
 };
 
 StatusHistory.prototype.show = function(arg) {
-	this.graph = new Graph(arg.item);
+	var item = (arg && arg.item? arg.item: 'illuminance');
+	this.graph = new Graph(item);
 	this.graph.appendTo("#status-history-chart");
 	this.$page.css('display', 'block');
+	this.resize();
 };
 
 StatusHistory.prototype.hidden = function() {
 	this.$page.css('display', 'none');
+	this.$graph.empty();
 };
 
 StatusHistory.prototype.resize = function() {
@@ -107,6 +111,10 @@ StatusHistory.prototype.resize = function() {
 	this.h = this.$page.height();
 	var shortSide = (this.w > this.h? this.h: this.w);
 	var pageBackIconSide = Math.floor(shortSide * 0.08);
+
+	this.$graph
+		.css('position', 'absolute')
+		.css('top', (this.h - this.$graph.height())/2);
 
 	this.$toStatus
 		.css('display', 'block')
