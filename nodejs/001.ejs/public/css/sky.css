@@ -56,15 +56,19 @@ div {
 	text-align: center;
 }
 
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
+svg {
+  font: 10px sans-serif;
   shape-rendering: crispEdges;
 }
 
-.x.axis path {
-  display: none;
+rect {
+  fill: #ddd;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #fff;
 }
 
 .line {
@@ -73,6 +77,7 @@ div {
   stroke-width: 1.5px;
 }
 
-.axis g {
+.tick {
   font: 15px sans-serif;
 }
+
