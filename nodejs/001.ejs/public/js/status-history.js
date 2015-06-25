@@ -35,6 +35,13 @@ Graph.prototype.appendTo = function(selector) {
 		.attr("height", height + margin.top + margin.bottom)
 		.append("g")
 
+	var clippath = svg.append("defs")
+		.append("clipPath")
+		.attr("id", "clippath")
+		.append("rect")
+		.attr("width", width)
+		.attr("height", height)
+
 	d3.tsv("data/sensor.tsv", function(error, data) {
 		if (error) throw error;
 
@@ -78,6 +85,7 @@ Graph.prototype.appendTo = function(selector) {
 		svg.append("path")
 			.datum(data)
 			.attr("class", "line")
+			.attr("clip-path","url(#clippath)")
 			.attr("d", line);
 	});
 
