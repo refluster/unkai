@@ -58,9 +58,6 @@ function dht11_get(callback) {
 // tlc5940 ////////////////////////////
 const num_led = 15; // # of led to control
 var tlc5940_process;
-if (! TEST_DRIVER) {
-	tlc5940_process = spawn("../../c/003.tlc5940/003.tlc5940", ["-n", String(num_led)]);
-}
 var tlc5940_brightness = [];
 
 function tlc5940_set(brightness) {
@@ -97,9 +94,6 @@ function rtc_set(date) {
 
 // mistgen ////////////////////////////
 var mistgen_process;
-if (! TEST_DRIVER) {
-	mistgen_process = spawn("../../c/006.mistgen/006.mistgen");
-}
 var mistgen_percent = 0;
 
 function mistgen_set(ratio) {
@@ -149,3 +143,21 @@ exports.setRtc = function(date) {
 exports.setMistgen = function(ratio) {
 	mistgen_set(ratio);
 };
+
+exports.start = function() {
+	if (! TEST_DRIVER) {
+		mistgen_process = spawn("../../c/006.mistgen/006.mistgen");
+		tlc5940_process = spawn("../../c/003.tlc5940/003.tlc5940", ["-n", String(num_led)]);
+	}
+};
+
+exports.stop = function() {
+	if (TEST_DRIVER) {
+		console.log('driver.stop');
+		return;
+	}
+	
+	tlc5940_process.stdin.write("0\n");
+	mistgen_process.stdin.write("0\n");
+};
+
