@@ -1,8 +1,7 @@
 var io
 var timer;
 
-exports.init = function(driver, server, conditioner) {
-	const SLEEP_CONDITIONER_INTERVAL = 10000;
+exports.init = function(driver, server) {
 	io = require('socket.io').listen(server);
 
 	io.sockets.on('connection', function(client) {
@@ -25,20 +24,10 @@ exports.init = function(driver, server, conditioner) {
 		client.on('led/set', function(data) {
 			driver.setLed(data.brightness);
 			console.log("led/set " + data.brightness);
-			conditioner.stop();
 			driver.setMistgen(100);
 			clearInterval(timer);
-			timer = setTimeout(function() {
-				conditioner.start();
-			}, SLEEP_CONDITIONER_INTERVAL);
 		});
 		
-		// rtc
-		client.on('rtc/set', function(data) {
-			driver.setRtc(data.date);
-			console.log("rtc/set " + data.date);
-		});
-
 		// system
 		client.on('system/reset', function() {
 			console.log("system/reset");
