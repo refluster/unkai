@@ -1,0 +1,54 @@
+<script src="js/jquery.min.js"></script>
+<script src="socket.io/socket.io.js"></script>
+<script type="text/javascript">
+ var socket = io.connect('http://<%= host %>');
+ var update_time = 0;
+ socket.on('connect', function(msg) {
+	 console.log('connect');
+	 setInterval(send_request, 1000);
+ });
+ 
+ // receive message
+ socket.on('sensor/response', function(data) {
+	 update_time ++;
+	 console.log('sensor/response');
+	 console.log(data);
+	 $("#illuminance").html(data.illuminance);
+	 $("#moisture").html(data.moisture);
+	 $("#humidity").html(data.humidity);
+	 $("#celsius").html(data.celsius);
+	 $("#fahrenheit").html(data.fahrenheit);
+	 $("#update").html(update_time);
+ });
+ 
+ // send message
+ function send_request() {
+	 socket.emit('sensor/get');
+ }
+</script>
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta content="text/html; charset=EUC-JP">
+    <% if (is_mobile) { %>
+      <meta name="viewport" content="width=320, user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
+    <% } %>
+    <title>status</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1>status</h1>
+    <br>
+    illuminance: <span id="illuminance"></span><br>
+    moisture: <span id="moisture"></span><br>
+    humidity: <span id="humidity"></span><br>
+    celsius: <span id="celsius"></span><br>
+    fahrenheit: <span id="fahrenheit"></span><br>
+    <hr>
+    update: <span id="update"></span>
+  </body>
+</html>
