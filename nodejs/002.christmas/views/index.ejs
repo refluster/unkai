@@ -1,47 +1,24 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Cache-Control" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <meta content="text/html; charset=EUC-JP">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
-    <title>schememono / unkai</title>
-    <link rel='stylesheet' href='css/sky.css' />
-    <script type="text/javascript" src="js/jquery.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-    	socket = io.connect('http://<%= host %>');
-    </script>
-    <script type="text/javascript" src="js/base.js"></script>
-    <script type="text/javascript" src="js/index.js"></script>
-    <script type="text/javascript" src="js/sky.js"></script>
-    <script type="text/javascript" src="js/status.js"></script>
-  </head>
-  <body>
-    <div id="page-index" class="page">
-      <div id="index-doc">schememono<br>unkai</div>
-      <div id="index-link">
-        <div id="page-to-sky">sky</div>
-        <div id="page-to-status">status</div>
-      </div>
-      <div id="reset">reset</div>
-    </div>
-    <div id="page-sky" class="page">
-      <div id="sky-space">
-        <div id="brightstar" class="surface star"></div>
-        <div id="darkstar" class="surface dark-star"></div>
-        <div id="earth" class="surface star"></div>
-      </div>
-      <div class="page-to-index"></div>
-    </div>
-    <div id="page-status" class="page">
-      <div id="status-illuminance-icon"></div>
-      <div id="status-illuminance-val"></div>
-      <div id="status-moisture-icon"></div>
-      <div id="status-moisture-val"></div>
-      <div class="page-to-index"></div>
-    </div>
-  </body>
+	<head>
+		<meta http-equiv="Pragma" content="no-cache">
+		<meta http-equiv="Cache-Control" content="no-cache">
+		<meta http-equiv="Expires" content="0">
+		<meta content="text/html; charset=EUC-JP">
+		<meta name="viewport"
+			  content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
+		<title>christmas</title>
+		<script type="text/javascript" src="js/jquery.min.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+		<script>
+    	 socket = io.connect('http://<%= host %>');
+		</script>
+		<script type="text/javascript" src="js/base.js"></script>
+		<script type="text/javascript" src="js/index.js"></script>
+	</head>
+	<body>
+		<button id="test0">test0</button>
+		<button id="test1">test1</button>
+		<button id="test2">test2</button>
+	</body>
 </html>
