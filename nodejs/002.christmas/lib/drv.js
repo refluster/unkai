@@ -47,6 +47,16 @@ exports.start = function() {
 	if (! TEST_DRIVER) {
 		tlc5940_process = spawn("../../c/003.tlc5940/003.tlc5940", ["-n", String(num_led)]);
 	}
+
+	for (var i = 0; i < num_led; i++) {
+		brightness.push(0);
+	}
+	setInterval(function() {
+		for (var i = 0; i < num_led; i++) {
+			brightness[i] += 100;
+		}
+		tlc5940_set(brightness);
+	}, 1000);
 };
 
 exports.stop = function() {
@@ -57,4 +67,3 @@ exports.stop = function() {
 	
 	tlc5940_process.stdin.write("0\n");
 };
-
