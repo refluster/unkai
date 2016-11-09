@@ -16,8 +16,6 @@ exports.init = function(driver, server) {
 		client.on('led/set', function(data) {
 			driver.setLed(data.brightness);
 			console.log("led/set " + data.brightness);
-			driver.setMistgen(100);
-			clearInterval(timer);
 		});
 		
 		// system
