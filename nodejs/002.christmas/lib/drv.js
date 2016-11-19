@@ -78,7 +78,7 @@ exports.start = function() {
 		brightness[n] = 1000;
 		
 		tlc5940_set(brightness);
-	}, 10);
+	}, 30);
 
 };
 

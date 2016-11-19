@@ -14,7 +14,7 @@ exports.init = function(driver, server) {
 		
 		// led
 		client.on('led/set', function(data) {
-			driver.setLed(data.brightness);
+//			driver.setLed(data.brightness);
 			console.log("led/set " + data.brightness);
 		});
 		
