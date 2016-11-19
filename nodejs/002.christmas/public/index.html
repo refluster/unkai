@@ -23,26 +23,38 @@
       <div class="page-header">
         <h1>Christmas tree</h1>
       </div>
-
-
       <div ng-controller="cBrightness">
-        <input type="range" min="0" max="4095" step="1"
-               ng-model="brightness" ng-change="update()">
+        <div class="form-group">
+          <input type="range" min="0" max="4095" step="1"
+                 ng-model="brightness" ng-change="update()">
+        </div>
       </div>
       <hr>
       <div ng-controller="cOptions">
-        <select class="form-control"
-                ng-model="pattern" ng-change="updatePattern()">
-          <option value="on">on</option>
-          <option value="random">random</option>
-          <option value="off">off</option>
-        </select>
-      </div>
-      <div ng-controller="cOn">
-      </div>
-      <div ng-controller="cOn">
-      </div>
-      <div ng-controller="cOff">
+        <div class="form-group">
+          <select class="form-control"
+                  ng-model="pattern" ng-change="updatePattern()">
+            <option value="on">on</option>
+            <option value="random">random</option>
+            <option value="off">off</option>
+          </select>
+        </div>
+        <div ng-controller="cOn" ng-show="$parent.pattern == 'on'">
+        </div>
+        <div ng-controller="cRandom" ng-show="$parent.pattern == 'random'">
+          <div class="form-group">
+            <label for="speed">speed</label>
+            <input id="speed" type="range" min="0" max="4095" step="1"
+                   ng-model="speed" ng-change="updateSpeed()">
+          </div>
+          <div class="form-group">
+            <label for="number">number</label>
+            <input id="number" type="range" min="0" max="15" step="1"
+                   ng-model="number" ng-change="updateNumber()">
+          </div>
+        </div>
+        <div ng-controller="cOff" ng-show="$parent.pattern = 'off'">
+        </div>
       </div>
     </div>
   </body>
