@@ -48,15 +48,38 @@ exports.start = function() {
 		tlc5940_process = spawn("../../c/003.tlc5940/003.tlc5940", ["-n", String(num_led)]);
 	}
 
+	brightness = [];
 	for (var i = 0; i < num_led; i++) {
 		brightness.push(0);
 	}
+
+/*
+	var increment = 100;
 	setInterval(function() {
 		for (var i = 0; i < num_led; i++) {
-			brightness[i] += 100;
+			brightness[i] += increment;
 		}
+		if ((increment > 0 && brightness[0] + increment > 4095) ||
+			(increment < 0 && brightness[0] + increment < 0)) {
+			increment = -increment;
+		}
+		
 		tlc5940_set(brightness);
-	}, 1000);
+	}, 100);
+*/
+
+	var increment = 100;
+	setInterval(function() {
+		var n = parseInt(Math.random() * num_led);
+
+		for (var i = 0; i < num_led; i++) {
+			brightness[i] = 0;
+		}
+		brightness[n] = 1000;
+		
+		tlc5940_set(brightness);
+	}, 10);
+
 };
 
 exports.stop = function() {
