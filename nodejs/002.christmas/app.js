@@ -32,6 +32,8 @@ App.prototype.start = function() {
 	this.socket = require('./lib/socket');
 	this.socket.init(this.driver, this.server);
 
+	return;
+
 	// pages
 	this.app.get("/", function(req, res) {
 		res.render('index', {host: req.headers.host});
