@@ -63,8 +63,13 @@ var tlc5940_brightness = [];
 function tlc5940_set(brightness) {
 	var cmd = "1 " + brightness.join(" ") + "\n";
 	
+	if (cmd.split(' ').length != num_led + 1) {
+		console.log('tlc5940_set: cmd length error');
+		return;
+	}
+
 	if (TEST_DRIVER) {
-		console.log('tlc5940_set: ' + brightness);
+		console.log('tlc5940_set: ' + cmd);
 		return;
 	}
 	

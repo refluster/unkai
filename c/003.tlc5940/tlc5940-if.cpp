@@ -40,7 +40,7 @@ void userif() {
 		
 		switch (ctrl_info.type) {
 		case TLC5940_END:
-			end = 1;
+			exit(0);
 			break;
 		case TLC5940_UPDATE:
 			update_brightness(ctrl_info.brightness);

@@ -25,10 +25,13 @@ var Index = function(pageTransition) {
 	this.$toStatus.bind('touchstart', function(e) {
 		this.pageTransition("#page-status");
 	}.bind(this));
+<<<<<<< HEAD
 	this.$toReset.bind('touchstart', function(e) {
 		socket.emit('system/reset');
 		this.$toReset.css('background-color', 'red');
 	}.bind(this));
+=======
+>>>>>>> 3b1e9c5a522a3fc796197f97e52984e59f461d49
 };
 Index.prototype.show = function() {
 	this.resize();

@@ -117,6 +117,8 @@ Sky = function(pageTransition) {
 	this.$toIndex.bind("touchend", function(e) {
 		this.pageTransition("#page-index");
 	}.bind(this));
+
+	this.tlc5940UpdateAvailable = true;
 };
 Sky.prototype.inputStart = function(e) {
 	this.touchStartX = e.originalEvent.touches[0].pageX;
@@ -182,6 +184,10 @@ Sky.prototype.earthRotate = function() {
 	var y = baseSize/2 + ratio*baseSize/2*Math.cos(this.earthRadian);
 	this.earth.setPosition(x, y);
 
+	if (! this.tlc5940UpdateAvailable) {
+		return;
+	}
+
 	for (var i = 0; i < this.colorTab.length; i++) {
 		if (this.colorTab[i].rad > this.earthRadian) {
 			var a = this.colorTab[i - 1];
@@ -200,6 +206,12 @@ Sky.prototype.earthRotate = function() {
 	}
 
 	tlc5940_update();
+	this.tlc5940UpdateAvailable = false;
+
+	clearTimeout(this.tlc5940UpdateTimer);
+	this.tlc5940UpdateTimer = setTimeout(function() {
+		this.tlc5940UpdateAvailable = true;
+	}.bind(this), 40);
 };
 Sky.prototype.show = function() {
 	this.$page.css('display', 'block');
