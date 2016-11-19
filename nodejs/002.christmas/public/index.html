@@ -23,17 +23,27 @@
       <div class="page-header">
         <h1>Christmas tree</h1>
       </div>
+
+
       <div ng-controller="cBrightness">
         <input type="range" min="0" max="4095" step="1"
-               ng-model="brightness" ng-change="changed()">
+               ng-model="brightness" ng-change="update()">
       </div>
-
-      <select class="form-control" id="">
-        <option>1</option>
-        <option>2</option>
-        <option>3</option>
-        <option>4</option>
-      </select>
+      <hr>
+      <div ng-controller="cOptions">
+        <select class="form-control"
+                ng-model="pattern" ng-change="updatePattern()">
+          <option value="on">on</option>
+          <option value="random">random</option>
+          <option value="off">off</option>
+        </select>
+      </div>
+      <div ng-controller="cOn">
+      </div>
+      <div ng-controller="cOn">
+      </div>
+      <div ng-controller="cOff">
+      </div>
     </div>
   </body>
 </html>
