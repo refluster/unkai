@@ -47,7 +47,7 @@ exports.getLed = function(callback) {
 
 exports.setLedMaxBrightness = function(b) {
 	max_brightness = b;
-	var brightness = brightness_ratio.map(function(r) {r * max_brightness});
+	var brightness = brightness_ratio.map(function(r) {return r * max_brightness});
 	tlc5940_set(brightness);
 };
 
