@@ -24,6 +24,12 @@ exports.init = function(driver, server) {
 			console.log("led/setMaxBrightness " + data.brightness);
 		});
 
+		// led random interval
+		client.on('led/setRandomInterval', function(data) {
+			driver.setRandomInterval(data.randomInterval);
+			console.log("led/setRandomInterval " + data.randomInterval);
+		});
+
 		// led pattern
 		client.on('led/setPattern', function(data) {
 			driver.setLedPattern(data.pattern);

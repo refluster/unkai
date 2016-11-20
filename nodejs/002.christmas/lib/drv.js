@@ -46,6 +46,10 @@ exports.setLedMaxBrightness = function(b) {
 	tlc5940_set(this.tlc5940_process, brightness);
 };
 
+exports.setRandomInterval = function(t) {
+	this.conf.randomInterval = t;
+};
+
 exports.setLedPattern = function(b) {
 	this.conf.pattern = b;
 	if (b == 'on') {
