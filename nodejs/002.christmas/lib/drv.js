@@ -49,10 +49,18 @@ exports.setLedMaxBrightness = function(b) {
 exports.setLedPattern = function(b) {
 	this.conf.pattern = b;
 	if (b == 'on') {
+		if (this.timer) {
+			clearTimeout(this.timer);
+			this.timer = undefined;
+		}
 		for (var i = 0; i < this.ratio.length; i++) {
 			this.ratio[i] = 1;
 		}
 	} else if (b == 'off') {
+		if (this.timer) {
+			clearTimeout(this.timer);
+			this.timer = undefined;
+		}
 		for (var i = 0; i < this.ratio.length; i++) {
 			this.ratio[i] = 0;
 		}
@@ -66,7 +74,7 @@ exports.setLedPattern = function(b) {
 				brightness[parseInt(Math.random() * num_led)] = 1000;
 			}
 			tlc5940_set(this.tlc5940_process, brightness);
-			setTimeout(fn, this.conf.randomInterval);
+			this.timer = setTimeout(fn, this.conf.randomInterval);
 		}.bind(this);
 		fn();
 	}
