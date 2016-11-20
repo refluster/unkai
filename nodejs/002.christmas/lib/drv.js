@@ -47,6 +47,7 @@ exports.setLedMaxBrightness = function(b) {
 };
 
 exports.setLedPattern = function(b) {
+	this.conf.pattern = b;
 	if (b == 'on') {
 		for (var i = 0; i < this.brightness_ratio.length; i++) {
 			this.brightness_ratio[i] = 1;
@@ -56,15 +57,24 @@ exports.setLedPattern = function(b) {
 			this.brightness_ratio[i] = 0;
 		}
 	} else if (b == 'random') {
+		var brightness = [];
+		setInterval(function() {
+			for (var i = 0; i < num_led; i++) {
+				brightness[i] = 0;
+			}
+			var n = parseInt(Math.random() * num_led);
+			brightness[n] = 1000;
+			tlc5940_set(this.tlc5940_process, brightness);
+		}.bind(this), 500);
 	}
 	var brightness = this.brightness_ratio.map(function(r) {return r * this.max_brightness}.bind(this));
 	tlc5940_set(this.tlc5940_process, brightness);
 };
 
 exports.start = function() {
-	// tlc5940 ////////////////////////////
 	this.tlc5940_process;
 	this.max_brightness = 1000;
+	this.conf = {};
 
 	if (! TEST_DRIVER) {
 		this.tlc5940_process = spawn("../../c/003.tlc5940/003.tlc5940", ["-n", String(num_led)]);
@@ -99,16 +109,6 @@ exports.start = function() {
 
 /*
 	var increment = 100;
-	setInterval(function() {
-		var n = parseInt(Math.random() * num_led);
-
-		for (var i = 0; i < num_led; i++) {
-			brightness[i] = 0;
-		}
-		brightness[n] = 1000;
-		
-		tlc5940_set(brightness);
-	}, 30);
 */
 };
 
