@@ -42,19 +42,19 @@ exports.getLed = function(callback) {
 
 exports.setLedMaxBrightness = function(b) {
 	this.conf.brightness = b;
-	var brightness = this.brightness_ratio.map(function(r) {return r * this.conf.brightness}.bind(this));
+	var brightness = this.conf.ratio.map(function(r) {return r * this.conf.brightness}.bind(this));
 	tlc5940_set(this.tlc5940_process, brightness);
 };
 
 exports.setLedPattern = function(b) {
 	this.conf.pattern = b;
 	if (b == 'on') {
-		for (var i = 0; i < this.brightness_ratio.length; i++) {
-			this.brightness_ratio[i] = 1;
+		for (var i = 0; i < this.conf.ratio.length; i++) {
+			this.conf.ratio[i] = 1;
 		}
 	} else if (b == 'off') {
-		for (var i = 0; i < this.brightness_ratio.length; i++) {
-			this.brightness_ratio[i] = 0;
+		for (var i = 0; i < this.conf.ratio.length; i++) {
+			this.conf.ratio[i] = 0;
 		}
 	} else if (b == 'random') {
 		var brightness = [];
@@ -67,7 +67,7 @@ exports.setLedPattern = function(b) {
 			tlc5940_set(this.tlc5940_process, brightness);
 		}.bind(this), 500);
 	}
-	var brightness = this.brightness_ratio.map(function(r) {return r * this.conf.brightness}.bind(this));
+	var brightness = this.conf.ratio.map(function(r) {return r * this.conf.brightness}.bind(this));
 	tlc5940_set(this.tlc5940_process, brightness);
 };
 
@@ -80,9 +80,9 @@ exports.start = function() {
 		this.tlc5940_process = spawn("../../c/003.tlc5940/003.tlc5940", ["-n", String(num_led)]);
 	}
 
-	this.brightness_ratio = [];
+	this.conf.ratio = [];
 	for (var i = 0; i < num_led; i++) {
-		this.brightness_ratio.push(1);
+		this.conf.ratio.push(1);
 	}
 
 	brightness = [];
