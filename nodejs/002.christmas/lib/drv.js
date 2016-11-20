@@ -56,10 +56,11 @@ exports.setLedPattern = function(b) {
 		for (var i = 0; i < brightness_ratio.length; i++) {
 			brightness_ratio[i] = 1;
 		}
-	} else {
+	} else if (b == 'off') {
 		for (var i = 0; i < brightness_ratio.length; i++) {
 			brightness_ratio[i] = 0;
 		}
+	} else if (b == 'random') {
 	}
 	var brightness = brightness_ratio.map(function(r) {return r * max_brightness});
 	console.log(max_brightness);
