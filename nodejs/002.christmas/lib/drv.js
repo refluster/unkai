@@ -58,14 +58,17 @@ exports.setLedPattern = function(b) {
 		}
 	} else if (b == 'random') {
 		var brightness = [];
-		setInterval(function() {
+		var fn = function() {
 			for (var i = 0; i < num_led; i++) {
 				brightness[i] = 0;
 			}
-			var n = parseInt(Math.random() * num_led);
-			brightness[n] = 1000;
+			for (var i = 0; i < 3; i++) {
+				brightness[parseInt(Math.random() * num_led)] = 1000;
+			}
 			tlc5940_set(this.tlc5940_process, brightness);
-		}.bind(this), 500);
+			setTimeout(fn, this.conf.randomInterval);
+		}.bind(this);
+		fn();
 	}
 	var brightness = this.ratio.map(function(r) {return r * this.conf.brightness}.bind(this));
 	tlc5940_set(this.tlc5940_process, brightness);
@@ -75,6 +78,7 @@ exports.start = function() {
 	this.tlc5940_process;
 	this.conf = {};
 	this.conf.brightness = 1000;
+	this.conf.randomInterval = 500;
 	this.ratio = [];
 
 	if (! TEST_DRIVER) {
