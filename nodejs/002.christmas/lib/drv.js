@@ -41,8 +41,8 @@ exports.getLed = function(callback) {
 };
 
 exports.setLedMaxBrightness = function(b) {
-	this.max_brightness = b;
-	var brightness = this.brightness_ratio.map(function(r) {return r * this.max_brightness}.bind(this));
+	this.conf.brightness = b;
+	var brightness = this.brightness_ratio.map(function(r) {return r * this.conf.brightness}.bind(this));
 	tlc5940_set(this.tlc5940_process, brightness);
 };
 
@@ -67,14 +67,14 @@ exports.setLedPattern = function(b) {
 			tlc5940_set(this.tlc5940_process, brightness);
 		}.bind(this), 500);
 	}
-	var brightness = this.brightness_ratio.map(function(r) {return r * this.max_brightness}.bind(this));
+	var brightness = this.brightness_ratio.map(function(r) {return r * this.conf.brightness}.bind(this));
 	tlc5940_set(this.tlc5940_process, brightness);
 };
 
 exports.start = function() {
 	this.tlc5940_process;
-	this.max_brightness = 1000;
 	this.conf = {};
+	this.conf.brightness = 1000;
 
 	if (! TEST_DRIVER) {
 		this.tlc5940_process = spawn("../../c/003.tlc5940/003.tlc5940", ["-n", String(num_led)]);
