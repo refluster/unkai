@@ -90,26 +90,6 @@ exports.start = function() {
 		brightness.push(0);
 	}
 	tlc5940_set(this.tlc5940_process, brightness);
-
-
-/*
-	var increment = 100;
-	setInterval(function() {
-		for (var i = 0; i < num_led; i++) {
-			brightness[i] += increment;
-		}
-		if ((increment > 0 && brightness[0] + increment > 4095) ||
-			(increment < 0 && brightness[0] + increment < 0)) {
-			increment = -increment;
-		}
-		
-		tlc5940_set(brightness);
-	}, 100);
-*/
-
-/*
-	var increment = 100;
-*/
 };
 
 exports.stop = function() {
