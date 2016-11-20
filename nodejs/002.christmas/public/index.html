@@ -30,8 +30,7 @@
       <hr>
       <div ng-controller="cOptions">
         <div class="form-group">
-          <select class="form-control"
-                  ng-model="pattern" ng-change="updatePattern()">
+          <select class="form-control" ng-model="pattern" ng-change="updatePattern()">
             <option value="on">on</option>
             <option value="random">random</option>
             <option value="off">off</option>
@@ -51,7 +50,7 @@
                    ng-model="number" ng-change="updateNumber()">
           </div>
         </div>
-        <div ng-controller="cOff" ng-show="$parent.pattern = 'off'">
+        <div ng-controller="cOff" ng-show="$parent.pattern == 'off'">
         </div>
       </div>
     </div>
