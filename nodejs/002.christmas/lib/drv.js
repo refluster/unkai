@@ -50,6 +50,10 @@ exports.setRandomInterval = function(t) {
 	this.conf.randomInterval = t;
 };
 
+exports.setUpdateNumber = function(n) {
+	this.conf.updateNumber = n;
+};
+
 exports.setLedPattern = function(b) {
 	this.conf.pattern = b;
 	this.conf.updateNumber = 3;

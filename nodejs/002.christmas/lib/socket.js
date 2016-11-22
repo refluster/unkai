@@ -30,6 +30,12 @@ exports.init = function(driver, server) {
 			console.log("led/setRandomInterval " + data.randomInterval);
 		});
 
+		// led random interval
+		client.on('led/setUpdateNumber', function(data) {
+			driver.setUpdateNumber(data.updateNumber);
+			console.log("led/setUpdateNumber " + data.updateNumber);
+		});
+
 		// led pattern
 		client.on('led/setPattern', function(data) {
 			driver.setLedPattern(data.pattern);
