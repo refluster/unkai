@@ -50,13 +50,13 @@ exports.setRandomInterval = function(t) {
 	this.conf.randomInterval = t;
 };
 
-exports.setUpdateNumber = function(n) {
-	this.conf.updateNumber = n;
+exports.setLedNumber = function(n) {
+	this.conf.ledNumber = n;
 };
 
 exports.setLedPattern = function(b) {
 	this.conf.pattern = b;
-	this.conf.updateNumber = 3;
+	this.conf.ledNumber = 3;
 	if (b == 'on') {
 		if (this.timer) {
 			clearTimeout(this.timer);
@@ -79,7 +79,7 @@ exports.setLedPattern = function(b) {
 			for (var i = 0; i < num_led; i++) {
 				brightness[i] = 0;
 			}
-			for (var i = 0; i < this.conf.updateNumber; i++) {
+			for (var i = 0; i < this.conf.ledNumber; i++) {
 				brightness[parseInt(Math.random() * num_led)] = 1000;
 			}
 			tlc5940_set(this.tlc5940_process, brightness);

@@ -43,12 +43,12 @@ app.controller('cRandom', function($scope) {
 			disableUpdate = false;
 		}, 100)
 	};
-	$scope.updateNumber = function() {
+	$scope.updateLedNumber = function() {
 		if (disableUpdate) {
 			return;
 		}
-		socket.emit('led/setUpdateNumber', {updateNumber: $scope.updateNumber});
-		console.log('update number ' + $scope.number);
+		socket.emit('led/setLedNumber', {ledNumber: $scope.ledNumber});
+		console.log('update led number ' + $scope.ledNumber);
 		disableUpdate = true;
 		setTimeout(function() {
 			disableUpdate = false;
