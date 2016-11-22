@@ -35,8 +35,9 @@ app.controller('cRandom', function($scope) {
 		if (disableUpdate) {
 			return;
 		}
-		console.log($scope.speed);
-		socket.emit('led/setRandomInterval', {randomInterval: $scope.speed});
+		$scope.times_per_sec = parseInt($scope.speed/8);
+		socket.emit('led/setRandomInterval', {randomInterval: 8000/$scope.speed});
+		console.log('interval ' + $scope.times_per_sec);
 		disableUpdate = true;
 		setTimeout(function() {
 			disableUpdate = false;

@@ -40,8 +40,8 @@
         </div>
         <div ng-controller="cRandom" ng-show="$parent.pattern == 'random'">
           <div class="form-group">
-            <label for="speed">speed</label>
-            <input id="speed" type="range" min="0" max="4095" step="1"
+            <label for="speed">speed {{times_per_sec}}</label>
+            <input id="speed" type="range" min="1" max="80" step="1"
                    ng-model="speed" ng-change="updateSpeed()">
           </div>
           <div class="form-group">
