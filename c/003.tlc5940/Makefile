@@ -9,7 +9,7 @@ TARGET = 003.tlc5940
 all: $(TARGET)
 
 $(TARGET): tlc5940-drv.o tlc5940-if.o
-	g++ -o $(TARGET) tlc5940-drv.o tlc5940-if.o -lwiringPi
+	g++ -o $(TARGET) tlc5940-drv.o tlc5940-if.o -lwiringPi -pthread
 	sudo chown root:root $(TARGET)
 	sudo chmod u+s $(TARGET)
 
